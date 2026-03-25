@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=3">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3">
+<meta name="theme-color" content="#5B4FD9">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review Pelanggan — Aslan Teknik</title>
+<meta name="description" content="Baca pengalaman nyata pelanggan Aslan Teknik — servis AC terpercaya di Jabodetabek.">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mint: #C8F0E8; --lavender: #DDD6F3; --peach: #FDDCCC;
+    --sky: #C9E8F5; --cream: #FDF8F2; --charcoal: #1A1A2E;
+    --mid: #4A4A6A; --soft: #8888AA; --accent: #5B4FD9;
+    --accent2: #E8643A; --white: #FFFFFF; --border: rgba(0,0,0,0.08);
+    --gold: #F5A623;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--charcoal); overflow-x:hidden; }
+
+  /* NAV */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 60px; background:rgba(253,248,242,0.92);
+    backdrop-filter:blur(16px); border-bottom:1px solid var(--border);
+  }
+  .nav-logo { font-family:'Instrument Serif',serif; font-size:1.5rem; color:var(--charcoal); letter-spacing:-0.02em; text-decoration:none; }
+  .nav-logo span { color:var(--accent); }
+  .nav-back {
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:0.85rem; font-weight:500; color:var(--mid);
+    text-decoration:none; padding:8px 18px; border-radius:100px;
+    border:1px solid var(--border); transition:all 0.2s;
+    background:var(--white);
+  }
+  .nav-back:hover { color:var(--accent); border-color:var(--accent); }
+
+  /* HERO */
+  .hero {
+    padding:140px 60px 80px; text-align:center;
+    position:relative; overflow:hidden;
+  }
+  .blob { position:absolute; border-radius:50%; filter:blur(90px); opacity:0.45; pointer-events:none; }
+  .b1 { width:560px; height:560px; background:var(--lavender); top:-160px; left:-120px; }
+  .b2 { width:420px; height:420px; background:var(--mint); bottom:-100px; right:-80px; }
+  .b3 { width:280px; height:280px; background:var(--peach); top:30%; left:60%; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+  .hero-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--white); border:1px solid var(--border);
+    padding:6px 18px; border-radius:100px;
+    font-size:0.8rem; font-weight:500; color:var(--mid);
+    margin-bottom:28px; box-shadow:0 2px 12px rgba(0,0,0,0.06);
+    position:relative; z-index:1; animation:fadeUp 0.6s ease both;
+  }
+  .bdot { width:8px; height:8px; background:#4CAF50; border-radius:50%; animation:pulse 2s infinite; }
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+  .hero h1 {
+    font-family:'Instrument Serif',serif;
+    font-size:clamp(2.6rem,5.5vw,4.4rem);
+    line-height:1.1; letter-spacing:-0.03em;
+    max-width:700px; margin:0 auto;
+    position:relative; z-index:1;
+    animation:fadeUp 0.7s 0.1s ease both; opacity:0;
+  }
+  .hero h1 em { font-style:italic; color:var(--accent); }
+  .hero-sub {
+    font-size:1.05rem; color:var(--soft); max-width:480px;
+    line-height:1.7; margin:18px auto 0;
+    position:relative; z-index:1;
+    animation:fadeUp 0.7s 0.2s ease both; opacity:0;
+  }
+
+  /* STATS STRIP */
+  .stats-strip {
+    display:flex; justify-content:center; gap:48px; flex-wrap:wrap;
+    margin-top:52px; position:relative; z-index:1;
+    animation:fadeUp 0.7s 0.3s ease both; opacity:0;
+  }
+  .stat-item { text-align:center; }
+  .stat-num {
+    font-family:'Instrument Serif',serif;
+    font-size:2.6rem; line-height:1; color:var(--charcoal);
+    letter-spacing:-0.03em;
+  }
+  .stat-num span { color:var(--accent); }
+  .stat-lbl { font-size:0.75rem; color:var(--soft); margin-top:4px; }
+
+  /* AVERAGE STARS */
+  .avg-stars {
+    display:flex; align-items:center; justify-content:center;
+    gap:6px; margin-top:32px; position:relative; z-index:1;
+    animation:fadeUp 0.7s 0.35s ease both; opacity:0;
+  }
+  .avg-stars-icons { color:var(--gold); font-size:1.5rem; letter-spacing:2px; }
+  .avg-label { font-size:0.85rem; font-weight:600; color:var(--mid); }
+
+  /* SECTION DIVIDER */
+  .section-sep { height:1px; background:var(--border); margin:0 60px; }
+
+  /* ─── MARQUEE TRACK ─── */
+  .marquee-section { padding:64px 0 80px; overflow:hidden; }
+  .marquee-label {
+    text-align:center; margin-bottom:40px; padding:0 60px;
+  }
+  .slbl { font-size:0.76rem; font-weight:600; color:var(--accent); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:10px; }
+  .stitle { font-family:'Instrument Serif',serif; font-size:clamp(1.8rem,3.5vw,2.6rem); line-height:1.15; letter-spacing:-0.02em; }
+  .stitle em { font-style:italic; color:var(--accent); }
+
+  /* Two rows scrolling in opposite directions */
+  .marquee-wrapper { display:flex; flex-direction:column; gap:20px; }
+
+  .marquee-row {
+    display:flex; gap:20px;
+    /* Width enough to hold cards × 2 sets for seamless loop */
+    width:max-content;
+  }
+  .marquee-row.row-1 { animation: scrollLeft 38s linear infinite; }
+  .marquee-row.row-2 { animation: scrollRight 44s linear infinite; }
+
+  .marquee-row:hover { animation-play-state:paused; }
+
+  @keyframes scrollLeft {
+    0%   { transform:translateX(0); }
+    100% { transform:translateX(-50%); }
+  }
+  @keyframes scrollRight {
+    0%   { transform:translateX(-50%); }
+    100% { transform:translateX(0); }
+  }
+
+  /* REVIEW CARD */
+  .rv-card {
+    flex-shrink:0; width:300px;
+    background:var(--white); border:1px solid var(--border);
+    border-radius:22px; padding:26px 24px;
+    transition:box-shadow 0.3s, transform 0.3s;
+    cursor:default;
+  }
+  .rv-card:hover { box-shadow:0 12px 40px rgba(0,0,0,0.09); transform:translateY(-3px); }
+
+  .rv-card-stars { color:var(--gold); font-size:0.9rem; letter-spacing:2px; margin-bottom:12px; }
+  .rv-card-text {
+    font-size:0.88rem; line-height:1.7; color:var(--mid);
+    font-style:italic; margin-bottom:18px;
+    display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .rv-card-footer { display:flex; align-items:center; gap:10px; }
+  .rv-card-av {
+    width:36px; height:36px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.85rem; font-weight:700; color:var(--charcoal);
+    flex-shrink:0;
+  }
+  .rv-card-name { font-weight:600; font-size:0.85rem; }
+  .rv-card-meta { font-size:0.72rem; color:var(--soft); margin-top:1px; }
+  .rv-card-date { font-size:0.72rem; color:var(--soft); margin-top:1px; }
+
+  /* LOADING & EMPTY */
+  .loading-state {
+    text-align:center; padding:80px 20px;
+    color:var(--soft); font-size:0.9rem;
+  }
+  .loading-dots span {
+    display:inline-block; width:8px; height:8px;
+    background:var(--accent); border-radius:50%; margin:0 3px;
+    animation:bounce 1.2s ease-in-out infinite;
+  }
+  .loading-dots span:nth-child(2){ animation-delay:0.2s; }
+  .loading-dots span:nth-child(3){ animation-delay:0.4s; }
+  @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+
+  .empty-state {
+    text-align:center; padding:80px 20px;
+  }
+  .empty-icon { font-size:3rem; margin-bottom:16px; }
+  .empty-state h3 { font-family:'Instrument Serif',serif; font-size:1.6rem; margin-bottom:8px; }
+  .empty-state p { color:var(--soft); font-size:0.9rem; }
+
+  /* CTA SECTION */
+  .cta-section {
+    text-align:center; padding:0 60px 80px;
+  }
+  .cta-box {
+    background:var(--charcoal); color:#fff;
+    border-radius:28px; padding:56px 60px;
+    max-width:700px; margin:0 auto;
+    position:relative; overflow:hidden;
+  }
+  .cta-box::before {
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(ellipse at top right, rgba(91,79,217,0.4), transparent 60%),
+               radial-gradient(ellipse at bottom left, rgba(200,240,232,0.15), transparent 50%);
+  }
+  .cta-box h2 {
+    font-family:'Instrument Serif',serif; font-size:clamp(1.8rem,3vw,2.6rem);
+    letter-spacing:-0.02em; position:relative; z-index:1; margin-bottom:12px;
+  }
+  .cta-box h2 em { font-style:italic; color:var(--peach); }
+  .cta-box p { font-size:0.92rem; color:rgba(255,255,255,0.55); position:relative; z-index:1; margin-bottom:28px; }
+  .cta-btns { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; position:relative; z-index:1; }
+  .btn-primary {
+    background:var(--white); color:var(--charcoal); padding:13px 28px;
+    border-radius:100px; font-size:0.9rem; font-weight:600;
+    text-decoration:none; transition:all 0.2s; border:none; cursor:pointer;
+    font-family:'DM Sans',sans-serif;
+  }
+  .btn-primary:hover { background:var(--peach); transform:translateY(-2px); }
+  .btn-ghost-light {
+    background:transparent; color:rgba(255,255,255,0.7); padding:13px 28px;
+    border-radius:100px; font-size:0.9rem; font-weight:500;
+    text-decoration:none; border:1px solid rgba(255,255,255,0.2); transition:all 0.2s;
+  }
+  .btn-ghost-light:hover { color:#fff; border-color:rgba(255,255,255,0.5); }
+
+  /* FOOTER */
+  footer {
+    background:var(--charcoal); color:rgba(255,255,255,0.4);
+    padding:32px 60px; text-align:center;
+  }
+  footer a { color:rgba(255,255,255,0.4); text-decoration:none; transition:color 0.2s; }
+  footer a:hover { color:#fff; }
+  .foot-logo { font-family:'Instrument Serif',serif; font-size:1.3rem; color:#fff; display:block; margin-bottom:8px; }
+  .foot-txt { font-size:0.78rem; }
+
+  @media(max-width:768px){
+    nav { padding:14px 20px; }
+    .hero { padding:110px 20px 60px; }
+    .stats-strip { gap:28px; }
+    .section-sep { margin:0 20px; }
+    .marquee-label { padding:0 20px; }
+    .cta-section { padding:0 20px 60px; }
+    .cta-box { padding:40px 28px; }
+    footer { padding:28px 20px; }
+  }
+</style>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, query, where, orderBy, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const firebaseConfig={apiKey:"AIzaSyAd_HmgX5djmePrHpYHxsydSErTPSjcBdY",authDomain:"aslan-teknik.firebaseapp.com",projectId:"aslan-teknik",storageBucket:"aslan-teknik.firebasestorage.app",messagingSenderId:"372303552922",appId:"1:372303552922:web:5b61d3cd2c590ff1381a23"};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+window._rvDb         = db;
+window._rvCollection = collection;
+window._rvQuery      = query;
+window._rvWhere      = where;
+window._rvOrderBy    = orderBy;
+window._rvGetDocs    = getDocs;
+</script>
+
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="/">Aslan<span>.</span>Teknik</a>
+  <a class="nav-back" href="/#testimoni">← Kembali ke Beranda</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+
+  <div class="hero-badge"><span class="bdot"></span>Review Terverifikasi</div>
+  <h1>Apa Kata <em>Pelanggan</em><br>Nyata Kami</h1>
+  <p class="hero-sub">Setiap review berasal dari pelanggan yang sudah menggunakan layanan Aslan Teknik — bukan rekayasa.</p>
+
+  <div class="avg-stars" id="avg-stars-block" style="opacity:0">
+    <div class="avg-stars-icons" id="avg-stars-icons">★★★★★</div>
+    <div class="avg-label" id="avg-label">4.9 / 5</div>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat-item">
+      <div class="stat-num" id="stat-count">–</div>
+      <div class="stat-lbl">Review Pelanggan</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" id="stat-avg">–</div>
+      <div class="stat-lbl">Rata-rata Bintang</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">96<span>%</span></div>
+      <div class="stat-lbl">Puas dengan Layanan</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-sep"></div>
+
+<!-- MARQUEE SECTION -->
+<div class="marquee-section">
+  <div class="marquee-label">
+    <div class="slbl">Testimoni</div>
+    <div class="stitle">Suara <em>Pelanggan</em> Kami</div>
+  </div>
+
+  <div id="reviews-area">
+    <!-- Loading state -->
+    <div class="loading-state" id="loading-state">
+      <div class="loading-dots">
+        <span></span><span></span><span></span>
+      </div>
+      <p style="margin-top:14px">Memuat review...</p>
+    </div>
+    <!-- Marquee injected here -->
+  </div>
+</div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-box">
+    <h2>Punya Pengalaman<br>dengan <em>Aslan Teknik?</em></h2>
+    <p>Bagikan cerita Anda dan bantu pelanggan lain membuat keputusan yang tepat.</p>
+    <div class="cta-btns">
+      <a href="/" class="btn-primary">📅 Pesan Sekarang</a>
+      <a href="/" onclick="event.preventDefault();window.location='/#testimoni';setTimeout(()=>window.openReviewModal&&window.openReviewModal(),600)" class="btn-ghost-light">✍️ Tulis Review</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="foot-logo">Aslan<span style="color:var(--peach)">.</span>Teknik</span>
+  <p class="foot-txt">© <span id="yr"></span> Aslan Teknik — Spesialis AC Jabodetabek</p>
+</footer>
+
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+// Avatar color palette
+var AV_BG = ['#EDE9FB','#D4F5EC','#FCEEE7','#C9E8F5','#FDD9C0','#D4EDD4'];
+var AV_EMOJI = ['👩','👨','👩‍💼','👨‍💼','🧑','👩‍🔧','👨‍🔧'];
+
+function starStr(n) {
+  var s = '';
+  for(var i=1;i<=5;i++) s += i<=n ? '★' : '☆';
+  return s;
+}
+
+function initials(name) {
+  return (name || '?').split(' ').map(function(w){ return w[0]; }).join('').slice(0,2).toUpperCase();
+}
+
+function fmtDate(ts) {
+  if (!ts) return '';
+  var d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
+}
+
+function buildCard(rv, idx) {
+  var div = document.createElement('div');
+  div.className = 'rv-card';
+  var bg  = AV_BG[idx % AV_BG.length];
+  var dt  = fmtDate(rv.created_at);
+  div.innerHTML =
+    '<div class="rv-card-stars">'+starStr(rv.rating)+'</div>'+
+    '<p class="rv-card-text">"'+(rv.comment || '')+'"</p>'+
+    '<div class="rv-card-footer">'+
+      '<div class="rv-card-av" style="background:'+bg+'">'+initials(rv.name)+'</div>'+
+      '<div>'+
+        '<div class="rv-card-name">'+(rv.name || 'Pelanggan')+'</div>'+
+        (dt ? '<div class="rv-card-date">'+dt+'</div>' : '')+
+      '</div>'+
+    '</div>';
+  return div;
+}
+
+function buildMarquee(reviews) {
+  var area = document.getElementById('reviews-area');
+  area.innerHTML = '';
+
+  if (reviews.length === 0) {
+    area.innerHTML =
+      '<div class="empty-state">'+
+      '<div class="empty-icon">⭐</div>'+
+      '<h3>Belum Ada Review</h3>'+
+      '<p>Review akan tampil di sini setelah diverifikasi.</p>'+
+      '</div>';
+    return;
+  }
+
+  // Update stats
+  var avg = reviews.reduce(function(s,r){ return s+r.rating; }, 0) / reviews.length;
+  document.getElementById('stat-count').innerHTML = reviews.length + '<span style="color:var(--accent)">+</span>';
+  document.getElementById('stat-avg').innerHTML = avg.toFixed(1) + '<span style="color:var(--accent); font-size:1.4rem">/5</span>';
+
+  // Stars display
+  var starsEl = document.getElementById('avg-stars-icons');
+  var full = Math.round(avg);
+  starsEl.textContent = starStr(full);
+  document.getElementById('avg-label').textContent = avg.toFixed(1) + ' / 5 — ' + reviews.length + ' ulasan';
+  document.getElementById('avg-stars-block').style.animation = 'fadeUp 0.6s 0.4s ease both';
+  document.getElementById('avg-stars-block').style.opacity = '1';
+
+  // Split into two rows, shuffle a bit
+  var shuffled = reviews.slice().sort(function(){ return Math.random()-0.5; });
+  var half     = Math.ceil(shuffled.length / 2);
+  var row1data = shuffled.slice(0, half);
+  var row2data = shuffled.slice(half);
+
+  // Need at least ~5 cards per row for smooth loop — duplicate if needed
+  function pad(arr) {
+    var out = arr.slice();
+    while (out.length < 6) out = out.concat(arr);
+    return out;
+  }
+  row1data = pad(row1data);
+  row2data = pad(row2data.length ? row2data : row1data.slice().reverse());
+
+  var wrapper = document.createElement('div');
+  wrapper.className = 'marquee-wrapper';
+
+  // Row 1 — scrolls left
+  var row1 = buildRow(row1data, 'row-1');
+  // Row 2 — scrolls right
+  var row2 = buildRow(row2data, 'row-2');
+
+  wrapper.appendChild(row1);
+  wrapper.appendChild(row2);
+  area.appendChild(wrapper);
+}
+
+function buildRow(data, cls) {
+  // Double the data for seamless loop
+  var doubled = data.concat(data);
+  var row = document.createElement('div');
+  row.className = 'marquee-row ' + cls;
+  doubled.forEach(function(rv, i) {
+    row.appendChild(buildCard(rv, i));
+  });
+  return row;
+}
+
+// ── FETCH ──────────────────────────────────────────────
+async function loadReviews() {
+  // Wait for Firebase to initialise
+  var waited = 0;
+  while (!window._rvDb && waited < 30) {
+    await new Promise(function(r){ setTimeout(r, 100); });
+    waited++;
+  }
+  if (!window._rvDb) {
+    document.getElementById('loading-state').innerHTML =
+      '<p style="color:#EF4444">Gagal terhubung ke server. Coba muat ulang halaman.</p>';
+    return;
+  }
+
+  try {
+    var q = window._rvQuery(
+      window._rvCollection(window._rvDb, 'reviews'),
+      window._rvWhere('approved', '==', true),
+      window._rvWhere('rating', '>=', 4)
+    );
+    var snap = await window._rvGetDocs(q);
+    var reviews = [];
+    snap.forEach(function(d){ reviews.push(d.data()); });
+
+    // Sort by date descending client-side
+    reviews.sort(function(a, b) {
+      var ta = a.created_at ? (a.created_at.toDate ? a.created_at.toDate().getTime() : 0) : 0;
+      var tb = b.created_at ? (b.created_at.toDate ? b.created_at.toDate().getTime() : 0) : 0;
+      return tb - ta;
+    });
+
+    buildMarquee(reviews);
+  } catch(e) {
+    document.getElementById('reviews-area').innerHTML =
+      '<div class="empty-state">'+
+      '<div class="empty-icon">⚠️</div>'+
+      '<h3>Gagal Memuat Review</h3>'+
+      '<p>'+e.message+'</p>'+
+      '</div>';
+  }
+}
+
+loadReviews();
+</script>
+</body>
+</html>
