@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
+<meta name="theme-color" content="#1A1A2E">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aslan Teknik — Portal Teknisi</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FDF8F2;--charcoal:#1A1A2E;--mid:#4A4A6A;--soft:#8888AA;
+    --accent:#5B4FD9;--white:#fff;--border:rgba(0,0,0,0.08);
+    --green:#22C55E;--red:#EF4444;--amber:#F59E0B;
+    --surface:#F4F3FF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);min-height:100vh;}
+
+  /* ── LOGIN ── */
+  #login-screen{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#1A1A2E 0%,#2D2B55 50%,#1A1A2E 100%);
+    padding:20px;
+  }
+  .login-card{
+    background:var(--white);border-radius:28px;padding:48px 40px;
+    box-shadow:0 32px 80px rgba(0,0,0,0.4);width:100%;max-width:400px;
+  }
+  .login-logo{font-family:'Instrument Serif',serif;font-size:1.8rem;margin-bottom:4px;}
+  .login-logo span{color:var(--accent);}
+  .login-sub{font-size:0.83rem;color:var(--soft);margin-bottom:32px;}
+  .l-label{font-size:0.78rem;font-weight:600;display:block;margin-bottom:7px;}
+  .l-input{
+    width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;
+    font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);
+    outline:none;transition:border-color 0.2s;margin-bottom:14px;
+  }
+  .l-input:focus{border-color:var(--accent);background:#fff;}
+  .l-btn{
+    width:100%;padding:14px;border-radius:14px;background:var(--charcoal);color:#fff;
+    border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.95rem;
+    font-weight:600;transition:all 0.2s;margin-top:4px;
+  }
+  .l-btn:hover{background:var(--accent);}
+  .l-btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .l-err{font-size:0.82rem;color:var(--red);margin-top:10px;min-height:18px;}
+
+  /* ── DASHBOARD ── */
+  #dashboard{display:none;}
+  header{
+    background:var(--charcoal);padding:16px 32px;
+    display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;z-index:50;
+  }
+  .hdr-left{display:flex;align-items:center;gap:14px;}
+  .hdr-logo{font-family:'Instrument Serif',serif;font-size:1.2rem;color:#fff;}
+  .hdr-logo span{color:#A89EF5;}
+  .hdr-badge{
+    background:#2D2B55;color:#A89EF5;padding:4px 12px;
+    border-radius:100px;font-size:0.75rem;font-weight:600;
+  }
+  .hdr-name{font-size:0.82rem;color:rgba(255,255,255,0.5);}
+  .logout-btn{
+    padding:7px 18px;border-radius:100px;background:transparent;
+    border:1.5px solid rgba(255,255,255,0.2);font-family:'DM Sans',sans-serif;
+    font-size:0.82rem;color:rgba(255,255,255,0.6);cursor:pointer;transition:all 0.2s;
+  }
+  .logout-btn:hover{border-color:var(--red);color:var(--red);}
+
+  /* ── BODY ── */
+  .dash-body{padding:32px;max-width:960px;margin:0 auto;}
+
+  /* ── DATE FILTER BAR ── */
+  .date-bar{
+    display:flex;align-items:center;gap:10px;margin-bottom:28px;
+    background:var(--white);border:1px solid var(--border);border-radius:16px;
+    padding:12px 16px;flex-wrap:wrap;
+  }
+  .date-bar-lbl{font-size:0.78rem;font-weight:600;color:var(--soft);margin-right:4px;}
+  .date-pill{
+    padding:6px 16px;border-radius:100px;border:1.5px solid var(--border);
+    background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;
+    font-size:0.8rem;font-weight:500;color:var(--mid);transition:all 0.15s;
+  }
+  .date-pill.act{border-color:var(--accent);background:var(--accent);color:#fff;}
+  .date-input{
+    padding:6px 12px;border:1.5px solid var(--border);border-radius:100px;
+    font-family:'DM Sans',sans-serif;font-size:0.8rem;color:var(--charcoal);
+    background:var(--cream);outline:none;cursor:pointer;transition:border-color 0.2s;
+  }
+  .date-input:focus{border-color:var(--accent);}
+
+  /* ── STATS ── */
+  .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
+  .stat-card{
+    background:var(--white);border:1px solid var(--border);border-radius:20px;
+    padding:20px 22px;position:relative;overflow:hidden;
+  }
+  .stat-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;}
+  .stat-card.today::before{background:var(--accent);}
+  .stat-card.week::before{background:var(--amber);}
+  .stat-card.month::before{background:var(--green);}
+  .stat-num{font-family:'Instrument Serif',serif;font-size:2.4rem;line-height:1;margin-bottom:4px;}
+  .stat-card.today .stat-num{color:var(--accent);}
+  .stat-card.week .stat-num{color:var(--amber);}
+  .stat-card.month .stat-num{color:var(--green);}
+  .stat-lbl{font-size:0.78rem;color:var(--soft);font-weight:500;}
+  .stat-sub{font-size:0.72rem;color:var(--soft);margin-top:6px;display:flex;gap:10px;flex-wrap:wrap;}
+  .stat-sub span{display:inline-flex;align-items:center;gap:3px;}
+
+  /* ── PROGRESS BADGES ── */
+  .prog-row{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap;}
+  .prog-badge{
+    display:flex;align-items:center;gap:8px;padding:10px 18px;
+    border-radius:14px;border:1px solid var(--border);background:var(--white);
+  }
+  .prog-badge .pb-num{font-family:'Instrument Serif',serif;font-size:1.6rem;font-weight:700;}
+  .prog-badge .pb-lbl{font-size:0.75rem;color:var(--soft);}
+  .prog-badge.done .pb-num{color:var(--green);}
+  .prog-badge.skip .pb-num{color:var(--red);}
+  .prog-badge.pending .pb-num{color:var(--mid);}
+
+  /* ── TASK LIST ── */
+  .section-head{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:16px;flex-wrap:wrap;gap:10px;
+  }
+  .section-title{font-size:1rem;font-weight:700;color:var(--charcoal);}
+  .task-count-badge{
+    background:var(--surface);color:var(--accent);
+    padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:700;
+  }
+  .empty-state{
+    text-align:center;padding:56px 20px;color:var(--soft);
+    background:var(--white);border:1px solid var(--border);border-radius:20px;
+  }
+  .empty-state .empty-ico{font-size:2.5rem;margin-bottom:12px;}
+  .empty-state p{font-size:0.88rem;}
+
+  /* ── TASK CARD ── */
+  .task-card{
+    background:var(--white);border:1px solid var(--border);border-radius:20px;
+    padding:20px 22px;margin-bottom:12px;transition:box-shadow 0.2s;
+    position:relative;overflow:hidden;
+  }
+  .task-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;}
+  .task-card.status-belum::before{background:var(--soft);}
+  .task-card.status-selesai::before{background:var(--green);}
+  .task-card.status-skip::before{background:var(--red);}
+  .task-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.07);}
+  .task-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:12px;flex-wrap:wrap;}
+  .task-id{
+    font-family:monospace;font-size:0.82rem;font-weight:700;
+    color:var(--charcoal);background:#EDE9FB;padding:3px 10px;
+    border-radius:6px;letter-spacing:0.06em;
+  }
+  .task-status-badge{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:8px;font-size:0.75rem;font-weight:700;}
+  .tsb-belum{background:#F3F4F6;color:var(--mid);}
+  .tsb-selesai{background:#DCFCE7;color:#166534;}
+  .tsb-skip{background:#FEE2E2;color:#991B1B;}
+
+  /* Task schedule highlight */
+  .task-schedule{
+    display:inline-flex;align-items:center;gap:6px;
+    background:#EDE9FB;border:1px solid rgba(91,79,217,0.2);
+    border-radius:10px;padding:6px 14px;font-size:0.82rem;
+    font-weight:600;color:var(--accent);margin-bottom:12px;
+  }
+  /* Task info grid */
+  .task-info{display:grid;grid-template-columns:1fr 1fr;gap:5px 16px;font-size:0.82rem;color:var(--mid);margin-bottom:14px;}
+  .task-info b{color:var(--charcoal);}
+  .task-info .full{grid-column:1/-1;}
+  /* Service chips */
+  .svc-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;}
+  .svc-chip{
+    background:#F0F9FF;color:#0369A1;border:1px solid #BAE6FD;
+    padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600;
+  }
+  /* WA button */
+  .wa-link{
+    display:inline-flex;align-items:center;gap:6px;
+    background:#DCFCE7;color:#166534;border:1px solid #BBF7D0;
+    padding:5px 14px;border-radius:100px;font-size:0.78rem;font-weight:600;
+    text-decoration:none;transition:background 0.2s;
+  }
+  .wa-link:hover{background:#BBF7D0;}
+  /* Action buttons */
+  .task-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+  .btn-selesai{
+    padding:9px 20px;border-radius:10px;background:var(--green);color:#fff;
+    border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;
+    font-weight:600;transition:all 0.2s;
+  }
+  .btn-selesai:hover{background:#16A34A;transform:translateY(-1px);}
+  .btn-skip{
+    padding:9px 16px;border-radius:10px;background:transparent;color:var(--red);
+    border:1.5px solid var(--red);cursor:pointer;font-family:'DM Sans',sans-serif;
+    font-size:0.82rem;font-weight:600;transition:all 0.2s;
+  }
+  .btn-skip:hover{background:var(--red);color:#fff;}
+  .btn-undo{
+    padding:9px 16px;border-radius:10px;background:transparent;color:var(--soft);
+    border:1.5px solid var(--border);cursor:pointer;font-family:'DM Sans',sans-serif;
+    font-size:0.82rem;font-weight:500;transition:all 0.2s;
+  }
+  .btn-undo:hover{border-color:var(--mid);color:var(--charcoal);}
+  /* Notes */
+  .task-notes{
+    background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;
+    padding:8px 12px;font-size:0.78rem;color:#92400E;line-height:1.5;margin-bottom:10px;
+  }
+
+  /* Footer */
+  .foot-copy{text-align:center;padding:20px;font-size:0.75rem;color:var(--soft);margin-top:16px;}
+
+  /* Toast */
+  #toast{
+    position:fixed;bottom:24px;right:24px;background:var(--charcoal);color:#fff;
+    padding:12px 22px;border-radius:14px;font-size:0.85rem;font-weight:500;
+    box-shadow:0 8px 32px rgba(0,0,0,0.2);opacity:0;transform:translateY(10px);
+    transition:all 0.3s;pointer-events:none;z-index:999;
+  }
+  #toast.show{opacity:1;transform:translateY(0);}
+
+  /* Spinner */
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .spinner-sm{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:4px;}
+
+  @media(max-width:640px){
+    .dash-body{padding:16px;}
+    header{padding:12px 16px;}
+    .hdr-name{display:none;}
+    .stats-grid{grid-template-columns:1fr 1fr;}
+    .stats-grid .stat-card:last-child{grid-column:1/-1;}
+    .task-info{grid-template-columns:1fr;}
+    .task-info .full{grid-column:1;}
+    .date-bar{gap:7px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Aslan<span>.</span>Teknik</div>
+    <p class="login-sub">Portal Teknisi — Masuk dengan ID & Password kamu</p>
+    <label class="l-label">ID Teknisi</label>
+    <input type="text" class="l-input" id="l-id" placeholder="TECH01" style="text-transform:uppercase;letter-spacing:0.08em;">
+    <label class="l-label">Password</label>
+    <input type="password" class="l-input" id="l-pass" placeholder="••••••••">
+    <button class="l-btn" id="btn-login">Masuk</button>
+    <p class="l-err" id="l-err"></p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <header>
+    <div class="hdr-left">
+      <div class="hdr-logo">Aslan<span>.</span>Teknik</div>
+      <div class="hdr-badge">Portal Teknisi</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <span class="hdr-name" id="hdr-name"></span>
+      <button class="logout-btn" id="btn-logout">Keluar</button>
+    </div>
+  </header>
+
+  <div class="dash-body">
+
+    <!-- WELCOME -->
+    <div style="margin-bottom:24px;">
+      <div style="font-family:'Instrument Serif',serif;font-size:1.6rem;color:var(--charcoal);" id="welcome-msg">Selamat datang!</div>
+      <div style="font-size:0.82rem;color:var(--soft);margin-top:4px;" id="welcome-date"></div>
+    </div>
+
+    <!-- DATE FILTER BAR -->
+    <div class="date-bar">
+      <span class="date-bar-lbl">📅 Lihat tugas:</span>
+      <button class="date-pill act" id="pill-today" onclick="setDateFilter('today')">Hari Ini</button>
+      <button class="date-pill" id="pill-week"  onclick="setDateFilter('week')">Pekan Ini</button>
+      <button class="date-pill" id="pill-month" onclick="setDateFilter('month')">Bulan Ini</button>
+      <button class="date-pill" id="pill-all"   onclick="setDateFilter('all')">Semua</button>
+      <input type="date" class="date-input" id="custom-date" onchange="setDateFilter('custom')" title="Pilih tanggal tertentu">
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card today">
+        <div class="stat-num" id="stat-today">0</div>
+        <div class="stat-lbl">Tugas Hari Ini</div>
+        <div class="stat-sub">
+          <span>✅ <b id="stat-today-done">0</b> selesai</span>
+          <span>⏳ <b id="stat-today-pending">0</b> belum</span>
+        </div>
+      </div>
+      <div class="stat-card week">
+        <div class="stat-num" id="stat-week">0</div>
+        <div class="stat-lbl">Total Pekan Ini</div>
+        <div class="stat-sub">
+          <span>✅ <b id="stat-week-done">0</b></span>
+          <span>⏭️ <b id="stat-week-skip">0</b></span>
+          <span>⏳ <b id="stat-week-pending">0</b></span>
+        </div>
+      </div>
+      <div class="stat-card month">
+        <div class="stat-num" id="stat-month">0</div>
+        <div class="stat-lbl">Total Bulan Ini</div>
+        <div class="stat-sub">
+          <span>✅ <b id="stat-month-done">0</b></span>
+          <span>⏭️ <b id="stat-month-skip">0</b></span>
+          <span>⏳ <b id="stat-month-pending">0</b></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRESS BADGES (for current filter) -->
+    <div class="prog-row">
+      <div class="prog-badge done">
+        <div>
+          <div class="pb-num" id="prog-done">0</div>
+          <div class="pb-lbl">✅ Selesai</div>
+        </div>
+      </div>
+      <div class="prog-badge skip">
+        <div>
+          <div class="pb-num" id="prog-skip">0</div>
+          <div class="pb-lbl">⏭️ Skip</div>
+        </div>
+      </div>
+      <div class="prog-badge pending">
+        <div>
+          <div class="pb-num" id="prog-pending">0</div>
+          <div class="pb-lbl">⏳ Belum</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK LIST -->
+    <div class="section-head">
+      <div class="section-title" id="task-list-title">Daftar Tugas</div>
+      <span class="task-count-badge" id="task-count-badge">0 tugas</span>
+    </div>
+    <div id="task-list">
+      <div class="empty-state">
+        <div class="empty-ico">⏳</div>
+        <p>Memuat tugas...</p>
+      </div>
+    </div>
+
+  </div>
+  <div class="foot-copy">© 2025–2026 Aslan Teknik. Portal Teknisi v1.0</div>
+</div>
+
+<div id="toast"></div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey:"AIzaSyAd_HmgX5djmePrHpYHxsydSErTPSjcBdY",
+  authDomain:"aslan-teknik.firebaseapp.com",
+  projectId:"aslan-teknik",
+  storageBucket:"aslan-teknik.firebasestorage.app",
+  messagingSenderId:"372303552922",
+  appId:"1:372303552922:web:5b61d3cd2c590ff1381a23"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+// ── STATE ───────────────────────────────────────────────
+let currentTech   = null; // { id, name, tech_id, ... }
+let myOrders      = [];
+let dateFilter    = 'today';
+let unsubOrders   = null;
+
+// ── UTILS ───────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function getWeekBounds() {
+  const now = new Date(); now.setHours(0,0,0,0);
+  const day = now.getDay();
+  const mon = new Date(now); mon.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  return { start: mon, end: sun };
+}
+
+function getOrderDate(o) {
+  // Use scheduled_date if set, else parse from date string
+  if (o.scheduled_date) return o.scheduled_date;
+  if (o.date) {
+    // date might be like "Senin, 7 April 2026" or "YYYY-MM-DD"
+    const parsed = new Date(o.date);
+    if (!isNaN(parsed)) {
+      return parsed.getFullYear()+'-'+String(parsed.getMonth()+1).padStart(2,'0')+'-'+String(parsed.getDate()).padStart(2,'0');
+    }
+  }
+  if (o.created_at && o.created_at.seconds) {
+    const d = new Date(o.created_at.seconds*1000);
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  return null;
+}
+
+function filterByDate(orders) {
+  const today = todayStr();
+  if (dateFilter === 'today') {
+    return orders.filter(o => getOrderDate(o) === today);
+  }
+  if (dateFilter === 'week') {
+    const { start, end } = getWeekBounds();
+    return orders.filter(o => {
+      const d = getOrderDate(o);
+      if (!d) return false;
+      const dt = new Date(d); dt.setHours(0,0,0,0);
+      return dt >= start && dt <= end;
+    });
+  }
+  if (dateFilter === 'month') {
+    const now = new Date();
+    return orders.filter(o => {
+      const d = getOrderDate(o);
+      if (!d) return false;
+      const dt = new Date(d);
+      return dt.getFullYear() === now.getFullYear() && dt.getMonth() === now.getMonth();
+    });
+  }
+  if (dateFilter === 'custom') {
+    const val = document.getElementById('custom-date').value;
+    return orders.filter(o => getOrderDate(o) === val);
+  }
+  return orders; // 'all'
+}
+
+// ── AUTH ────────────────────────────────────────────────
+async function doLogin() {
+  const techIdRaw = document.getElementById('l-id').value.trim().toUpperCase();
+  const pass      = document.getElementById('l-pass').value;
+  const errEl     = document.getElementById('l-err');
+  const btn       = document.getElementById('btn-login');
+  errEl.textContent = '';
+  if (!techIdRaw || !pass) { errEl.textContent = 'ID dan password wajib diisi.'; return; }
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-sm"></span> Memeriksa...';
+
+  try {
+    // Query hanya by tech_id (single field = no composite index needed)
+    const { getDocs, query: fq, collection: col, where: w } =
+      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const snap = await getDocs(fq(col(db,'technicians'), w('tech_id','==',techIdRaw)));
+
+    if (snap.empty) {
+      errEl.textContent = 'ID tidak ditemukan. Hubungi admin.';
+      btn.disabled = false; btn.textContent = 'Masuk'; return;
+    }
+    const techDoc  = snap.docs[0];
+    const techData = techDoc.data();
+    // Cek is_active client-side
+    if (!techData.is_active) {
+      errEl.textContent = 'Akun nonaktif. Hubungi admin.';
+      btn.disabled = false; btn.textContent = 'Masuk'; return;
+    }
+    if (techData.password !== pass) {
+      errEl.textContent = 'Password salah.';
+      btn.disabled = false; btn.textContent = 'Masuk'; return;
+    }
+    currentTech = { id: techDoc.id, ...techData };
+    sessionStorage.setItem('aslan_tech', JSON.stringify(currentTech));
+    showDashboard();
+  } catch(e) {
+    errEl.textContent = 'Gagal login: ' + e.message;
+    btn.disabled = false; btn.textContent = 'Masuk';
+  }
+}
+
+function doLogout() {
+  if (!confirm('Keluar dari portal teknisi?')) return;
+  sessionStorage.removeItem('aslan_tech');
+  if (unsubOrders) { unsubOrders(); unsubOrders = null; }
+  currentTech = null; myOrders = [];
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('l-id').value = '';
+  document.getElementById('l-pass').value = '';
+  document.getElementById('l-err').textContent = '';
+  document.getElementById('btn-login').textContent = 'Masuk';
+}
+
+function showDashboard() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+
+  const now  = new Date();
+  const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const mons = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  document.getElementById('hdr-name').textContent = currentTech.name;
+  document.getElementById('welcome-msg').textContent = 'Hai, ' + currentTech.name + '! 👋';
+  document.getElementById('welcome-date').textContent =
+    days[now.getDay()] + ', ' + now.getDate() + ' ' + mons[now.getMonth()] + ' ' + now.getFullYear();
+
+  listenMyOrders();
+}
+
+// ── ORDERS LISTENER ─────────────────────────────────────
+function listenMyOrders() {
+  if (unsubOrders) { unsubOrders(); }
+
+  // Hanya filter by assigned_to (single field, no composite index needed)
+  // orderBy dihapus — kita sort client-side supaya tidak butuh composite index
+  const q = query(
+    collection(db,'orders'),
+    where('assigned_to','==', currentTech.tech_id)
+  );
+
+  unsubOrders = onSnapshot(q,
+    snap => {
+      // Sort client-side: terbaru dulu berdasarkan created_at
+      myOrders = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a,b) => {
+          const ta = a.created_at?.seconds || 0;
+          const tb = b.created_at?.seconds || 0;
+          return tb - ta;
+        });
+      renderAll();
+    },
+    err => {
+      // Error handler — tampilkan ke user
+      console.error('listenMyOrders error:', err);
+      document.getElementById('task-list').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-ico">⚠️</div>
+          <p style="color:#EF4444;font-weight:600">Gagal memuat tugas</p>
+          <p style="font-size:0.78rem;margin-top:6px">${err.message}</p>
+          <p style="font-size:0.75rem;margin-top:4px;color:var(--soft)">Coba refresh halaman atau hubungi admin.</p>
+        </div>`;
+    }
+  );
+}
+
+// ── RENDER ──────────────────────────────────────────────
+function renderAll() {
+  renderStats();
+  renderTasks();
+}
+
+function renderStats() {
+  const today   = todayStr();
+  const { start: wStart, end: wEnd } = getWeekBounds();
+  const now     = new Date();
+
+  const inToday  = myOrders.filter(o => getOrderDate(o) === today);
+  const inWeek   = myOrders.filter(o => {
+    const d = getOrderDate(o); if (!d) return false;
+    const dt = new Date(d); dt.setHours(0,0,0,0);
+    return dt >= wStart && dt <= wEnd;
+  });
+  const inMonth  = myOrders.filter(o => {
+    const d = getOrderDate(o); if (!d) return false;
+    const dt = new Date(d);
+    return dt.getFullYear() === now.getFullYear() && dt.getMonth() === now.getMonth();
+  });
+
+  const count = (arr, status) => arr.filter(o => (o.task_status||'belum') === status).length;
+
+  document.getElementById('stat-today').textContent         = inToday.length;
+  document.getElementById('stat-today-done').textContent    = count(inToday,'selesai');
+  document.getElementById('stat-today-pending').textContent = count(inToday,'belum');
+  document.getElementById('stat-week').textContent          = inWeek.length;
+  document.getElementById('stat-week-done').textContent     = count(inWeek,'selesai');
+  document.getElementById('stat-week-skip').textContent     = count(inWeek,'skip');
+  document.getElementById('stat-week-pending').textContent  = count(inWeek,'belum');
+  document.getElementById('stat-month').textContent         = inMonth.length;
+  document.getElementById('stat-month-done').textContent    = count(inMonth,'selesai');
+  document.getElementById('stat-month-skip').textContent    = count(inMonth,'skip');
+  document.getElementById('stat-month-pending').textContent = count(inMonth,'belum');
+}
+
+function renderTasks() {
+  const filtered = filterByDate(myOrders);
+
+  // Progress badges for current filter
+  const done    = filtered.filter(o => (o.task_status||'belum') === 'selesai').length;
+  const skip    = filtered.filter(o => (o.task_status||'belum') === 'skip').length;
+  const pending = filtered.filter(o => (o.task_status||'belum') === 'belum').length;
+  document.getElementById('prog-done').textContent    = done;
+  document.getElementById('prog-skip').textContent    = skip;
+  document.getElementById('prog-pending').textContent = pending;
+
+  // Title
+  const titles = { today:'Tugas Hari Ini', week:'Tugas Pekan Ini', month:'Tugas Bulan Ini', all:'Semua Tugas', custom:'Tugas Tanggal Ini' };
+  document.getElementById('task-list-title').textContent = titles[dateFilter] || 'Daftar Tugas';
+  document.getElementById('task-count-badge').textContent = filtered.length + ' tugas';
+
+  const el = document.getElementById('task-list');
+  if (!filtered.length) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-ico">🎉</div>
+      <p>${dateFilter === 'today' ? 'Tidak ada tugas hari ini. Istirahat dulu!' : 'Tidak ada tugas pada periode ini.'}</p>
+    </div>`;
+    return;
+  }
+
+  // Sort: belum first, then selesai, then skip
+  const sorted = [...filtered].sort((a,b) => {
+    const order = { belum:0, selesai:1, skip:2 };
+    return (order[a.task_status||'belum']||0) - (order[b.task_status||'belum']||0);
+  });
+
+  el.innerHTML = sorted.map(o => buildTaskCard(o)).join('');
+}
+
+function buildTaskCard(o) {
+  const status  = o.task_status || 'belum';
+  const safeId  = o.id.replace(/'/g,"\\'");
+  const orderId = o.order_id || o.id.slice(0,8).toUpperCase();
+
+  const statusBadge = status === 'selesai'
+    ? `<span class="task-status-badge tsb-selesai">✅ Selesai</span>`
+    : status === 'skip'
+    ? `<span class="task-status-badge tsb-skip">⏭️ Skip</span>`
+    : `<span class="task-status-badge tsb-belum">⏳ Belum Dikerjakan</span>`;
+
+  // Schedule
+  let schedHtml = '';
+  if (o.scheduled_date) {
+    const sd    = new Date(o.scheduled_date + 'T00:00:00');
+    const days  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const mons  = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const sdStr = days[sd.getDay()] + ', ' + sd.getDate() + ' ' + mons[sd.getMonth()] + ' ' + sd.getFullYear();
+    const stStr = o.scheduled_time ? ' · ' + o.scheduled_time + ' WIB' : '';
+    schedHtml = `<div class="task-schedule">📅 ${sdStr}${stStr}</div>`;
+  }
+
+  // Services
+  const svcList = Array.isArray(o.services) ? o.services : (o.services ? [o.services] : []);
+  const svcChips = svcList.map(s => `<span class="svc-chip">${s}</span>`).join('');
+
+  // WA link
+  const waNum  = (o.wa_number || o.whatsapp || '').replace(/\D/g,'').replace(/^0/,'62');
+  const waHtml = waNum
+    ? `<a class="wa-link" href="https://wa.me/${waNum}" target="_blank">
+        <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        ${o.wa_number || o.whatsapp}
+      </a>` : '';
+
+  // Action buttons
+  let actionHtml = '';
+  if (status === 'belum') {
+    actionHtml = `
+      <button class="btn-selesai" onclick="updateStatus('${safeId}','selesai')">✅ Tandai Selesai</button>
+      <button class="btn-skip"    onclick="updateStatus('${safeId}','skip')">⏭️ Skip / Tidak Bisa</button>`;
+  } else {
+    actionHtml = `<button class="btn-undo" onclick="updateStatus('${safeId}','belum')">↩️ Batalkan Status</button>`;
+  }
+
+  const notesHtml = o.notes
+    ? `<div class="task-notes">📝 <strong>Catatan:</strong> ${o.notes}</div>`
+    : '';
+
+  return `<div class="task-card status-${status}">
+    <div class="task-head">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span class="task-id">${orderId}</span>
+        ${statusBadge}
+      </div>
+    </div>
+    ${schedHtml}
+    <div class="task-info">
+      <div><b>${o.name||'—'}</b></div>
+      <div>${o.city||'—'}</div>
+      <div class="full" style="color:var(--soft)">📍 ${o.address||'—'}</div>
+      <div>${o.ac_type||'—'}</div>
+      <div>${o.unit_count||'—'} unit</div>
+    </div>
+    <div class="svc-chips">${svcChips}</div>
+    ${notesHtml}
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+      ${waHtml}
+    </div>
+    <div class="task-actions">${actionHtml}</div>
+  </div>`;
+}
+
+// ── UPDATE TASK STATUS ──────────────────────────────────
+window.updateStatus = async function(orderId, newStatus) {
+  try {
+    await updateDoc(doc(db,'orders',orderId), { task_status: newStatus });
+    const labels = { selesai:'✅ Ditandai selesai!', skip:'⏭️ Order di-skip.', belum:'↩️ Status dikembalikan.' };
+    showToast(labels[newStatus] || 'Status diperbarui.');
+  } catch(e) { showToast('Gagal: '+e.message); }
+};
+
+// ── DATE FILTER ─────────────────────────────────────────
+window.setDateFilter = function(f) {
+  dateFilter = f;
+  ['today','week','month','all'].forEach(x => {
+    const el = document.getElementById('pill-'+x);
+    if (el) el.classList.toggle('act', x === f);
+  });
+  if (f !== 'custom') document.getElementById('custom-date').value = '';
+  renderTasks();
+};
+
+// ── EVENT LISTENERS ─────────────────────────────────────
+document.getElementById('btn-login').addEventListener('click', doLogin);
+document.getElementById('l-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('l-id').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase(); });
+document.getElementById('btn-logout').addEventListener('click', doLogout);
+
+// ── AUTO-LOGIN from session ─────────────────────────────
+(function(){
+  try {
+    const saved = sessionStorage.getItem('aslan_tech');
+    if (saved) {
+      currentTech = JSON.parse(saved);
+      showDashboard();
+    }
+  } catch(e) { sessionStorage.removeItem('aslan_tech'); }
+})();
+
+</script>
+</body>
+</html>
