@@ -1,0 +1,2086 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<!-- Favicon reliable + anti-cache -->
+<link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
+<link rel="shortcut icon" href="/favicon.ico?v=2" type="image/x-icon">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2">
+<meta name="theme-color" content="#5B4FD9">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aslan Teknik — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--cream:#FDF8F2;--charcoal:#1A1A2E;--mid:#4A4A6A;--soft:#8888AA;--accent:#5B4FD9;--accent2:#E8643A;--white:#fff;--border:rgba(0,0,0,0.08);--green:#22C55E;--red:#EF4444;--amber:#F59E0B;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);min-height:100vh;}
+  #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#EDE9FB 0%,#D4F5EC 50%,#FCEEE7 100%);}
+  .login-card{background:var(--white);border-radius:28px;padding:48px 40px;box-shadow:0 24px 80px rgba(0,0,0,0.1);width:100%;max-width:400px;}
+  .login-logo{font-family:'Instrument Serif',serif;font-size:1.8rem;margin-bottom:6px;}
+  .login-logo span{color:var(--accent);}
+  .login-sub{font-size:0.85rem;color:var(--soft);margin-bottom:32px;}
+  .l-label{font-size:0.8rem;font-weight:600;display:block;margin-bottom:7px;}
+  .l-input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);outline:none;transition:border-color 0.2s;margin-bottom:16px;}
+  .l-input:focus{border-color:var(--accent);background:#fff;}
+  .l-btn{width:100%;padding:14px;border-radius:14px;background:var(--charcoal);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;transition:all 0.2s;margin-top:4px;}
+  .l-btn:hover{background:var(--accent);}
+  .l-btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .l-err{font-size:0.82rem;color:var(--red);margin-top:10px;min-height:18px;}
+  #dashboard{display:none;}
+  header{background:var(--white);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+  .hdr-logo{font-family:'Instrument Serif',serif;font-size:1.3rem;}
+  .hdr-logo span{color:var(--accent);}
+  .hdr-right{display:flex;align-items:center;gap:16px;}
+  .hdr-user{font-size:0.82rem;color:var(--soft);}
+  .logout-btn{padding:7px 18px;border-radius:100px;background:transparent;border:1.5px solid var(--border);font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:500;color:var(--mid);cursor:pointer;transition:all 0.2s;}
+  .logout-btn:hover{border-color:var(--red);color:var(--red);}
+  .dash-body{padding:40px;max-width:1100px;margin:0 auto;}
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px;}
+  .stat-row-orders{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:8px;}
+  .stat-c{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:22px 24px;}
+  .stat-c .s-num{font-family:'Instrument Serif',serif;font-size:2rem;}
+  .stat-c .s-lbl{font-size:0.8rem;color:var(--soft);margin-top:3px;}
+  .stat-c.green .s-num{color:var(--green);}
+  .stat-c.amber .s-num{color:var(--amber);}
+  .stat-c.red .s-num{color:var(--red);}
+  .stat-c.purple .s-num{color:var(--accent);}
+  .panels{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start;}
+  .panel{background:var(--white);border:1px solid var(--border);border-radius:24px;padding:28px;}
+  .panel-title{font-size:1rem;font-weight:600;margin-bottom:22px;}
+  .fg{margin-bottom:15px;}
+  .fl{font-size:0.78rem;font-weight:600;display:block;margin-bottom:6px;}
+  .fi,.fs{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:0.87rem;color:var(--charcoal);background:var(--cream);outline:none;transition:border-color 0.2s;}
+  .fi:focus,.fs:focus{border-color:var(--accent);background:#fff;}
+  .fr2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .type-row{display:flex;gap:8px;}
+  .type-pill{flex:1;padding:9px 0;border-radius:100px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.83rem;font-weight:500;color:var(--mid);transition:all 0.15s;text-align:center;}
+  .type-pill.act{border-color:var(--accent);background:var(--accent);color:#fff;}
+  .gen-row{display:flex;gap:8px;}
+  .gen-input{flex:1;padding:10px 13px;border:1.5px solid var(--border);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:0.87rem;background:var(--cream);outline:none;transition:border-color 0.2s;text-transform:uppercase;letter-spacing:0.08em;}
+  .gen-input:focus{border-color:var(--accent);background:#fff;}
+  .gen-btn{padding:10px 14px;border-radius:11px;background:var(--cream);border:1.5px solid var(--border);cursor:pointer;font-size:0.85rem;transition:all 0.15s;color:var(--mid);white-space:nowrap;}
+  .gen-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .create-btn{width:100%;padding:13px;border-radius:14px;background:var(--charcoal);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.92rem;font-weight:600;transition:all 0.2s;margin-top:6px;}
+  .create-btn:hover{background:var(--accent);}
+  .create-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .form-msg{font-size:0.8rem;margin-top:10px;min-height:18px;text-align:center;}
+  .form-msg.ok{color:var(--green);}
+  .form-msg.err{color:var(--red);}
+  .search-bar{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.87rem;background:var(--cream);outline:none;transition:border-color 0.2s;margin-bottom:16px;}
+  .search-bar:focus{border-color:var(--accent);background:#fff;}
+  .tbl-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:0.83rem;}
+  th{text-align:left;padding:10px 12px;font-size:0.72rem;font-weight:600;color:var(--soft);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border);}
+  td{padding:12px 12px;border-bottom:1px solid var(--border);color:var(--mid);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(91,79,217,0.03);}
+  .code-badge{font-family:monospace;font-size:0.85rem;font-weight:700;color:var(--charcoal);background:#EDE9FB;padding:3px 10px;border-radius:6px;letter-spacing:0.08em;}
+  .badge{display:inline-block;padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600;}
+  .badge-green{background:#DCFCE7;color:#166534;}
+  .badge-red{background:#FEE2E2;color:#991B1B;}
+  .badge-amber{background:#FEF9C3;color:#854D0E;}
+  .badge-pending{background:#FEF9C3;color:#854D0E;}
+  .prog-bar{height:6px;background:rgba(0,0,0,0.06);border-radius:3px;min-width:80px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:3px;background:var(--accent);transition:width 0.3s;}
+  .act-btn{padding:5px 12px;border-radius:8px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:500;color:var(--mid);transition:all 0.15s;margin-right:4px;}
+  .act-btn.del:hover{border-color:var(--red);color:var(--red);background:#FEE2E2;}
+  .act-btn.tog:hover{border-color:var(--green);color:#166534;background:#DCFCE7;}
+  .empty-state{text-align:center;padding:48px 20px;color:var(--soft);font-size:0.88rem;}
+  #toast{position:fixed;bottom:28px;right:28px;background:var(--charcoal);color:#fff;padding:12px 22px;border-radius:14px;font-size:0.85rem;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,0.2);opacity:0;transform:translateY(10px);transition:all 0.3s;pointer-events:none;z-index:999;}
+  #toast.show{opacity:1;transform:translateY(0);}
+  .tabs{display:flex;gap:4px;margin-bottom:28px;background:rgba(0,0,0,0.04);padding:4px;border-radius:14px;width:fit-content;max-width:100%;}
+  .tab-btn{padding:8px 22px;border-radius:10px;border:none;background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:500;color:var(--soft);transition:all 0.2s;}
+  .tab-btn.act{background:var(--white);color:var(--charcoal);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+  .tab-pane{display:none;}.tab-pane.act{display:block;}
+  /* ORDER CARDS */
+  .order-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:12px;transition:box-shadow 0.2s;}
+  .order-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.07);}
+  .order-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+  .order-id{font-family:monospace;font-size:0.85rem;font-weight:700;color:var(--charcoal);background:#EDE9FB;padding:3px 10px;border-radius:6px;letter-spacing:0.06em;}
+  .order-time{font-size:0.75rem;color:var(--soft);}
+  .order-body{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;font-size:0.82rem;color:var(--mid);margin-bottom:14px;}
+  .order-body b{color:var(--charcoal);}
+  .order-voucher{display:inline-flex;align-items:center;gap:6px;background:#DCFCE7;border:1px solid #BBF7D0;border-radius:100px;padding:4px 12px;font-size:0.78rem;font-weight:600;color:#166534;margin-bottom:12px;}
+  .order-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  .order-total{font-size:0.9rem;font-weight:700;color:var(--charcoal);}
+  .order-total .green{color:var(--green);}
+  .order-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .confirmed-badge{display:inline-flex;align-items:center;gap:5px;background:#DCFCE7;color:#166534;padding:8px 14px;border-radius:10px;font-size:0.8rem;font-weight:600;}
+  .rejected-badge{display:inline-flex;align-items:center;gap:5px;background:#FEE2E2;color:#991B1B;padding:8px 14px;border-radius:10px;font-size:0.8rem;font-weight:600;}
+  .confirm-btn-o{padding:10px 20px;border-radius:10px;background:var(--green);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;transition:all 0.2s;}
+  .confirm-btn-o:hover{background:#16A34A;transform:translateY(-1px);}
+  .confirm-btn-o:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+  .reject-btn-o{padding:10px 20px;border-radius:10px;background:transparent;color:var(--red);border:1.5px solid var(--red);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;transition:all 0.2s;}
+  .reject-btn-o:hover{background:var(--red);color:#fff;transform:translateY(-1px);}
+  .reject-btn-o:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+  .orders-empty{text-align:center;padding:48px 20px;color:var(--soft);font-size:0.88rem;}
+  .filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .filter-pill{padding:6px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:500;color:var(--mid);transition:all 0.15s;}
+  .filter-pill.act{border-color:var(--accent);background:var(--accent);color:#fff;}
+  /* Spinner */
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .spinner-sm{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:4px;}
+  /* Copyright */
+  .foot-copy{text-align:center;padding:20px 40px;font-size:0.76rem;color:var(--soft);border-top:1px solid var(--border);background:var(--white);margin-top:40px;}
+
+  /* ── SCHEDULE EDIT MODAL ── */
+  .sched-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;}
+  .sched-modal-overlay.open{display:flex;}
+  .sched-modal{background:var(--white);border-radius:24px;padding:32px 28px;width:100%;max-width:400px;box-shadow:0 24px 80px rgba(0,0,0,0.2);}
+  .sched-modal-title{font-size:1rem;font-weight:700;color:var(--charcoal);margin-bottom:6px;}
+  .sched-modal-sub{font-size:0.78rem;color:var(--soft);margin-bottom:24px;}
+  .sched-field{margin-bottom:16px;}
+  .sched-field label{display:block;font-size:0.78rem;font-weight:600;margin-bottom:6px;}
+  .sched-input{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);outline:none;color:var(--charcoal);}
+  .sched-input:focus{border-color:var(--accent);background:#fff;}
+  .sched-foot{display:flex;gap:10px;margin-top:4px;}
+  .sched-save-btn{flex:1;padding:12px;border-radius:12px;background:var(--charcoal);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;transition:all 0.2s;}
+  .sched-save-btn:hover{background:var(--accent);}
+  .sched-cancel-btn{padding:12px 20px;border-radius:12px;background:transparent;border:1.5px solid var(--border);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;color:var(--mid);transition:all 0.2s;}
+  .sched-cancel-btn:hover{border-color:var(--red);color:var(--red);}
+
+  /* Scheduled info badge inside card */
+  .sched-info{display:inline-flex;align-items:center;gap:6px;background:#EDE9FB;border:1px solid rgba(91,79,217,0.2);border-radius:100px;padding:4px 12px;font-size:0.78rem;font-weight:600;color:var(--accent);margin-bottom:10px;}
+  .edit-sched-btn{padding:7px 14px;border-radius:8px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:500;color:var(--mid);transition:all 0.15s;}
+  .edit-sched-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(91,79,217,0.05);}
+  .export-cal-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:100px;border:1.5px solid var(--accent);background:rgba(91,79,217,0.07);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;color:var(--accent);transition:all 0.15s;margin-left:auto;}
+  .export-cal-btn:hover{background:var(--accent);color:#fff;}
+
+  /* ── CALENDAR PICKER ── */
+  .cal-toggle-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:100px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:500;color:var(--mid);transition:all 0.15s;margin-bottom:16px;}
+  .cal-toggle-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .cal-toggle-btn.act{border-color:var(--accent);background:rgba(91,79,217,0.06);color:var(--accent);}
+  .cal-container{margin-bottom:20px;display:none;}
+  .cal-container.open{display:block;}
+  .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .cal-nav-btn{width:32px;height:32px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;color:var(--mid);transition:all 0.15s;}
+  .cal-nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .cal-month-label{font-size:0.85rem;font-weight:600;color:var(--charcoal);min-width:140px;text-align:center;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .cal-dow{text-align:center;font-size:0.68rem;font-weight:600;color:var(--soft);text-transform:uppercase;padding:6px 0;}
+  .cal-day{text-align:center;padding:8px 4px 12px;border-radius:10px;font-size:0.82rem;cursor:pointer;transition:all 0.15s;color:var(--mid);border:1.5px solid transparent;position:relative;}
+  .cal-day:hover{background:rgba(91,79,217,0.06);border-color:var(--accent);}
+  .cal-day.today{font-weight:700;color:var(--accent);}
+  .cal-day.selected{background:var(--accent);color:#fff !important;font-weight:600;border-color:var(--accent);}
+  .cal-day.other-month{color:rgba(0,0,0,0.15);cursor:default;}
+  .cal-day.other-month:hover{background:transparent;border-color:transparent;}
+  .cal-day.has-orders-low{background:#FEF9C3;color:#854D0E;font-weight:600;}
+  .cal-day.has-orders-high{background:#DBEAFE;color:#1E40AF;font-weight:600;}
+  .cal-day.selected.has-orders-low,.cal-day.selected.has-orders-high{background:var(--accent);color:#fff !important;}
+  /* Availability dot */
+  .cal-day .avail-dot{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;display:none;}
+  .cal-day.avail-almost{border-color:#F59E0B !important;}
+  .cal-day.avail-almost .avail-dot{display:block;background:#F59E0B;}
+  .cal-day.avail-full{border-color:#EF4444 !important;background:rgba(239,68,68,0.05);}
+  .cal-day.avail-full .avail-dot{display:block;background:#EF4444;}
+  .cal-day.selected.avail-almost,.cal-day.selected.avail-full{background:var(--accent) !important;border-color:var(--accent) !important;}
+  .cal-day.selected .avail-dot{background:rgba(255,255,255,0.85);}
+  .cal-legend{display:flex;align-items:center;gap:14px;margin-top:10px;font-size:0.72rem;color:var(--soft);flex-wrap:wrap;}
+  .cal-legend-dot{width:12px;height:12px;border-radius:4px;display:inline-block;vertical-align:middle;margin-right:4px;}
+  /* Selected info — redesigned to host availability picker */
+  .cal-selected-info{margin-top:12px;padding:14px;background:rgba(91,79,217,0.06);border-radius:14px;font-size:0.82rem;color:var(--charcoal);}
+  .cal-sel-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .cal-selected-info .cal-clear{margin-left:auto;padding:4px 12px;border-radius:8px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:500;color:var(--mid);transition:all 0.15s;white-space:nowrap;}
+  .cal-selected-info .cal-clear:hover{border-color:var(--red);color:var(--red);}
+  /* Availability picker inside selected-info */
+  .avail-picker{border-top:1px solid rgba(91,79,217,0.15);padding-top:12px;}
+  .avail-picker-label{font-size:0.72rem;font-weight:600;color:var(--soft);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;}
+  .avail-btn-row{display:flex;gap:7px;flex-wrap:wrap;}
+  .avail-btn{flex:1;min-width:70px;padding:9px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:600;color:var(--mid);transition:all 0.15s;text-align:center;}
+  .avail-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.08);}
+  .avail-btn.av-available{border-color:#22C55E;color:#166534;}
+  .avail-btn.av-available:hover,.avail-btn.av-available.act{background:#DCFCE7;border-color:#22C55E;}
+  .avail-btn.av-almost{border-color:#F59E0B;color:#854D0E;}
+  .avail-btn.av-almost:hover,.avail-btn.av-almost.act{background:#FEF9C3;border-color:#F59E0B;}
+  .avail-btn.av-full{border-color:#EF4444;color:#991B1B;}
+  .avail-btn.av-full:hover,.avail-btn.av-full.act{background:#FEE2E2;border-color:#EF4444;}
+  .avail-btn.act{box-shadow:inset 0 0 0 1.5px currentColor;}
+
+  /* ── REVIEW CARDS ── */
+  .review-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:12px;transition:box-shadow 0.2s;}
+  .review-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.07);}
+  .review-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+  .review-stars{color:var(--amber);font-size:1rem;letter-spacing:2px;}
+  .review-time{font-size:0.75rem;color:var(--soft);}
+  .review-body{margin-bottom:14px;}
+  .review-name{font-weight:600;font-size:0.9rem;color:var(--charcoal);margin-bottom:2px;}
+  .review-service{font-size:0.78rem;color:var(--soft);margin-bottom:8px;}
+  .review-text{font-size:0.85rem;color:var(--mid);line-height:1.5;}
+  .review-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+
+  /* ── TEKNISI ── */
+  .tech-assign-badge{display:inline-flex;align-items:center;gap:6px;background:#EDE9FB;border:1px solid rgba(91,79,217,0.2);border-radius:10px;padding:6px 12px;font-size:0.78rem;font-weight:600;color:var(--accent);}
+  .tech-assign-badge .unassign-btn{background:none;border:none;cursor:pointer;color:var(--soft);font-size:0.85rem;line-height:1;padding:0 0 0 4px;transition:color 0.15s;}
+  .tech-assign-badge .unassign-btn:hover{color:var(--red);}
+  .assign-btn-o{padding:8px 16px;border-radius:10px;background:transparent;color:var(--accent);border:1.5px solid var(--accent);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:600;transition:all 0.2s;}
+  .assign-btn-o:hover{background:var(--accent);color:#fff;}
+  /* Task status badges */
+  .ts-belum{display:inline-flex;align-items:center;gap:4px;background:#F3F4F6;color:var(--mid);padding:5px 10px;border-radius:8px;font-size:0.72rem;font-weight:600;}
+  .ts-selesai{display:inline-flex;align-items:center;gap:4px;background:#DCFCE7;color:#166534;padding:5px 10px;border-radius:8px;font-size:0.72rem;font-weight:600;}
+  .ts-skip{display:inline-flex;align-items:center;gap:4px;background:#FEE2E2;color:#991B1B;padding:5px 10px;border-radius:8px;font-size:0.72rem;font-weight:600;}
+  /* Assign modal */
+  .assign-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;}
+  .assign-modal-overlay.open{display:flex;}
+  .assign-modal{background:var(--white);border-radius:24px;padding:32px 28px;width:100%;max-width:420px;box-shadow:0 24px 80px rgba(0,0,0,0.2);}
+  .assign-modal-title{font-size:1rem;font-weight:700;color:var(--charcoal);margin-bottom:4px;}
+  .assign-modal-sub{font-size:0.78rem;color:var(--soft);margin-bottom:20px;}
+  .assign-select{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:0.87rem;color:var(--charcoal);background:var(--cream);outline:none;transition:border-color 0.2s;margin-bottom:16px;}
+  .assign-select:focus{border-color:var(--accent);background:#fff;}
+  .assign-foot{display:flex;gap:10px;}
+  .assign-save-btn{flex:1;padding:12px;border-radius:12px;background:var(--charcoal);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;transition:all 0.2s;}
+  .assign-save-btn:hover{background:var(--accent);}
+  .assign-cancel-btn{padding:12px 20px;border-radius:12px;background:transparent;border:1.5px solid var(--border);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--mid);transition:all 0.2s;}
+  .assign-cancel-btn:hover{border-color:var(--red);color:var(--red);}
+  /* Tech ID badge */
+  .tech-id-badge{font-family:monospace;font-size:0.82rem;font-weight:700;color:var(--accent);background:#EDE9FB;padding:2px 8px;border-radius:5px;letter-spacing:0.06em;}
+
+  @media(max-width:800px){
+    .panels{grid-template-columns:1fr}
+    .stat-row,.stat-row-orders{grid-template-columns:repeat(2,1fr)}
+    header{padding:12px 16px}
+    .hdr-user{display:none}
+    .dash-body{padding:16px}
+    .panel{padding:20px 16px}
+    .tabs{width:100%;overflow-x:auto;}
+    .tab-btn{flex:1;padding:8px 10px;font-size:0.8rem;white-space:nowrap;}
+    .order-body{grid-template-columns:1fr}
+    .order-foot{flex-direction:column;align-items:flex-start}
+    .order-actions{width:100%}
+    .confirm-btn-o,.reject-btn-o{flex:1;text-align:center}
+    .filter-row{gap:6px}
+    .filter-pill{padding:5px 12px;font-size:0.75rem}
+    .stat-c{padding:16px 14px}
+    .stat-c .s-num{font-size:1.6rem}
+    .login-card{padding:36px 24px;border-radius:20px}
+    table{font-size:0.78rem}
+    th,td{padding:8px 8px}
+    .act-btn{padding:4px 8px;font-size:0.72rem}
+    #toast{bottom:16px;right:16px;left:16px;text-align:center}
+    .foot-copy{padding:16px}
+    .cal-day{padding:6px 2px;font-size:0.75rem;}
+  }
+  @media(max-width:480px){
+    .stat-row,.stat-row-orders{grid-template-columns:repeat(2,1fr);gap:10px}
+    .tabs{border-radius:12px}
+    .tab-btn{font-size:0.72rem;padding:7px 6px}
+    .order-card{padding:14px}
+    .order-id{font-size:0.78rem}
+    .tbl-wrap{font-size:0.75rem}
+    th{display:none}
+    td{display:block;border:none;padding:4px 8px}
+    td:first-child{padding-top:10px}
+    td:last-child{padding-bottom:10px;border-bottom:1px solid var(--border)}
+    tr:last-child td:last-child{border-bottom:none}
+    td::before{content:attr(data-label);font-size:0.68rem;font-weight:600;color:var(--soft);text-transform:uppercase;display:block;margin-bottom:2px}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Aslan<span>.</span>Teknik</div>
+    <p class="login-sub">Admin Dashboard — Voucher, Pesanan, Review &amp; Affiliator</p>
+    <label class="l-label">Email</label>
+    <input type="email" class="l-input" id="l-email" placeholder="admin@email.com">
+    <label class="l-label">Password</label>
+    <input type="password" class="l-input" id="l-pass" placeholder="••••••••">
+    <button class="l-btn" id="btn-login">Masuk ke Dashboard</button>
+    <p class="l-err" id="l-err"></p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <header>
+    <div class="hdr-logo">Aslan<span>.</span>Teknik <span style="font-family:'DM Sans';font-size:0.75rem;color:var(--soft);font-weight:400;margin-left:8px;">Admin</span></div>
+    <div class="hdr-right">
+      <span class="hdr-user" id="hdr-email"></span>
+      <button class="logout-btn" id="btn-logout">Keluar</button>
+    </div>
+  </header>
+
+  <div class="dash-body">
+
+    <!-- STAT: VOUCHER -->
+    <div style="font-size:0.72rem;font-weight:600;color:var(--soft);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">🎟️ Statistik Voucher</div>
+    <div class="stat-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat-c purple"><div class="s-num" id="st-total">—</div><div class="s-lbl">Total Voucher</div></div>
+      <div class="stat-c green"><div class="s-num" id="st-active">—</div><div class="s-lbl">Aktif</div></div>
+      <div class="stat-c amber"><div class="s-num" id="st-used">—</div><div class="s-lbl">Total Diklaim</div></div>
+      <div class="stat-c red"><div class="s-num" id="st-expired">—</div><div class="s-lbl">Kedaluwarsa</div></div>
+    </div>
+
+    <!-- STAT: ORDERS -->
+    <div style="font-size:0.72rem;font-weight:600;color:var(--soft);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;margin-top:20px;">📦 Statistik Pesanan</div>
+    <div class="stat-row-orders">
+      <div class="stat-c" style="border-left:3px solid var(--accent)"><div class="s-num" id="st-orders" style="color:var(--accent)">—</div><div class="s-lbl">Pesanan Masuk</div></div>
+      <div class="stat-c green"><div class="s-num" id="st-confirmed">—</div><div class="s-lbl">Dikonfirmasi</div></div>
+      <div class="stat-c amber"><div class="s-num" id="st-pending">—</div><div class="s-lbl">Menunggu</div></div>
+    </div>
+
+    <!-- STAT: REVIEW -->
+    <div style="font-size:0.72rem;font-weight:600;color:var(--soft);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;margin-top:20px;">⭐ Statistik Review</div>
+    <div class="stat-row-orders" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat-c" style="border-left:3px solid var(--accent)"><div class="s-num" id="st-rev-total" style="color:var(--accent)">—</div><div class="s-lbl">Total Review</div></div>
+      <div class="stat-c amber"><div class="s-num" id="st-rev-pending">—</div><div class="s-lbl">Menunggu Review</div></div>
+      <div class="stat-c green"><div class="s-num" id="st-rev-approved">—</div><div class="s-lbl">Disetujui</div></div>
+      <div class="stat-c red"><div class="s-num" id="st-rev-rejected">—</div><div class="s-lbl">Ditolak</div></div>
+    </div>
+
+    <!-- STAT: AFFILIATOR -->
+    <div style="font-size:0.72rem;font-weight:600;color:var(--soft);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;margin-top:20px;">👥 Statistik Affiliator</div>
+    <div class="stat-row-orders">
+      <div class="stat-c" style="border-left:3px solid var(--accent)"><div class="s-num" id="st-aff-total" style="color:var(--accent)">—</div><div class="s-lbl">Total Affiliator</div></div>
+      <div class="stat-c green"><div class="s-num" id="st-aff-active">—</div><div class="s-lbl">Aktif</div></div>
+      <div class="stat-c amber"><div class="s-num" id="st-aff-wd-pending">—</div><div class="s-lbl">Penarikan Pending</div></div>
+    </div>
+
+    <!-- STAT: TEKNISI -->
+    <div style="font-size:0.72rem;font-weight:600;color:var(--soft);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;margin-top:20px;">👷 Statistik Teknisi</div>
+    <div class="stat-row-orders">
+      <div class="stat-c" style="border-left:3px solid var(--accent)"><div class="s-num" id="st-tech-total" style="color:var(--accent)">—</div><div class="s-lbl">Total Teknisi</div></div>
+      <div class="stat-c green"><div class="s-num" id="st-tech-active">—</div><div class="s-lbl">Aktif</div></div>
+      <div class="stat-c purple"><div class="s-num" id="st-tech-assigned">—</div><div class="s-lbl">Order Ter-assign</div></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs" style="margin-top:32px;">
+      <button class="tab-btn act" id="tab-voucher" onclick="switchTab('voucher')">🎟️ Voucher</button>
+      <button class="tab-btn" id="tab-orders" onclick="switchTab('orders')">
+        📦 Pesanan
+        <span id="orders-badge" style="display:none;background:var(--red);color:#fff;border-radius:100px;padding:1px 7px;font-size:0.7rem;margin-left:4px;vertical-align:middle;"></span>
+      </button>
+      <button class="tab-btn" id="tab-reviews" onclick="switchTab('reviews')">
+        ⭐ Review
+        <span id="reviews-badge" style="display:none;background:var(--amber);color:#fff;border-radius:100px;padding:1px 7px;font-size:0.7rem;margin-left:4px;vertical-align:middle;"></span>
+      </button>
+      <button class="tab-btn" id="tab-affiliator" onclick="switchTab('affiliator')">
+        👥 Affiliator
+        <span id="aff-wd-badge" style="display:none;background:var(--amber);color:#fff;border-radius:100px;padding:1px 7px;font-size:0.7rem;margin-left:4px;vertical-align:middle;"></span>
+      </button>
+      <button class="tab-btn" id="tab-teknisi" onclick="switchTab('teknisi')">👷 Teknisi</button>
+    </div>
+
+    <!-- PANE: VOUCHER -->
+    <div id="pane-voucher" class="tab-pane act">
+      <div class="panels">
+        <!-- CREATE PANEL -->
+        <div class="panel">
+          <div class="panel-title">✨ Buat Voucher Baru</div>
+          <div class="fg">
+            <label class="fl">Kode Voucher</label>
+            <div class="gen-row">
+              <input type="text" class="gen-input" id="v-code" placeholder="ASLAN20" maxlength="20">
+              <button class="gen-btn" id="btn-gen">🎲 Generate</button>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Tipe Diskon</label>
+            <div class="type-row">
+              <button class="type-pill act" id="tp-pct">% Persen</button>
+              <button class="type-pill" id="tp-nom">Rp Nominal</button>
+            </div>
+          </div>
+          <div class="fg fr2">
+            <div>
+              <label class="fl" id="v-val-lbl">Besar Diskon (%)</label>
+              <input type="number" class="fi" id="v-val" placeholder="20" min="1">
+            </div>
+            <div>
+              <label class="fl">Maks. Pemakaian</label>
+              <input type="number" class="fi" id="v-max" placeholder="100" min="1" value="100">
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Berlaku Hingga</label>
+            <input type="date" class="fi" id="v-exp">
+          </div>
+          <div class="fg">
+            <label class="fl">Deskripsi (opsional)</label>
+            <input type="text" class="fi" id="v-desc" placeholder="Promo Lebaran 2026">
+          </div>
+          <button class="create-btn" id="btn-create">+ Buat Voucher</button>
+          <p class="form-msg" id="form-msg"></p>
+        </div>
+
+        <!-- TABLE PANEL -->
+        <div class="panel">
+          <div class="panel-title">📋 Daftar Voucher</div>
+          <input type="text" class="search-bar" id="search" placeholder="🔍  Cari kode atau deskripsi...">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Kode</th><th>Diskon</th><th>Pemakaian</th><th>Kedaluwarsa</th><th>Status</th><th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbl-body">
+                <tr><td colspan="6"><div class="empty-state">Memuat data...</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div><!-- /pane-voucher -->
+
+    <!-- PANE: ORDERS -->
+    <div id="pane-orders" class="tab-pane">
+      <div class="filter-row" style="align-items:center;">
+        <button class="filter-pill act" id="f-all"       onclick="filterOrders('all')">Semua</button>
+        <button class="filter-pill"     id="f-pending"   onclick="filterOrders('pending')">⏳ Menunggu</button>
+        <button class="filter-pill"     id="f-confirmed" onclick="filterOrders('confirmed')">✅ Dikonfirmasi</button>
+        <button class="filter-pill"     id="f-rejected"  onclick="filterOrders('rejected')">❌ Ditolak</button>
+        <button class="cal-toggle-btn" id="cal-toggle" onclick="window.toggleCalendar()">📅 Filter Tanggal</button>
+        <button class="export-cal-btn" onclick="window.exportToCalendar()" title="Export order terkonfirmasi ke iPhone Calendar">📤 Export ke Kalender</button>
+      </div>
+
+      <!-- CALENDAR (hidden by default) -->
+      <div class="panel cal-container" id="cal-panel">
+        <div class="cal-header">
+          <button class="cal-nav-btn" id="cal-prev">‹</button>
+          <span class="cal-month-label" id="cal-month-label"></span>
+          <button class="cal-nav-btn" id="cal-next">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="cal-legend">
+          <span><span class="cal-legend-dot" style="background:#FEF9C3;border:1px solid #EAB308;"></span> &lt; 4 order</span>
+          <span><span class="cal-legend-dot" style="background:#DBEAFE;border:1px solid #3B82F6;"></span> ≥ 4 order</span>
+          <span style="margin-left:6px;opacity:0.4">|</span>
+          <span><span class="cal-legend-dot" style="background:#DCFCE7;border:2px solid #22C55E;"></span> Tersedia</span>
+          <span><span class="cal-legend-dot" style="background:#FEF9C3;border:2px solid #F59E0B;"></span> Hampir Penuh</span>
+          <span><span class="cal-legend-dot" style="background:#FEE2E2;border:2px solid #EF4444;"></span> Full Booked</span>
+        </div>
+        <div class="cal-selected-info" id="cal-selected-info" style="display:none;">
+          <div class="cal-sel-top">
+            <span id="cal-selected-text"></span>
+            <button class="cal-clear" id="cal-clear">✕ Reset</button>
+          </div>
+          <div class="avail-picker">
+            <div class="avail-picker-label">🗓️ Atur Ketersediaan Tanggal Ini</div>
+            <div class="avail-btn-row">
+              <button class="avail-btn av-available" id="avail-btn-available" onclick="window.setAvailability('available')">✅ Tersedia</button>
+              <button class="avail-btn av-almost"    id="avail-btn-almost"    onclick="window.setAvailability('almost_full')">⚠️ Hampir Penuh</button>
+              <button class="avail-btn av-full"      id="avail-btn-full"      onclick="window.setAvailability('full_booked')">🔴 Full Booked</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="orders-list">
+        <div class="orders-empty">Belum ada pesanan masuk.</div>
+      </div>
+    </div>
+
+    <!-- PANE: REVIEWS -->
+    <div id="pane-reviews" class="tab-pane">
+      <div class="filter-row">
+        <button class="filter-pill act" id="rf-all"      onclick="window.filterReviews('all')">Semua</button>
+        <button class="filter-pill"     id="rf-pending"  onclick="window.filterReviews('pending')">⏳ Menunggu</button>
+        <button class="filter-pill"     id="rf-approved" onclick="window.filterReviews('approved')">✅ Disetujui</button>
+        <button class="filter-pill"     id="rf-rejected" onclick="window.filterReviews('rejected')">❌ Ditolak</button>
+      </div>
+      <div id="reviews-list">
+        <div class="orders-empty">Memuat review...</div>
+      </div>
+    </div><!-- /pane-reviews -->
+
+    <!-- PANE: AFFILIATOR -->
+    <div id="pane-affiliator" class="tab-pane">
+      <div class="panels">
+        <!-- CREATE AFFILIATOR PANEL -->
+        <div class="panel">
+          <div class="panel-title">✨ Buat Affiliator Baru</div>
+          <div class="fg">
+            <label class="fl">Kode Affiliator</label>
+            <div class="gen-row">
+              <input type="text" class="gen-input" id="aff-code" placeholder="ASLANAFF01" maxlength="20">
+              <button class="gen-btn" id="btn-gen-aff">🎲 Generate</button>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">PIN Login (6 digit)</label>
+            <div class="gen-row">
+              <input type="text" class="gen-input" id="aff-pin" placeholder="123456" maxlength="6" style="letter-spacing:0.15em;text-transform:none;">
+              <button class="gen-btn" id="btn-gen-pin">🎲 Random</button>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Nama Affiliator</label>
+            <input type="text" class="fi" id="aff-name" placeholder="Nama lengkap affiliator">
+          </div>
+          <div class="fg fr2">
+            <div>
+              <label class="fl">Komisi Affiliator (%)</label>
+              <input type="number" class="fi" id="aff-rate" placeholder="10" min="1" max="50" value="10">
+            </div>
+            <div>
+              <label class="fl">Diskon Voucher untuk Customer (%)</label>
+              <input type="number" class="fi" id="aff-disc" placeholder="5" min="1" max="100" value="5">
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">No. WhatsApp</label>
+            <input type="text" class="fi" id="aff-wa" placeholder="08xxxxxxxxxx">
+          </div>
+          <div style="background:#EDE9FB;border-radius:12px;padding:12px 14px;font-size:0.76rem;color:var(--mid);line-height:1.6;margin-bottom:14px;">
+            🎟️ Voucher dengan kode yang sama akan <strong>otomatis dibuat</strong> saat affiliator disimpan. Customer bisa pakai kode ini saat booking.
+          </div>
+          <button class="create-btn" id="btn-create-aff">+ Buat Affiliator</button>
+          <p class="form-msg" id="aff-form-msg"></p>
+        </div>
+
+        <!-- AFFILIATOR TABLE PANEL -->
+        <div class="panel">
+          <div class="panel-title">📋 Daftar Affiliator</div>
+          <input type="text" class="search-bar" id="aff-search" placeholder="🔍  Cari kode atau nama...">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Kode</th><th>Nama</th><th>Komisi</th><th>Diskon Voucher</th><th>PIN</th><th>Status</th><th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="aff-tbl-body">
+                <tr><td colspan="6"><div class="empty-state">Memuat data...</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- WITHDRAWAL REQUESTS -->
+      <div class="panel" style="margin-top:24px;">
+        <div class="panel-title">💸 Pengajuan Penarikan Komisi</div>
+        <div class="filter-row" style="margin-top:12px;">
+          <button class="filter-pill act" id="wf-all"      onclick="window.filterWd('all')">Semua</button>
+          <button class="filter-pill"     id="wf-pending"  onclick="window.filterWd('pending')">⏳ Pending</button>
+          <button class="filter-pill"     id="wf-approved" onclick="window.filterWd('approved')">✅ Disetujui</button>
+          <button class="filter-pill"     id="wf-rejected" onclick="window.filterWd('rejected')">❌ Ditolak</button>
+        </div>
+        <div class="tbl-wrap" style="margin-top:12px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal</th><th>Affiliator</th><th>Jumlah</th><th>Status</th><th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="wd-tbl-body">
+              <tr><td colspan="5"><div class="empty-state">Belum ada pengajuan penarikan.</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /pane-affiliator -->
+
+    <!-- PANE: TEKNISI -->
+    <div id="pane-teknisi" class="tab-pane">
+      <div class="panels">
+        <!-- CREATE TEKNISI PANEL -->
+        <div class="panel">
+          <div class="panel-title">👷 Tambah Teknisi Baru</div>
+          <div class="fg">
+            <label class="fl">Nama Teknisi</label>
+            <input type="text" class="fi" id="tech-name" placeholder="Nama lengkap teknisi">
+          </div>
+          <div class="fg">
+            <label class="fl">ID Login</label>
+            <div class="gen-row">
+              <input type="text" class="gen-input" id="tech-id" placeholder="TECH01" maxlength="20" style="text-transform:uppercase;letter-spacing:0.06em;">
+              <button class="gen-btn" id="btn-gen-tech">🎲 Generate</button>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Password</label>
+            <div class="gen-row">
+              <input type="text" class="gen-input" id="tech-pass" placeholder="password123" style="text-transform:none;letter-spacing:normal;">
+              <button class="gen-btn" id="btn-gen-tech-pass">🎲 Random</button>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Nomor WhatsApp</label>
+            <input type="text" class="fi" id="tech-wa" placeholder="08xxxxxxxxxx">
+          </div>
+          <div class="fg">
+            <label class="fl">Spesialisasi (opsional)</label>
+            <input type="text" class="fi" id="tech-spec" placeholder="Cuci AC, Freon, dll.">
+          </div>
+          <button class="create-btn" id="btn-create-tech">+ Tambah Teknisi</button>
+          <p class="form-msg" id="tech-form-msg"></p>
+          <div style="margin-top:16px;padding:12px;background:#EDE9FB;border-radius:12px;font-size:0.76rem;color:var(--mid);line-height:1.6;">
+            💡 Teknisi login di <strong>/teknisi</strong> menggunakan ID dan password yang kamu buat di sini.
+          </div>
+        </div>
+
+        <!-- TEKNISI TABLE PANEL -->
+        <div class="panel">
+          <div class="panel-title">📋 Daftar Teknisi</div>
+          <input type="text" class="search-bar" id="tech-search" placeholder="🔍  Cari nama atau ID...">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr><th>Nama</th><th>ID Login</th><th>WA</th><th>Spesialisasi</th><th>Status</th><th>Aksi</th></tr>
+              </thead>
+              <tbody id="tech-tbl-body">
+                <tr><td colspan="6"><div class="empty-state">Memuat data...</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ASSIGNMENT OVERVIEW -->
+      <div class="panel" style="margin-top:24px;">
+        <div class="panel-title">📋 Ringkasan Assignment Teknisi</div>
+        <p style="font-size:0.82rem;color:var(--soft);margin-bottom:16px;">Order confirmed yang sudah / belum di-assign ke teknisi.</p>
+        <div id="tech-assignment-overview">
+          <div class="empty-state">Memuat data assignment...</div>
+        </div>
+      </div>
+    </div><!-- /pane-teknisi -->
+
+  </div>
+  <div class="foot-copy" id="admin-copyright"></div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ASSIGN ORDER MODAL -->
+<div class="assign-modal-overlay" id="assign-modal" onclick="if(event.target===this)window.closeAssignModal()">
+  <div class="assign-modal">
+    <div class="assign-modal-title">👷 Assign ke Teknisi</div>
+    <div class="assign-modal-sub" id="assign-modal-sub">Pilih teknisi yang akan menangani order ini</div>
+    <input type="hidden" id="assign-order-id">
+    <select class="assign-select" id="assign-tech-select">
+      <option value="">-- Pilih Teknisi --</option>
+    </select>
+    <div class="assign-foot">
+      <button class="assign-cancel-btn" onclick="window.closeAssignModal()">Batal</button>
+      <button class="assign-save-btn" onclick="window.saveAssign()">✅ Assign</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCHEDULE EDIT MODAL -->
+<div class="sched-modal-overlay" id="schedule-modal" onclick="if(event.target===this)window.closeScheduleModal()">
+  <div class="sched-modal">
+    <div class="sched-modal-title">✏️ Edit Jadwal Order</div>
+    <div class="sched-modal-sub" id="sm-order-label">Atur tanggal &amp; jam yang sudah disepakati via WhatsApp</div>
+    <input type="hidden" id="sm-order-id">
+    <div class="sched-field">
+      <label>📅 Tanggal Servis</label>
+      <input type="date" class="sched-input" id="sm-date">
+    </div>
+    <div class="sched-field">
+      <label>🕐 Jam Kedatangan <span style="font-weight:400;color:var(--soft)">(opsional)</span></label>
+      <input type="time" class="sched-input" id="sm-time" placeholder="09:00">
+    </div>
+    <div class="sched-foot">
+      <button class="sched-cancel-btn" onclick="window.closeScheduleModal()">Batal</button>
+      <button class="sched-save-btn" onclick="window.saveSchedule()">💾 Simpan Jadwal</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc,
+         onSnapshot, query, orderBy, where, getDocs, serverTimestamp, increment }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey:"AIzaSyAd_HmgX5djmePrHpYHxsydSErTPSjcBdY",
+  authDomain:"aslan-teknik.firebaseapp.com",
+  projectId:"aslan-teknik",
+  storageBucket:"aslan-teknik.firebasestorage.app",
+  messagingSenderId:"372303552922",
+  appId:"1:372303552922:web:5b61d3cd2c590ff1381a23"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// Expose ke window agar fungsi global bisa akses tanpa dynamic import
+window._fbDb              = db;
+window._fbCollection      = collection;
+window._fbDoc             = doc;
+window._fbSetDoc          = setDoc;
+window._fbUpdateDoc       = updateDoc;
+window._fbIncrement       = increment;
+window._fbServerTimestamp = serverTimestamp;
+window._fbWhere           = where;
+window._fbGetDocs         = getDocs;
+window._fbQuery           = query;
+window._fbAddDoc          = addDoc;
+
+let allVouchers  = [];
+let allOrders    = [];
+let allReviews   = [];
+let allAvailability = {}; // map: 'YYYY-MM-DD' → status string
+let orderFilter  = 'all';
+let reviewFilter = 'all';
+let discountType = 'percent';
+let selectedDate = null; // for calendar filter
+
+// Unsubscribe guards
+let unsubVouchers    = null;
+let unsubOrders      = null;
+let unsubAffiliators = null;
+let unsubWithdrawals = null;
+let unsubReviews     = null;
+let unsubAvailability = null;
+let unsubTechnicians = null;
+let allTechnicians   = [];
+let allAffiliators   = [];
+let allWithdrawals   = [];
+let wdFilter         = 'all';
+
+// ── CALENDAR STATE ─────────────────────────────────────
+let calYear  = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+
+// ── COPYRIGHT ──────────────────────────────────────────
+(function(){
+  const start = 2025;
+  const now   = new Date().getFullYear();
+  const range = now > start ? start + '–' + now : String(start);
+  const el = document.getElementById('admin-copyright');
+  if (el) el.textContent = '© ' + range + ' Aslan Teknik. Semua hak dilindungi.';
+})();
+
+// ── AUTH ───────────────────────────────────────────────
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display    = 'block';
+    document.getElementById('hdr-email').textContent      = user.email;
+    if (unsubVouchers)    { unsubVouchers();    unsubVouchers    = null; }
+    if (unsubOrders)      { unsubOrders();      unsubOrders      = null; }
+    if (unsubAffiliators) { unsubAffiliators(); unsubAffiliators = null; }
+    if (unsubWithdrawals) { unsubWithdrawals(); unsubWithdrawals = null; }
+    if (unsubReviews)     { unsubReviews();     unsubReviews     = null; }
+    listenVouchers();
+    listenOrders();
+    listenAffiliators();
+    listenWithdrawals();
+    listenReviews();
+    listenAvailability();
+    listenTechnicians();
+    const d = new Date(); d.setDate(d.getDate()+30);
+    document.getElementById('v-exp').value = d.toISOString().split('T')[0];
+    document.getElementById('v-exp').min   = new Date().toISOString().split('T')[0];
+    renderCalendar();
+  } else {
+    if (unsubVouchers)    { unsubVouchers();    unsubVouchers    = null; }
+    if (unsubOrders)      { unsubOrders();      unsubOrders      = null; }
+    if (unsubAffiliators) { unsubAffiliators(); unsubAffiliators = null; }
+    if (unsubWithdrawals) { unsubWithdrawals(); unsubWithdrawals = null; }
+    if (unsubReviews)     { unsubReviews();     unsubReviews     = null; }
+    if (unsubAvailability){ unsubAvailability();unsubAvailability= null; }
+    if (unsubTechnicians) { unsubTechnicians(); unsubTechnicians = null; }
+    allVouchers = []; allOrders = []; allAffiliators = []; allWithdrawals = []; allReviews = []; allAvailability = {}; allTechnicians = [];
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('dashboard').style.display    = 'none';
+  }
+});
+
+async function doLogin() {
+  const email = document.getElementById('l-email').value.trim();
+  const pass  = document.getElementById('l-pass').value;
+  const errEl = document.getElementById('l-err');
+  const btn   = document.getElementById('btn-login');
+  errEl.textContent = '';
+  if (!email || !pass) { errEl.textContent = 'Email dan password wajib diisi.'; return; }
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-sm"></span> Masuk...';
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e) {
+    errEl.textContent = (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found')
+      ? 'Email atau password salah.' : 'Gagal login: ' + e.message;
+    btn.disabled = false;
+    btn.textContent = 'Masuk ke Dashboard';
+  }
+}
+
+async function doLogout() { await signOut(auth); }
+
+// ── VOUCHERS ───────────────────────────────────────────
+function listenVouchers() {
+  const q = query(collection(db, 'vouchers'), orderBy('created_at', 'desc'));
+  unsubVouchers = onSnapshot(q, snap => {
+    allVouchers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderStats();
+    renderTable(allVouchers);
+  });
+}
+
+function renderStats() {
+  const now = new Date();
+  document.getElementById('st-total').textContent   = allVouchers.length;
+  document.getElementById('st-active').textContent  = allVouchers.filter(v => v.is_active && new Date(v.expires_at) > now && v.used_count < v.max_uses).length;
+  document.getElementById('st-used').textContent    = allVouchers.reduce((s,v) => s+(v.used_count||0), 0);
+  document.getElementById('st-expired').textContent = allVouchers.filter(v => new Date(v.expires_at) <= now).length;
+}
+
+function renderTable(list) {
+  const tbody = document.getElementById('tbl-body');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">Belum ada voucher. Buat voucher pertamamu! 🎉</div></td></tr>';
+    return;
+  }
+  const now = new Date();
+  tbody.innerHTML = list.map(v => {
+    const exp       = new Date(v.expires_at);
+    const isExpired = exp <= now;
+    const isFull    = v.used_count >= v.max_uses;
+    const pct       = Math.min(100, Math.round((v.used_count / v.max_uses) * 100));
+    const expStr    = exp.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+    const discount  = v.discount_type==='percent' ? v.discount_value+'%' : 'Rp '+Number(v.discount_value).toLocaleString('id-ID');
+    const badge     = isExpired ? '<span class="badge badge-red">Kedaluwarsa</span>'
+      : isFull      ? '<span class="badge badge-amber">Habis</span>'
+      : v.is_active ? '<span class="badge badge-green">Aktif</span>'
+      :               '<span class="badge badge-red">Nonaktif</span>';
+    return `<tr>
+      <td data-label="Kode"><div class="code-badge">${v.code}</div>${v.description?`<div style="font-size:0.75rem;color:var(--soft);margin-top:3px">${v.description}</div>`:''}</td>
+      <td data-label="Diskon"><strong style="color:var(--charcoal)">${discount}</strong><div style="font-size:0.72rem;color:var(--soft)">${v.discount_type==='percent'?'Persen':'Nominal'}</div></td>
+      <td data-label="Pemakaian"><div style="font-size:0.82rem;margin-bottom:4px">${v.used_count} / ${v.max_uses} pakai</div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div></td>
+      <td data-label="Kedaluwarsa" style="white-space:nowrap">${expStr}</td>
+      <td data-label="Status">${badge}</td>
+      <td data-label="Aksi">
+        <button class="act-btn tog" onclick="window.toggleV('${v.id}',${!!v.is_active})">${v.is_active?'Nonaktifkan':'Aktifkan'}</button>
+        <button class="act-btn del" onclick="window.deleteV('${v.id}','${v.code}')">Hapus</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTable() {
+  const q = document.getElementById('search').value.toLowerCase();
+  renderTable(allVouchers.filter(v => v.code.toLowerCase().includes(q)||(v.description||'').toLowerCase().includes(q)));
+}
+
+function setType(t) {
+  discountType = t;
+  document.getElementById('tp-pct').classList.toggle('act', t==='percent');
+  document.getElementById('tp-nom').classList.toggle('act', t==='nominal');
+  document.getElementById('v-val-lbl').textContent = t==='percent' ? 'Besar Diskon (%)' : 'Besar Diskon (Rp)';
+}
+
+function genCode() {
+  const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = 'ASLAN';
+  for(let i=0;i<4;i++) code += c[Math.floor(Math.random()*c.length)];
+  document.getElementById('v-code').value = code;
+}
+
+async function createVoucher() {
+  const code  = document.getElementById('v-code').value.trim().toUpperCase();
+  const val   = parseInt(document.getElementById('v-val').value);
+  const max   = parseInt(document.getElementById('v-max').value);
+  const exp   = document.getElementById('v-exp').value;
+  const desc  = document.getElementById('v-desc').value.trim();
+  const msgEl = document.getElementById('form-msg');
+  msgEl.className = 'form-msg';
+  if (!code)       { msgEl.textContent='Kode wajib diisi.';           msgEl.className='form-msg err'; return; }
+  if (!val||val<1) { msgEl.textContent='Besar diskon wajib diisi.';   msgEl.className='form-msg err'; return; }
+  if (discountType==='percent'&&val>100){ msgEl.textContent='Diskon persen max 100%.'; msgEl.className='form-msg err'; return; }
+  if (!max||max<1) { msgEl.textContent='Maks. pemakaian wajib diisi.';msgEl.className='form-msg err'; return; }
+  if (!exp)        { msgEl.textContent='Tanggal kedaluwarsa wajib.';  msgEl.className='form-msg err'; return; }
+  if (allVouchers.some(v=>v.code===code)){ msgEl.textContent='Kode sudah ada.'; msgEl.className='form-msg err'; return; }
+  const btn = document.getElementById('btn-create');
+  btn.disabled=true; btn.innerHTML='<span class="spinner-sm"></span> Menyimpan...';
+  try {
+    await addDoc(collection(db,'vouchers'),{
+      code, discount_type:discountType, discount_value:val,
+      max_uses:max, used_count:0, expires_at:exp+'T23:59:59',
+      description:desc, is_active:true, created_at:serverTimestamp()
+    });
+    msgEl.textContent='✓ Voucher berhasil dibuat!'; msgEl.className='form-msg ok';
+    document.getElementById('v-code').value='';
+    document.getElementById('v-val').value='';
+    document.getElementById('v-desc').value='';
+    showToast('Voucher '+code+' berhasil dibuat 🎉');
+    setTimeout(()=>{ msgEl.textContent=''; },3000);
+  } catch(e) {
+    msgEl.textContent='Gagal: '+e.message; msgEl.className='form-msg err';
+  }
+  btn.disabled=false; btn.textContent='+ Buat Voucher';
+}
+
+window.toggleV = async function(id, current) {
+  try {
+    await updateDoc(doc(db,'vouchers',id),{is_active:!current});
+    showToast(current?'Voucher dinonaktifkan.':'Voucher diaktifkan kembali.');
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+window.deleteV = async function(id, code) {
+  if (!confirm('Hapus voucher '+code+'? Tidak dapat dibatalkan.')) return;
+  try { await deleteDoc(doc(db,'vouchers',id)); showToast('Voucher '+code+' dihapus.'); }
+  catch(e){ showToast('Gagal: '+e.message); }
+};
+
+// ── TABS ───────────────────────────────────────────────
+window.switchTab = function(tab) {
+  ['voucher','orders','reviews','affiliator','teknisi'].forEach(t => {
+    const pane = document.getElementById('pane-'+t);
+    const btn  = document.getElementById('tab-'+t);
+    if (pane) pane.classList.toggle('act', t===tab);
+    if (btn)  btn.classList.toggle('act', t===tab);
+  });
+};
+
+// ── CALENDAR ───────────────────────────────────────────
+// ── CALENDAR TOGGLE ────────────────────────────────────
+window.toggleCalendar = function() {
+  const panel = document.getElementById('cal-panel');
+  const btn   = document.getElementById('cal-toggle');
+  const isOpen = panel.classList.toggle('open');
+  btn.classList.toggle('act', isOpen);
+  if (isOpen) renderCalendar();
+};
+
+function renderCalendar() {
+  const grid = document.getElementById('cal-grid');
+  const label = document.getElementById('cal-month-label');
+  const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+
+  label.textContent = months[calMonth] + ' ' + calYear;
+
+  // Count orders per date (exclude rejected)
+  const orderCounts = {};
+  allOrders.forEach(o => {
+    if (o.status === 'rejected') return;
+    const addDate = (dateStr) => { orderCounts[dateStr] = (orderCounts[dateStr] || 0) + 1; };
+    if (o.created_at && o.created_at.seconds) {
+      const d = new Date(o.created_at.seconds * 1000);
+      addDate(d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'));
+    }
+    if (o.scheduled_date) addDate(o.scheduled_date);
+    else if (o.date) {
+      try {
+        const pd = new Date(o.date);
+        if (!isNaN(pd)) addDate(pd.getFullYear() + '-' + String(pd.getMonth()+1).padStart(2,'0') + '-' + String(pd.getDate()).padStart(2,'0'));
+      } catch(e){}
+    }
+  });
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+
+  let html = days.map(d => `<div class="cal-dow">${d}</div>`).join('');
+
+  // Previous month fill
+  for (let i = firstDay - 1; i >= 0; i--) {
+    html += `<div class="cal-day other-month">${daysInPrev - i}</div>`;
+  }
+
+  // Current month
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = calYear + '-' + String(calMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    const isToday    = dateStr === todayStr;
+    const isSelected = selectedDate === dateStr;
+    const count      = orderCounts[dateStr] || 0;
+    const colorClass = count > 0 ? (count >= 4 ? ' has-orders-high' : ' has-orders-low') : '';
+    // Availability class
+    const avail = allAvailability[dateStr];
+    const availClass = avail === 'almost_full' ? ' avail-almost' : avail === 'full_booked' ? ' avail-full' : '';
+    const availDot = (avail === 'almost_full' || avail === 'full_booked') ? '<span class="avail-dot"></span>' : '';
+    html += `<div class="cal-day${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}${colorClass}${availClass}" data-date="${dateStr}" onclick="window.selectCalDate('${dateStr}')">
+      ${d}${availDot}
+    </div>`;
+  }
+
+  // Next month fill
+  const totalCells = firstDay + daysInMonth;
+  const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let i = 1; i <= remaining; i++) {
+    html += `<div class="cal-day other-month">${i}</div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+window.selectCalDate = function(dateStr) {
+  if (selectedDate === dateStr) {
+    selectedDate = null;
+    document.getElementById('cal-selected-info').style.display = 'none';
+    document.getElementById('cal-toggle').innerHTML = '📅 Filter Tanggal';
+  } else {
+    selectedDate = dateStr;
+    const d = new Date(dateStr + 'T00:00:00');
+    const formatted = d.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    document.getElementById('cal-selected-text').textContent = '📅 ' + formatted;
+    document.getElementById('cal-selected-info').style.display = 'block';
+    document.getElementById('cal-toggle').innerHTML = '📅 ' + d.toLocaleDateString('id-ID',{day:'numeric',month:'short'});
+    document.getElementById('cal-toggle').classList.add('act');
+    // Reflect current availability status on the picker buttons
+    const currentStatus = allAvailability[dateStr] || 'available';
+    updateAvailBtnState(currentStatus);
+  }
+  renderCalendar();
+  renderOrders();
+};
+
+document.getElementById('cal-prev').addEventListener('click', () => {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+});
+document.getElementById('cal-next').addEventListener('click', () => {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+});
+document.getElementById('cal-clear').addEventListener('click', () => {
+  selectedDate = null;
+  document.getElementById('cal-selected-info').style.display = 'none';
+  document.getElementById('cal-toggle').classList.remove('act');
+  document.getElementById('cal-toggle').innerHTML = '📅 Filter Tanggal';
+  document.getElementById('cal-panel').classList.remove('open');
+  renderOrders();
+});
+
+// ── ORDERS ─────────────────────────────────────────────
+function listenOrders() {
+  const q = query(collection(db, 'orders'), orderBy('created_at', 'desc'));
+  unsubOrders = onSnapshot(q, snap => {
+    allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderOrderStats();
+    renderOrders();
+    renderCalendar(); // re-render dots
+  });
+}
+
+// ── CALENDAR AVAILABILITY ──────────────────────────────
+function listenAvailability() {
+  unsubAvailability = onSnapshot(collection(db, 'calendar_availability'), snap => {
+    allAvailability = {};
+    snap.docs.forEach(d => { allAvailability[d.id] = d.data().status; });
+    renderCalendar();
+  });
+}
+
+window.setAvailability = async function(status) {
+  if (!selectedDate) return;
+  try {
+    await window._fbSetDoc(window._fbDoc(window._fbDb, 'calendar_availability', selectedDate), {
+      status,
+      updated_at: window._fbServerTimestamp(),
+    });
+    renderCalendar();
+    updateAvailBtnState(status);
+    const labels = { available: '✅ Tersedia', almost_full: '⚠️ Hampir Penuh', full_booked: '🔴 Full Booked' };
+    showToast(`Tanggal ${selectedDate} → ${labels[status]}`);
+  } catch(e) {
+    showToast('Gagal: ' + e.message);
+  }
+};
+
+function updateAvailBtnState(status) {
+  ['available','almost','full'].forEach(k => {
+    const map = { available:'available', almost:'almost_full', full:'full_booked' };
+    const btn = document.getElementById('avail-btn-'+k);
+    if (btn) btn.classList.toggle('act', map[k] === status);
+  });
+}
+
+function renderOrderStats() {
+  const pending   = allOrders.filter(o => o.status === 'pending').length;
+  const confirmed = allOrders.filter(o => o.status === 'confirmed').length;
+  document.getElementById('st-orders').textContent    = allOrders.length;
+  document.getElementById('st-confirmed').textContent = confirmed;
+  document.getElementById('st-pending').textContent   = pending;
+  const badge = document.getElementById('orders-badge');
+  if (pending > 0) { badge.textContent = pending; badge.style.display = 'inline-block'; }
+  else { badge.style.display = 'none'; }
+}
+
+window.filterOrders = function(f) {
+  orderFilter = f;
+  ['all','pending','confirmed','rejected'].forEach(x => {
+    document.getElementById('f-'+x).classList.toggle('act', x===f);
+  });
+  renderOrders();
+};
+
+function fmt(n){ return 'Rp ' + Number(n).toLocaleString('id-ID'); }
+
+function getOrderDateStr(o) {
+  // Returns YYYY-MM-DD from created_at timestamp
+  if (o.created_at && o.created_at.seconds) {
+    const d = new Date(o.created_at.seconds * 1000);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  return null;
+}
+
+function renderOrders() {
+  let list = orderFilter === 'all' ? allOrders : allOrders.filter(o => o.status === orderFilter);
+
+  // Calendar date filter
+  if (selectedDate) {
+    list = list.filter(o => {
+      // Match by created_at date
+      const createdDateStr = getOrderDateStr(o);
+      if (createdDateStr === selectedDate) return true;
+      // Also match by booking date field
+      if (o.date) {
+        try {
+          const pd = new Date(o.date);
+          if (!isNaN(pd)) {
+            const bookingStr = pd.getFullYear() + '-' + String(pd.getMonth()+1).padStart(2,'0') + '-' + String(pd.getDate()).padStart(2,'0');
+            if (bookingStr === selectedDate) return true;
+          }
+        } catch(e){}
+      }
+      return false;
+    });
+  }
+
+  const el = document.getElementById('orders-list');
+  if (!list.length) {
+    const dateInfo = selectedDate ? ` pada tanggal ${new Date(selectedDate).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}` : '';
+    el.innerHTML = `<div class="orders-empty">Tidak ada pesanan${orderFilter !== 'all' ? ' dengan status ini' : ''}${dateInfo}.</div>`;
+    return;
+  }
+  el.innerHTML = list.map(o => {
+    const createdAt = o.created_at
+      ? new Date(o.created_at.seconds*1000).toLocaleString('id-ID',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+      : '—';
+    const svcList      = Array.isArray(o.services) ? o.services.join(', ') : (o.services || '—');
+    const isConfirmed  = o.status === 'confirmed';
+    const isRejected   = o.status === 'rejected';
+    const isPending    = !isConfirmed && !isRejected;
+    const voucherHtml  = o.voucher_code
+      ? `<div class="order-voucher">🎟️ ${o.voucher_code} — hemat ${fmt(o.discount_amount||0)}</div>`
+      : '';
+    const totalHtml    = o.voucher_code
+      ? `<div class="order-total"><span style="text-decoration:line-through;color:var(--soft);font-weight:400">${fmt(o.total_before)}</span> → <span class="green">${fmt(o.total_after)}</span></div>`
+      : `<div class="order-total">${fmt(o.total_before||0)}</div>`;
+    const safeId       = o.id.replace(/'/g,"\\'");
+    const safeVid      = (o.voucher_id||'').replace(/'/g,"\\'");
+    const safeVcode    = (o.voucher_code||'').replace(/'/g,"\\'");
+
+    // Assignment UI for confirmed orders
+    let assignHtml = '';
+    if (isConfirmed) {
+      const ts = o.task_status || 'belum';
+      const tsBadge = ts === 'selesai'
+        ? `<span class="ts-selesai">✅ Selesai</span>`
+        : ts === 'skip'
+        ? `<span class="ts-skip">⏭️ Skip</span>`
+        : `<span class="ts-belum">⏳ Belum</span>`;
+      if (o.assigned_to) {
+        assignHtml = `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div class="tech-assign-badge">👷 ${o.assigned_name||o.assigned_to}
+            <button class="unassign-btn" onclick="window.unassignOrder('${safeId}')" title="Hapus assignment">✕</button>
+          </div>
+          ${tsBadge}
+        </div>`;
+      } else {
+        assignHtml = `<button class="assign-btn-o" onclick="window.openAssignModal('${safeId}')">👷 Assign Teknisi</button>`;
+      }
+    }
+
+    const actionHtml   = isConfirmed
+      ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+           <div class="confirmed-badge">✅ Dikonfirmasi</div>
+           ${assignHtml}
+         </div>`
+      : isRejected
+      ? `<div class="rejected-badge">❌ Ditolak</div>`
+      : `<div class="order-actions">
+           <button class="confirm-btn-o" onclick="window.confirmOrder('${safeId}','${safeVid}','${safeVcode}',this)">✅ Konfirmasi Order</button>
+           <button class="reject-btn-o"  onclick="window.rejectOrder('${safeId}',this)">❌ Tolak Order</button>
+         </div>`;
+
+    // Scheduled date/time display
+    let schedHtml = '';
+    if (o.scheduled_date) {
+      const sd = new Date(o.scheduled_date + 'T00:00:00');
+      const sdStr = sd.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+      const stStr = o.scheduled_time ? ' · ' + o.scheduled_time + ' WIB' : '';
+      schedHtml = `<div class="sched-info">📅 Jadwal Fix: ${sdStr}${stStr}</div>`;
+    }
+    const badgeHtml    = isConfirmed
+      ? '<span class="badge badge-green">Confirmed</span>'
+      : isRejected
+      ? '<span class="badge badge-red">Ditolak</span>'
+      : '<span class="badge badge-pending">Pending</span>';
+    return `<div class="order-card" id="ocard-${o.id}">
+      <div class="order-head">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="order-id">${o.order_id || o.id.slice(0,8).toUpperCase()}</span>
+          ${badgeHtml}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="order-time">${createdAt}</span>
+          <button class="edit-sched-btn" onclick="window.openEditSchedule('${safeId}')">✏️ Edit Jadwal</button>
+        </div>
+      </div>
+      ${schedHtml}
+      <div class="order-body">
+        <div><b>${o.name||'—'}</b></div>
+        <div>${o.city||'—'}</div>
+        ${o.wa_number ? `<div style="grid-column:1/-1">
+          <a href="https://wa.me/${(o.wa_number||'').replace(/\D/g,'').replace(/^0/,'62')}" target="_blank"
+             style="display:inline-flex;align-items:center;gap:6px;background:#DCFCE7;color:#166534;padding:4px 12px;border-radius:100px;font-size:0.78rem;font-weight:600;text-decoration:none;border:1px solid #BBF7D0;transition:background 0.2s;"
+             onmouseover="this.style.background='#BBF7D0'" onmouseout="this.style.background='#DCFCE7'">
+            <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            📱 ${o.wa_number}
+          </a>
+        </div>` : ''}
+        <div style="grid-column:1/-1;color:var(--soft)">${o.address||'—'}</div>
+        <div>${o.ac_type||'—'}</div>
+        <div>${o.unit_count||'—'} unit</div>
+        <div style="grid-column:1/-1">${svcList}</div>
+        <div>📅 ${o.date||'—'}</div>
+        ${o.notes ? `<div style="grid-column:1/-1;color:var(--soft)">📝 ${o.notes}</div>` : ''}
+      </div>
+      ${voucherHtml}
+      <div class="order-foot">
+        ${totalHtml}
+        ${actionHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.confirmOrder = async function(orderId, voucherId, voucherCode, btn) {
+  const label = voucherCode ? `Voucher ${voucherCode} akan dicatat sebagai terpakai.` : 'Order ini tidak menggunakan voucher.';
+  if (!confirm('Konfirmasi order ini? ' + label)) return;
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Memproses...'; }
+
+  try {
+    // 1. Konfirmasi order
+    await window._fbUpdateDoc(window._fbDoc(window._fbDb, 'orders', orderId), {
+      status: 'confirmed',
+      confirmed_at: window._fbServerTimestamp()
+    });
+
+    // 2. Kalau tidak ada voucher, selesai
+    if (!voucherCode) {
+      showToast('Order dikonfirmasi ✅');
+      return;
+    }
+
+    // 3. Ambil data voucher dari Firestore (selalu by code, paling reliable)
+    const vSnap = await window._fbGetDocs(
+      window._fbQuery(window._fbCollection(window._fbDb,'vouchers'), window._fbWhere('code','==',voucherCode))
+    );
+
+    if (vSnap.empty) {
+      showToast('Order dikonfirmasi ✅ (voucher tidak ditemukan di database)');
+      return;
+    }
+
+    const voucherDocId = vSnap.docs[0].id;
+    const voucherData  = vSnap.docs[0].data();
+
+    // 4. Increment used_count voucher
+    await window._fbUpdateDoc(window._fbDoc(window._fbDb,'vouchers',voucherDocId), {
+      used_count: window._fbIncrement(1)
+    });
+
+    // 5. Cari affiliator — dari field affiliator_code di voucher,
+    //    atau fallback: cari affiliator yg kodenya sama dengan kode voucher
+    const affCode = (voucherData.affiliator_code || voucherCode || '').trim().toUpperCase();
+
+    console.log('[confirmOrder] voucherCode:', voucherCode);
+    console.log('[confirmOrder] voucherData.affiliator_code:', voucherData.affiliator_code);
+    console.log('[confirmOrder] affCode yg dicari:', affCode);
+    console.log('[confirmOrder] voucherData:', JSON.stringify(voucherData));
+
+    const affSnap = await window._fbGetDocs(
+      window._fbQuery(window._fbCollection(window._fbDb,'affiliators'), window._fbWhere('code','==',affCode))
+    );
+
+    console.log('[confirmOrder] affSnap.size:', affSnap.size);
+
+    // Bukan voucher affiliator — selesai
+    if (affSnap.empty) {
+      // Coba juga dengan kode asli tanpa toUpperCase sebagai fallback terakhir
+      const affSnapRaw = await window._fbGetDocs(
+        window._fbQuery(window._fbCollection(window._fbDb,'affiliators'), window._fbWhere('code','==',voucherCode))
+      );
+      console.log('[confirmOrder] affSnapRaw (tanpa uppercase) size:', affSnapRaw.size);
+      if (affSnapRaw.empty) {
+        showToast('Order dikonfirmasi! Pemakaian voucher tercatat ✅');
+        return;
+      }
+      // Ketemu dengan raw — lanjut pakai ini
+      const affDocId2  = affSnapRaw.docs[0].id;
+      const affData2   = affSnapRaw.docs[0].data();
+      const commRate2  = affData2.commission_rate || 10;
+      const orderDoc2  = allOrders.find(o => o.id === orderId);
+      const total2     = orderDoc2?.total_after || orderDoc2?.total_before || 0;
+      const commAmt2   = Math.round(total2 * commRate2 / 100);
+      await window._fbUpdateDoc(window._fbDoc(window._fbDb,'affiliators',affDocId2), {
+        total_earnings:  window._fbIncrement(commAmt2),
+        total_orders:    window._fbIncrement(1),
+        pending_balance: window._fbIncrement(commAmt2)
+      });
+      await window._fbAddDoc(window._fbCollection(window._fbDb,'affiliate_commissions'), {
+        affiliator_code:   affData2.code,
+        affiliator_name:   affData2.name || '',
+        order_id:          orderDoc2?.order_id || orderId,
+        order_total:       total2,
+        commission_rate:   commRate2,
+        commission_amount: commAmt2,
+        voucher_code:      voucherCode,
+        status:            'pending',
+        created_at:        window._fbServerTimestamp()
+      });
+      showToast(`✅ Dikonfirmasi! Komisi ${affData2.name||voucherCode}: Rp ${commAmt2.toLocaleString('id-ID')} tercatat`);
+      return;
+    }
+
+    // 6. Ini voucher affiliator — hitung & catat komisi
+
+    const affDocId  = affSnap.docs[0].id;
+    const affData   = affSnap.docs[0].data();
+    const commRate  = affData.commission_rate || 10;
+    const orderDoc  = allOrders.find(o => o.id === orderId);
+    const total     = orderDoc?.total_after || orderDoc?.total_before || 0;
+    const commAmt   = Math.round(total * commRate / 100);
+
+    // Patch voucher lama yang belum punya affiliator_code
+    if (!voucherData.affiliator_code) {
+      window._fbUpdateDoc(window._fbDoc(window._fbDb,'vouchers',voucherDocId), {
+        affiliator_code: affCode
+      }).catch(()=>{}); // silent, not critical
+    }
+
+    // Update saldo affiliator
+    await window._fbUpdateDoc(window._fbDoc(window._fbDb,'affiliators',affDocId), {
+      total_earnings:  window._fbIncrement(commAmt),
+      total_orders:    window._fbIncrement(1),
+      pending_balance: window._fbIncrement(commAmt)
+    });
+
+    // Catat record komisi
+    await window._fbAddDoc(window._fbCollection(window._fbDb,'affiliate_commissions'), {
+      affiliator_code:   affCode,
+      affiliator_name:   affData.name || '',
+      order_id:          orderDoc?.order_id || orderId,
+      order_total:       total,
+      commission_rate:   commRate,
+      commission_amount: commAmt,
+      voucher_code:      voucherCode,
+      status:            'pending',
+      created_at:        window._fbServerTimestamp()
+    });
+
+    showToast(`✅ Dikonfirmasi! Komisi ${affData.name||affCode}: Rp ${commAmt.toLocaleString('id-ID')} tercatat`);
+
+  } catch(e) {
+    showToast('Gagal konfirmasi: ' + e.message);
+    if (btn) { btn.disabled = false; btn.textContent = '✅ Konfirmasi Order'; }
+  }
+};
+
+window.rejectOrder = async function(orderId, btn) {
+  if (!confirm('Tolak/batalkan order ini? Tindakan ini tidak dapat dibatalkan.')) return;
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Memproses...'; }
+  try {
+    await window._fbUpdateDoc(window._fbDoc(window._fbDb,'orders',orderId), {
+      status: 'rejected',
+      rejected_at: window._fbServerTimestamp()
+    });
+    showToast('Order telah ditolak ❌');
+  } catch(e) {
+    showToast('Gagal menolak order: ' + e.message);
+    if (btn) { btn.disabled = false; btn.textContent = '❌ Tolak Order'; }
+  }
+};
+
+// ── REVIEWS ────────────────────────────────────────────
+function listenReviews() {
+  const q = query(collection(db, 'reviews'), orderBy('created_at', 'desc'));
+  unsubReviews = onSnapshot(q, snap => {
+    allReviews = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderReviewStats();
+    renderReviews();
+  });
+}
+
+function renderReviewStats() {
+  // Web utama saves reviews with approved:false (no status field)
+  // Treat any review without status='approved' or status='rejected' as pending
+  const pending  = allReviews.filter(r => r.status !== 'approved' && r.status !== 'rejected').length;
+  const approved = allReviews.filter(r => r.status === 'approved').length;
+  const rejected = allReviews.filter(r => r.status === 'rejected').length;
+  document.getElementById('st-rev-total').textContent    = allReviews.length;
+  document.getElementById('st-rev-pending').textContent  = pending;
+  document.getElementById('st-rev-approved').textContent = approved;
+  document.getElementById('st-rev-rejected').textContent = rejected;
+  // Badge notif
+  const badge = document.getElementById('reviews-badge');
+  if (pending > 0) { badge.textContent = pending; badge.style.display = 'inline-block'; }
+  else { badge.style.display = 'none'; }
+}
+
+window.filterReviews = function(f) {
+  reviewFilter = f;
+  ['all','pending','approved','rejected'].forEach(x => {
+    document.getElementById('rf-'+x).classList.toggle('act', x===f);
+  });
+  renderReviews();
+};
+
+function renderReviews() {
+  let list;
+  if (reviewFilter === 'all') {
+    list = allReviews;
+  } else if (reviewFilter === 'pending') {
+    // Reviews from web utama have no status field — treat as pending
+    list = allReviews.filter(r => r.status !== 'approved' && r.status !== 'rejected');
+  } else {
+    list = allReviews.filter(r => r.status === reviewFilter);
+  }
+  const el = document.getElementById('reviews-list');
+  if (!list.length) {
+    el.innerHTML = `<div class="orders-empty">Tidak ada review${reviewFilter !== 'all' ? ' dengan status ini' : ''}.</div>`;
+    return;
+  }
+  el.innerHTML = list.map(r => {
+    const createdAt = r.created_at
+      ? new Date(r.created_at.seconds*1000).toLocaleString('id-ID',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+      : '—';
+    const stars = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
+    const isApproved = r.status === 'approved';
+    const isRejected = r.status === 'rejected';
+    const isPending  = !isApproved && !isRejected;
+    const safeId = r.id.replace(/'/g,"\\'");
+
+    const statusBadge = isApproved
+      ? '<span class="badge badge-green">✅ Tampil di Web</span>'
+      : isRejected
+      ? '<span class="badge badge-red">❌ Ditolak</span>'
+      : '<span class="badge badge-pending">⏳ Menunggu Review</span>';
+
+    const actionHtml = isPending
+      ? `<div class="order-actions">
+           <button class="confirm-btn-o" onclick="window.approveReview('${safeId}',this)">✅ Setujui & Tampilkan</button>
+           <button class="reject-btn-o"  onclick="window.rejectReview('${safeId}',this)">❌ Tolak</button>
+         </div>`
+      : isApproved
+      ? `<div class="confirmed-badge">✅ Ditampilkan di Web</div>
+         <button class="act-btn del" style="margin-left:8px" onclick="window.rejectReview('${safeId}',this)">Sembunyikan</button>`
+      : `<div class="rejected-badge">❌ Ditolak</div>
+         <button class="act-btn tog" style="margin-left:8px" onclick="window.approveReview('${safeId}',this)">Tampilkan</button>`;
+
+    return `<div class="review-card">
+      <div class="review-head">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="review-stars">${stars}</span>
+          ${statusBadge}
+        </div>
+        <span class="review-time">${createdAt}</span>
+      </div>
+      <div class="review-body">
+        <div class="review-name">${r.name || 'Anonim'}</div>
+        ${r.service_type ? `<div class="review-service">🔧 ${r.service_type}</div>` : ''}
+        ${r.city ? `<div class="review-service">📍 ${r.city}</div>` : ''}
+        <div class="review-text">"${r.review || r.text || r.comment || '—'}"</div>
+      </div>
+      <div class="review-foot">
+        ${actionHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.approveReview = async function(id, btn) {
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span>'; }
+  try {
+    await updateDoc(doc(db,'reviews',id),{ status:'approved', approved:true, approved_at:serverTimestamp() });
+    showToast('Review disetujui & ditampilkan di web ✅');
+  } catch(e) {
+    showToast('Gagal: '+e.message);
+    if (btn) { btn.disabled = false; }
+  }
+};
+
+window.rejectReview = async function(id, btn) {
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span>'; }
+  try {
+    await updateDoc(doc(db,'reviews',id),{ status:'rejected', approved:false, rejected_at:serverTimestamp() });
+    showToast('Review ditolak / disembunyikan ❌');
+  } catch(e) {
+    showToast('Gagal: '+e.message);
+    if (btn) { btn.disabled = false; }
+  }
+};
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── AFFILIATORS ────────────────────────────────────────
+function listenAffiliators() {
+  const q = query(collection(db, 'affiliators'), orderBy('created_at', 'desc'));
+  unsubAffiliators = onSnapshot(q, snap => {
+    allAffiliators = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAffStats();
+    renderAffTable(allAffiliators);
+  });
+}
+
+function renderAffStats() {
+  document.getElementById('st-aff-total').textContent  = allAffiliators.length;
+  document.getElementById('st-aff-active').textContent = allAffiliators.filter(a => a.is_active).length;
+}
+
+function renderAffTable(list) {
+  const tbody = document.getElementById('aff-tbl-body');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state">Belum ada affiliator. Buat yang pertama! 🤝</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(a => {
+    const badge = a.is_active
+      ? '<span class="badge badge-green">Aktif</span>'
+      : '<span class="badge badge-red">Nonaktif</span>';
+    const discBadge = a.voucher_discount
+      ? `<span class="badge" style="background:#EDE9FB;color:var(--accent)">🎟️ ${a.voucher_discount}% off</span>`
+      : `<span style="font-size:0.75rem;color:var(--soft)">—</span>`;
+    return `<tr>
+      <td data-label="Kode"><div class="code-badge">${a.code}</div></td>
+      <td data-label="Nama"><b style="color:var(--charcoal)">${a.name||'—'}</b>${a.whatsapp?`<div style="font-size:0.72rem;color:var(--soft)">${a.whatsapp}</div>`:''}</td>
+      <td data-label="Komisi"><strong style="color:var(--accent)">${a.commission_rate||10}%</strong></td>
+      <td data-label="Diskon Voucher">${discBadge}</td>
+      <td data-label="PIN"><span style="font-family:monospace;font-size:0.85rem;letter-spacing:0.1em">${a.pin||'—'}</span></td>
+      <td data-label="Status">${badge}</td>
+      <td data-label="Aksi">
+        <button class="act-btn tog" onclick="window.toggleAff('${a.id}',${!!a.is_active})">${a.is_active?'Nonaktifkan':'Aktifkan'}</button>
+        <button class="act-btn del" onclick="window.deleteAff('${a.id}','${a.code}')">Hapus</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterAffTable() {
+  const q = document.getElementById('aff-search').value.toLowerCase();
+  renderAffTable(allAffiliators.filter(a => a.code.toLowerCase().includes(q)||(a.name||'').toLowerCase().includes(q)));
+}
+
+function genAffCode() {
+  const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = 'ASLAN';
+  for(let i=0;i<4;i++) code += c[Math.floor(Math.random()*c.length)];
+  document.getElementById('aff-code').value = code;
+}
+
+function genAffPin() {
+  let pin = '';
+  for(let i=0;i<6;i++) pin += Math.floor(Math.random()*10);
+  document.getElementById('aff-pin').value = pin;
+}
+
+async function createAffiliator() {
+  const code  = document.getElementById('aff-code').value.trim().toUpperCase();
+  const pin   = document.getElementById('aff-pin').value.trim();
+  const name  = document.getElementById('aff-name').value.trim();
+  const rate  = parseInt(document.getElementById('aff-rate').value);
+  const disc  = parseInt(document.getElementById('aff-disc').value);
+  const wa    = document.getElementById('aff-wa').value.trim();
+  const msgEl = document.getElementById('aff-form-msg');
+  msgEl.className = 'form-msg';
+
+  if (!code)              { msgEl.textContent='Kode wajib diisi.';             msgEl.className='form-msg err'; return; }
+  if (!pin||pin.length!==6){ msgEl.textContent='PIN harus 6 digit angka.';     msgEl.className='form-msg err'; return; }
+  if (!/^\d{6}$/.test(pin)){ msgEl.textContent='PIN harus berupa angka.';      msgEl.className='form-msg err'; return; }
+  if (!name)              { msgEl.textContent='Nama wajib diisi.';             msgEl.className='form-msg err'; return; }
+  if (!rate||rate<1)      { msgEl.textContent='Komisi wajib diisi (min 1%).';  msgEl.className='form-msg err'; return; }
+  if (!disc||disc<1)      { msgEl.textContent='Diskon voucher wajib diisi.';   msgEl.className='form-msg err'; return; }
+  if (disc > 100)         { msgEl.textContent='Diskon voucher max 100%.';      msgEl.className='form-msg err'; return; }
+  if (allAffiliators.some(a=>a.code===code)){ msgEl.textContent='Kode affiliator sudah ada.'; msgEl.className='form-msg err'; return; }
+  if (allVouchers.some(v=>v.code===code))   { msgEl.textContent='Kode ini sudah dipakai sebagai voucher lain.'; msgEl.className='form-msg err'; return; }
+
+  const btn = document.getElementById('btn-create-aff');
+  btn.disabled=true; btn.innerHTML='<span class="spinner-sm"></span> Menyimpan...';
+  try {
+    // Buat expiry 2 tahun ke depan
+    const exp = new Date();
+    exp.setFullYear(exp.getFullYear() + 2);
+    const expStr = exp.toISOString().split('T')[0] + 'T23:59:59';
+
+    // 1. Buat affiliator
+    await addDoc(collection(db,'affiliators'),{
+      code, pin, name, commission_rate:rate, voucher_discount:disc,
+      whatsapp:wa, is_active:true, created_at:serverTimestamp()
+    });
+
+    // 2. Buat voucher dengan kode yang sama secara otomatis
+    await addDoc(collection(db,'vouchers'),{
+      code,
+      discount_type: 'percent',
+      discount_value: disc,
+      max_uses: 99999,
+      used_count: 0,
+      expires_at: expStr,
+      description: 'Voucher affiliator — ' + name,
+      is_active: true,
+      affiliator_code: code,
+      created_at: serverTimestamp()
+    });
+
+    msgEl.textContent='✓ Affiliator & voucher berhasil dibuat!'; msgEl.className='form-msg ok';
+    document.getElementById('aff-code').value='';
+    document.getElementById('aff-pin').value='';
+    document.getElementById('aff-name').value='';
+    document.getElementById('aff-wa').value='';
+    showToast('Affiliator '+code+' + voucher berhasil dibuat 🤝🎟️');
+    setTimeout(()=>{ msgEl.textContent=''; },3000);
+  } catch(e) {
+    msgEl.textContent='Gagal: '+e.message; msgEl.className='form-msg err';
+  }
+  btn.disabled=false; btn.textContent='+ Buat Affiliator';
+}
+
+window.toggleAff = async function(id, current) {
+  try {
+    await updateDoc(doc(db,'affiliators',id),{is_active:!current});
+    showToast(current?'Affiliator dinonaktifkan.':'Affiliator diaktifkan kembali.');
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+window.deleteAff = async function(id, code) {
+  if (!confirm('Hapus affiliator '+code+'? Voucher dengan kode yang sama juga akan dihapus.')) return;
+  try {
+    await deleteDoc(doc(db,'affiliators',id));
+    // Hapus juga voucher affiliator yang terkait (cari by code + affiliator_code)
+    const vSnap = await getDocs(
+      query(collection(db,'vouchers'), where('affiliator_code','==',code))
+    );
+    for (const vDoc of vSnap.docs) {
+      await deleteDoc(doc(db,'vouchers',vDoc.id));
+    }
+    showToast('Affiliator '+code+' dan vouchernya dihapus.');
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+// ── WITHDRAWALS (Admin) ───────────────────────────────
+function listenWithdrawals() {
+  const q = query(collection(db, 'affiliate_withdrawals'), orderBy('created_at', 'desc'));
+  unsubWithdrawals = onSnapshot(q, snap => {
+    allWithdrawals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderWdTable();
+    const pendingCount = allWithdrawals.filter(w => w.status === 'pending').length;
+    const badge = document.getElementById('aff-wd-badge');
+    if (pendingCount > 0) { badge.textContent = pendingCount; badge.style.display = 'inline-block'; }
+    else { badge.style.display = 'none'; }
+    document.getElementById('st-aff-wd-pending').textContent = pendingCount;
+  });
+}
+
+window.filterWd = function(f) {
+  wdFilter = f;
+  ['all','pending','approved','rejected'].forEach(x => {
+    document.getElementById('wf-'+x).classList.toggle('act', x===f);
+  });
+  renderWdTable();
+};
+
+function renderWdTable() {
+  const list = wdFilter === 'all' ? allWithdrawals : allWithdrawals.filter(w => w.status === wdFilter);
+  const tbody = document.getElementById('wd-tbl-body');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">Tidak ada pengajuan${wdFilter !== 'all' ? ' dengan status ini' : ''}.</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(w => {
+    const dateStr = w.created_at
+      ? new Date(w.created_at.seconds*1000).toLocaleString('id-ID',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+      : '—';
+    const statusBadge = (w.status==='approved'||w.status==='paid')
+      ? '<span class="badge badge-green">✅ Disetujui</span>'
+      : w.status==='rejected'
+      ? '<span class="badge badge-red">❌ Ditolak</span>'
+      : '<span class="badge badge-amber">⏳ Pending</span>';
+    const safeId = w.id.replace(/'/g,"\\'");
+    const actionHtml = w.status === 'pending'
+      ? `<button class="act-btn tog" onclick="window.approveWd('${safeId}')">✅ Setujui</button>
+         <button class="act-btn del" onclick="window.rejectWd('${safeId}')">❌ Tolak</button>`
+      : '<span style="font-size:0.75rem;color:var(--soft)">—</span>';
+    return `<tr>
+      <td data-label="Tanggal">${dateStr}</td>
+      <td data-label="Affiliator"><b style="color:var(--charcoal)">${w.affiliator_code||'—'}</b><div style="font-size:0.72rem;color:var(--soft)">${w.affiliator_name||''}</div></td>
+      <td data-label="Jumlah"><strong style="color:var(--green)">${fmt(w.amount)}</strong></td>
+      <td data-label="Status">${statusBadge}</td>
+      <td data-label="Aksi">${actionHtml}</td>
+    </tr>`;
+  }).join('');
+}
+
+window.approveWd = async function(id) {
+  if (!confirm('Setujui penarikan ini? Pastikan dana sudah ditransfer ke affiliator.')) return;
+  try {
+    await updateDoc(doc(db,'affiliate_withdrawals',id),{ status:'approved', approved_at:serverTimestamp() });
+    showToast('Penarikan disetujui ✅');
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+window.rejectWd = async function(id) {
+  if (!confirm('Tolak penarikan ini? Saldo akan dikembalikan ke affiliator.')) return;
+  try {
+    await updateDoc(doc(db,'affiliate_withdrawals',id),{ status:'rejected', rejected_at:serverTimestamp() });
+    showToast('Penarikan ditolak ❌');
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+// ── SCHEDULE EDIT ──────────────────────────────────────
+window.openEditSchedule = function(orderId) {
+  const o = allOrders.find(x => x.id === orderId);
+  if (!o) return;
+  document.getElementById('sm-order-id').value = orderId;
+  document.getElementById('sm-order-label').textContent =
+    'Order: ' + (o.order_id || o.id.slice(0,8).toUpperCase()) + ' — ' + (o.name || 'Customer');
+  document.getElementById('sm-date').value = o.scheduled_date || '';
+  document.getElementById('sm-time').value = o.scheduled_time || '';
+  document.getElementById('schedule-modal').classList.add('open');
+};
+
+window.closeScheduleModal = function() {
+  document.getElementById('schedule-modal').classList.remove('open');
+};
+
+window.saveSchedule = async function() {
+  const orderId = document.getElementById('sm-order-id').value;
+  const date    = document.getElementById('sm-date').value;
+  const time    = document.getElementById('sm-time').value;
+  if (!date) { showToast('Tanggal wajib diisi!'); return; }
+  try {
+    await window._fbUpdateDoc(window._fbDoc(window._fbDb, 'orders', orderId), {
+      scheduled_date: date,
+      scheduled_time: time || null,
+      schedule_updated_at: window._fbServerTimestamp()
+    });
+    window.closeScheduleModal();
+    showToast('Jadwal berhasil disimpan 📅');
+  } catch(e) {
+    showToast('Gagal menyimpan jadwal: ' + e.message);
+  }
+};
+
+// ── EXPORT TO iCAL ─────────────────────────────────────
+window.exportToCalendar = function() {
+  // Only export confirmed orders
+  let list = allOrders.filter(o => o.status === 'confirmed');
+
+  // If a date is selected in the calendar filter, export only that date
+  if (selectedDate) {
+    list = list.filter(o => {
+      const d = o.scheduled_date ||
+        (o.created_at && o.created_at.seconds
+          ? new Date(o.created_at.seconds*1000).toISOString().split('T')[0]
+          : null);
+      return d === selectedDate;
+    });
+  }
+
+  if (!list.length) {
+    showToast(selectedDate
+      ? 'Tidak ada order terkonfirmasi pada tanggal ini.'
+      : 'Belum ada order terkonfirmasi untuk diexport.');
+    return;
+  }
+
+  function padZ(n){ return String(n).padStart(2,'0'); }
+  function toICSDate(dateStr, timeStr) {
+    // Build a local datetime and format as TZID
+    const [y,m,d] = dateStr.split('-').map(Number);
+    const [hh,mm] = (timeStr||'09:00').split(':').map(Number);
+    // Return as floating local time (no Z) with TZID=Asia/Jakarta
+    return `${y}${padZ(m)}${padZ(d)}T${padZ(hh)}${padZ(mm)}00`;
+  }
+  function escICS(s){ return (s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n'); }
+
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Aslan Teknik//Admin Dashboard//ID',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'X-WR-CALNAME:Aslan Teknik — Jadwal Servis',
+    'X-WR-TIMEZONE:Asia/Jakarta'
+  ];
+
+  list.forEach(o => {
+    const dateStr = o.scheduled_date ||
+      (o.created_at && o.created_at.seconds
+        ? new Date(o.created_at.seconds*1000).toISOString().split('T')[0]
+        : null);
+    if (!dateStr) return;
+
+    const timeStr  = o.scheduled_time || '09:00';
+    const [hh,mm]  = timeStr.split(':').map(Number);
+    // End time = start + 2 hours
+    const endHH    = padZ(hh + 2 > 23 ? 23 : hh + 2);
+    const [y,mo,d] = dateStr.split('-').map(Number);
+    const dtStart  = `${y}${padZ(mo)}${padZ(d)}T${padZ(hh)}${padZ(mm)}00`;
+    const dtEnd    = `${y}${padZ(mo)}${padZ(d)}T${endHH}${padZ(mm)}00`;
+
+    const svcList  = Array.isArray(o.services) ? o.services.join(', ') : (o.services||'');
+    const summary  = escICS(`Service AC — ${o.name||'Customer'} (${o.order_id||o.id.slice(0,8).toUpperCase()})`);
+    const desc     = escICS([
+      `Pelanggan: ${o.name||'—'}`,
+      `WA: ${o.wa_number||'—'}`,
+      `Layanan: ${svcList}`,
+      `AC: ${o.ac_type||'—'} × ${o.unit_count||1} unit`,
+      o.notes ? `Catatan: ${o.notes}` : ''
+    ].filter(Boolean).join('\n'));
+    const location = escICS([o.address, o.city].filter(Boolean).join(', '));
+    const uid      = `${o.id}@aslan-teknik.app`;
+
+    lines.push('BEGIN:VEVENT');
+    lines.push(`UID:${uid}`);
+    lines.push(`DTSTART;TZID=Asia/Jakarta:${dtStart}`);
+    lines.push(`DTEND;TZID=Asia/Jakarta:${dtEnd}`);
+    lines.push(`SUMMARY:${summary}`);
+    lines.push(`DESCRIPTION:${desc}`);
+    if (location) lines.push(`LOCATION:${location}`);
+    lines.push('STATUS:CONFIRMED');
+    lines.push('END:VEVENT');
+  });
+
+  lines.push('END:VCALENDAR');
+
+  const icsContent = lines.join('\r\n');
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const label = selectedDate || new Date().toISOString().split('T')[0];
+  a.href = url;
+  a.download = `aslan-teknik-servis-${label}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`✅ ${list.length} event diexport ke kalender!`);
+};
+
+// ── TECHNICIANS ────────────────────────────────────────
+function listenTechnicians() {
+  const q = query(collection(db, 'technicians'), orderBy('created_at', 'desc'));
+  unsubTechnicians = onSnapshot(q, snap => {
+    allTechnicians = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderTechTable();
+    renderTechStats();
+    renderTechAssignmentOverview();
+  });
+}
+
+function renderTechStats() {
+  document.getElementById('st-tech-total').textContent  = allTechnicians.length;
+  document.getElementById('st-tech-active').textContent = allTechnicians.filter(t => t.is_active).length;
+  document.getElementById('st-tech-assigned').textContent = allOrders.filter(o => o.assigned_to).length;
+}
+
+function renderTechTable(list) {
+  const data = list || allTechnicians;
+  const tbody = document.getElementById('tech-tbl-body');
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">Belum ada teknisi. Tambah teknisi pertama!</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map(t => {
+    const safeId = t.id.replace(/'/g,"\\'");
+    const statusBadge = t.is_active
+      ? '<span class="badge badge-green">Aktif</span>'
+      : '<span class="badge badge-red">Nonaktif</span>';
+    const assignedCount = allOrders.filter(o => o.assigned_to === t.tech_id).length;
+    return `<tr>
+      <td data-label="Nama"><b style="color:var(--charcoal)">${t.name||'—'}</b>
+        ${assignedCount > 0 ? `<div style="font-size:0.72rem;color:var(--soft);margin-top:2px">${assignedCount} order ter-assign</div>` : ''}
+      </td>
+      <td data-label="ID Login"><span class="tech-id-badge">${t.tech_id||'—'}</span></td>
+      <td data-label="WA">${t.wa_number||'—'}</td>
+      <td data-label="Spesialisasi" style="font-size:0.78rem;color:var(--soft)">${t.specialization||'—'}</td>
+      <td data-label="Status">${statusBadge}</td>
+      <td data-label="Aksi">
+        <button class="act-btn tog" onclick="window.toggleTech('${safeId}',${!!t.is_active})">${t.is_active?'Nonaktifkan':'Aktifkan'}</button>
+        <button class="act-btn del" onclick="window.deleteTech('${safeId}','${(t.name||'').replace(/'/g,"\\'")}')">Hapus</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderTechAssignmentOverview() {
+  const el = document.getElementById('tech-assignment-overview');
+  if (!el) return;
+  const confirmed = allOrders.filter(o => o.status === 'confirmed');
+  if (!confirmed.length) { el.innerHTML = '<div class="empty-state">Belum ada order terkonfirmasi.</div>'; return; }
+  const assigned   = confirmed.filter(o => o.assigned_to);
+  const unassigned = confirmed.filter(o => !o.assigned_to);
+  let html = `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+    <div class="stat-c" style="flex:1;min-width:120px;border-left:3px solid var(--green)"><div class="s-num" style="color:var(--green);font-size:1.5rem">${assigned.length}</div><div class="s-lbl">Sudah Ter-assign</div></div>
+    <div class="stat-c" style="flex:1;min-width:120px;border-left:3px solid var(--amber)"><div class="s-num" style="color:var(--amber);font-size:1.5rem">${unassigned.length}</div><div class="s-lbl">Belum Di-assign</div></div>
+  </div>`;
+  if (unassigned.length) {
+    html += `<div style="font-size:0.78rem;font-weight:600;color:var(--soft);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em;">⚠️ Order Belum Di-assign</div>`;
+    html += unassigned.map(o => {
+      const safeId = o.id.replace(/'/g,"\\'");
+      const sd = o.scheduled_date ? new Date(o.scheduled_date+'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short'}) : '—';
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap;">
+        <div>
+          <span class="code-badge" style="font-size:0.75rem">${o.order_id||o.id.slice(0,8).toUpperCase()}</span>
+          <span style="font-size:0.82rem;color:var(--charcoal);margin-left:8px;font-weight:600">${o.name||'—'}</span>
+          <span style="font-size:0.75rem;color:var(--soft);margin-left:8px">📅 ${sd}</span>
+        </div>
+        <button class="assign-btn-o" style="padding:6px 14px;font-size:0.75rem" onclick="window.openAssignModal('${safeId}')">👷 Assign</button>
+      </div>`;
+    }).join('');
+  }
+  el.innerHTML = html;
+}
+
+window.filterTechTable = function() {
+  const q = document.getElementById('tech-search').value.toLowerCase();
+  renderTechTable(allTechnicians.filter(t =>
+    (t.name||'').toLowerCase().includes(q) || (t.tech_id||'').toLowerCase().includes(q)
+  ));
+};
+
+function genTechId() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let id = 'TECH';
+  for(let i=0;i<3;i++) id += chars[Math.floor(Math.random()*chars.length)];
+  return id;
+}
+function genTechPass() {
+  const w = ['aslan','teknik','service','ac','teknisi'];
+  const n = Math.floor(Math.random()*900)+100;
+  return w[Math.floor(Math.random()*w.length)] + n;
+}
+
+window.createTechnician = async function() {
+  const name  = document.getElementById('tech-name').value.trim();
+  const tid   = document.getElementById('tech-id').value.trim().toUpperCase();
+  const pass  = document.getElementById('tech-pass').value.trim();
+  const wa    = document.getElementById('tech-wa').value.trim();
+  const spec  = document.getElementById('tech-spec').value.trim();
+  const msgEl = document.getElementById('tech-form-msg');
+  msgEl.className = 'form-msg';
+  if (!name) { msgEl.textContent='Nama wajib diisi.'; msgEl.className='form-msg err'; return; }
+  if (!tid)  { msgEl.textContent='ID Login wajib diisi.'; msgEl.className='form-msg err'; return; }
+  if (!pass) { msgEl.textContent='Password wajib diisi.'; msgEl.className='form-msg err'; return; }
+  if (allTechnicians.some(t => t.tech_id === tid)) { msgEl.textContent='ID sudah dipakai teknisi lain.'; msgEl.className='form-msg err'; return; }
+  const btn = document.getElementById('btn-create-tech');
+  btn.disabled=true; btn.innerHTML='<span class="spinner-sm"></span> Menyimpan...';
+  try {
+    await addDoc(collection(db,'technicians'),{
+      name, tech_id:tid, password:pass, wa_number:wa, specialization:spec,
+      is_active:true, created_at:serverTimestamp()
+    });
+    msgEl.textContent='✓ Teknisi berhasil ditambahkan!'; msgEl.className='form-msg ok';
+    document.getElementById('tech-name').value='';
+    document.getElementById('tech-id').value='';
+    document.getElementById('tech-pass').value='';
+    document.getElementById('tech-wa').value='';
+    document.getElementById('tech-spec').value='';
+    showToast('Teknisi '+name+' berhasil dibuat 👷');
+    setTimeout(()=>{ msgEl.textContent=''; },3000);
+  } catch(e){ msgEl.textContent='Gagal: '+e.message; msgEl.className='form-msg err'; }
+  btn.disabled=false; btn.textContent='+ Tambah Teknisi';
+};
+
+window.toggleTech = async function(id, current) {
+  try {
+    await updateDoc(doc(db,'technicians',id),{is_active:!current});
+    showToast(current?'Teknisi dinonaktifkan.':'Teknisi diaktifkan kembali.');
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+window.deleteTech = async function(id, name) {
+  if (!confirm('Hapus teknisi '+name+'? Tindakan ini tidak dapat dibatalkan.')) return;
+  try { await deleteDoc(doc(db,'technicians',id)); showToast('Teknisi '+name+' dihapus.'); }
+  catch(e){ showToast('Gagal: '+e.message); }
+};
+
+// ── ORDER ASSIGNMENT ───────────────────────────────────
+window.openAssignModal = function(orderId) {
+  const o = allOrders.find(x => x.id === orderId);
+  if (!o) return;
+  document.getElementById('assign-order-id').value = orderId;
+  document.getElementById('assign-modal-sub').textContent =
+    `Order ${o.order_id||o.id.slice(0,8).toUpperCase()} — ${o.name||'Customer'}`;
+  const sel = document.getElementById('assign-tech-select');
+  const active = allTechnicians.filter(t => t.is_active);
+  sel.innerHTML = '<option value="">-- Pilih Teknisi --</option>' +
+    active.map(t => `<option value="${t.tech_id}" data-name="${t.name}">${t.name} (${t.tech_id})</option>`).join('');
+  if (o.assigned_to) sel.value = o.assigned_to;
+  document.getElementById('assign-modal').classList.add('open');
+};
+
+window.closeAssignModal = function() {
+  document.getElementById('assign-modal').classList.remove('open');
+};
+
+window.saveAssign = async function() {
+  const orderId = document.getElementById('assign-order-id').value;
+  const sel     = document.getElementById('assign-tech-select');
+  const techId  = sel.value;
+  const techOpt = sel.options[sel.selectedIndex];
+  const techName = techOpt ? techOpt.dataset.name || techId : techId;
+  if (!techId) { showToast('Pilih teknisi terlebih dahulu!'); return; }
+  try {
+    await window._fbUpdateDoc(window._fbDoc(window._fbDb,'orders',orderId), {
+      assigned_to: techId,
+      assigned_name: techName,
+      assigned_at: window._fbServerTimestamp(),
+      task_status: 'belum'
+    });
+    window.closeAssignModal();
+    showToast(`Order di-assign ke ${techName} 👷`);
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+window.unassignOrder = async function(orderId) {
+  if (!confirm('Hapus assignment teknisi dari order ini?')) return;
+  try {
+    await window._fbUpdateDoc(window._fbDoc(window._fbDb,'orders',orderId), {
+      assigned_to: null, assigned_name: null, assigned_at: null, task_status: null
+    });
+    showToast('Assignment dihapus.');
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+// ── EVENT LISTENERS ───────────────────────────────────
+document.getElementById('btn-login').addEventListener('click', doLogin);
+document.getElementById('l-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('btn-logout').addEventListener('click', doLogout);
+document.getElementById('btn-gen').addEventListener('click', genCode);
+document.getElementById('btn-create').addEventListener('click', createVoucher);
+document.getElementById('tp-pct').addEventListener('click', () => setType('percent'));
+document.getElementById('tp-nom').addEventListener('click', () => setType('nominal'));
+document.getElementById('search').addEventListener('input', filterTable);
+document.getElementById('btn-gen-aff').addEventListener('click', genAffCode);
+document.getElementById('btn-gen-pin').addEventListener('click', genAffPin);
+document.getElementById('btn-create-aff').addEventListener('click', createAffiliator);
+document.getElementById('aff-search').addEventListener('input', filterAffTable);
+document.getElementById('btn-gen-tech').addEventListener('click', () => { document.getElementById('tech-id').value = genTechId(); });
+document.getElementById('btn-gen-tech-pass').addEventListener('click', () => { document.getElementById('tech-pass').value = genTechPass(); });
+document.getElementById('btn-create-tech').addEventListener('click', window.createTechnician);
+document.getElementById('tech-search').addEventListener('input', window.filterTechTable);
+window.toggleV = window.toggleV;
+window.deleteV = window.deleteV;
+</script>
+</body>
+</html>
