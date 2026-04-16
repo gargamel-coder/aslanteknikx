@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buku Panduan Saku Teknisi — Aslan Teknik</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+/* ── RESET & BASE ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --biru-tua:  #0D47A1;
+  --biru:      #1976D2;
+  --biru-muda: #E3F2FD;
+  --emas:      #F9A825;
+  --merah:     #C62828;
+  --hijau:     #2E7D32;
+  --hijau-bg:  #E8F5E9;
+  --abu:       #212121;
+  --abu-muda:  #F5F5F5;
+  --merah-bg:  #FFEBEE;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 11px;
+  color: var(--abu);
+  background: #e0e0e0;
+  line-height: 1.4;
+}
+
+/* ── PRINT SETUP ──────────────────────────────────────────── */
+@media print {
+  body { background: white; }
+  .page { box-shadow: none; margin: 0; page-break-after: always; }
+  .page:last-child { page-break-after: avoid; }
+  .no-print { display: none; }
+  @page { size: A5; margin: 12mm 13mm; }
+}
+
+/* ── PAGE LAYOUT ─────────────────────────────────────────── */
+.page {
+  width: 148mm;
+  min-height: 210mm;
+  background: white;
+  margin: 8mm auto;
+  padding: 12mm 13mm 14mm;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── TYPOGRAPHY ──────────────────────────────────────────── */
+h1 { font-size: 18px; }
+h2 { font-size: 11px; }
+h3 { font-size: 10.5px; }
+p  { font-size: 10px; line-height: 1.45; }
+
+/* ── HEADER BOXES ────────────────────────────────────────── */
+.bab-header {
+  background: var(--biru-tua);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.bab-header.blue  { background: var(--biru); }
+.bab-header.red   { background: #B71C1C; }
+.bab-header.green { background: #1B5E20; }
+.bab-header.orange{ background: #E65100; }
+
+/* ── SECTION TITLE ───────────────────────────────────────── */
+.section-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--biru-tua);
+  margin: 10px 0 5px;
+  border-left: 3px solid var(--biru);
+  padding-left: 7px;
+}
+
+/* ── INFO BOX ────────────────────────────────────────────── */
+.info-box {
+  background: var(--biru-muda);
+  border: 1px solid var(--biru);
+  border-radius: 5px;
+  padding: 7px 9px;
+  font-size: 9.5px;
+  line-height: 1.45;
+  margin: 6px 0;
+}
+.info-box.green { background: var(--hijau-bg); border-color: var(--hijau); }
+.info-box.red   { background: var(--merah-bg); border-color: var(--merah); }
+.info-box.gold  { background: #FFF8E1; border-color: var(--emas); }
+.info-box.quote {
+  font-style: italic;
+  color: var(--biru-tua);
+  border-color: var(--biru);
+}
+
+.warning-box {
+  background: var(--merah-bg);
+  border: 1px solid var(--merah);
+  border-radius: 5px;
+  padding: 7px 9px;
+  font-size: 9.5px;
+  margin: 6px 0;
+}
+.warning-box::before { content: "⚠ PERHATIAN: "; color: var(--merah); font-weight: 700; }
+
+/* ── TABLES ──────────────────────────────────────────────── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9px;
+  margin: 4px 0;
+}
+th {
+  padding: 5px 5px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 9px;
+}
+td {
+  padding: 4px 5px;
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: #F5F5F5; }
+
+.tbl-blue th  { background: var(--biru-tua); color: white; }
+.tbl-red  th  { background: #B71C1C;          color: white; }
+.tbl-green th { background: #1B5E20;          color: white; }
+.tbl-grid td, .tbl-grid th { border: 0.3px solid #BBDEFB; }
+.tbl-grid.red td, .tbl-grid.red th { border-color: #FFCDD2; }
+.tbl-grid.green td, .tbl-grid.green th { border-color: #A5D6A7; }
+tr:nth-child(even) td.no-stripe { background: inherit; }
+
+/* ── STEPS ───────────────────────────────────────────────── */
+.step { display: flex; align-items: flex-start; margin: 4px 0; gap: 7px; }
+.step-num {
+  min-width: 20px; height: 20px;
+  background: var(--biru);
+  color: white;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 9px;
+  flex-shrink: 0;
+}
+.step-content { flex: 1; }
+.step-title { font-weight: 700; font-size: 10px; line-height: 1.3; }
+.step-desc { font-size: 8.5px; color: #555; margin-top: 1px; line-height: 1.3; }
+
+/* ── CHECKLIST ───────────────────────────────────────────── */
+.checklist { border-radius: 5px; overflow: hidden; margin: 4px 0; }
+.checklist-header {
+  background: var(--biru-muda);
+  padding: 5px 8px;
+  font-weight: 700;
+  font-size: 9.5px;
+  color: var(--biru-tua);
+}
+.checklist-item {
+  display: flex; gap: 6px; align-items: flex-start;
+  padding: 3px 8px;
+  font-size: 9.5px;
+  line-height: 1.4;
+  border-bottom: 0.3px solid #E3F2FD;
+}
+.checklist-item:nth-child(odd) { background: #FAFAFA; }
+.check-box {
+  min-width: 14px; height: 14px;
+  border: 1.5px solid var(--biru);
+  border-radius: 2px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+/* ── COMPARISON TABLE ────────────────────────────────────── */
+.comp-table { width: 100%; border-collapse: collapse; font-size: 8.5px; }
+.comp-table th { background: var(--biru-tua); color: white; padding: 5px; text-align: center; font-size: 9px; }
+.comp-table td { padding: 4px 5px; border: 0.3px solid #BBDEFB; vertical-align: middle; }
+.comp-table tr:nth-child(even) td { background: var(--biru-muda); }
+
+/* ── HEARD FRAMEWORK ─────────────────────────────────────── */
+.heard-row { display: flex; gap: 0; margin: 0; }
+.heard-key {
+  min-width: 36mm;
+  background: var(--biru-muda);
+  color: var(--biru-tua);
+  font-weight: 700;
+  font-size: 9px;
+  padding: 5px 6px;
+  border-bottom: 0.3px solid #BBDEFB;
+  display: flex; align-items: center;
+}
+.heard-val {
+  flex: 1;
+  padding: 5px 6px;
+  font-size: 9px;
+  border-bottom: 0.3px solid #BBDEFB;
+}
+.heard-row:nth-child(even) .heard-key { background: white; }
+.heard-row:nth-child(even) .heard-val { background: #FAFAFA; }
+
+/* ── 5S TABLE ────────────────────────────────────────────── */
+.s5-row { display: flex; gap: 0; border-bottom: 0.3px solid #BBDEFB; }
+.s5-key {
+  min-width: 22mm;
+  background: var(--biru-muda);
+  color: var(--biru-tua);
+  font-weight: 700;
+  font-size: 9.5px;
+  padding: 5px 7px;
+  display: flex; align-items: center;
+}
+.s5-row:nth-child(even) .s5-key { background: white; }
+.s5-val { flex:1; padding: 5px 7px; font-size: 9.5px; }
+
+/* ── COVER ───────────────────────────────────────────────── */
+.cover-page {
+  background: white;
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+}
+.cover-box {
+  background: var(--biru-tua);
+  color: white;
+  border-radius: 10px;
+  padding: 22px 16px 18px;
+  text-align: center;
+}
+.cover-brand { font-size: 24px; font-weight: 900; letter-spacing: 1px; margin-bottom: 4px; }
+.cover-title { font-size: 13px; font-weight: 700; color: #BBDEFB; margin-bottom: 12px; }
+.cover-tagline { font-size: 10px; font-style: italic; color: var(--emas); margin-bottom: 14px; }
+.cover-pills { font-size: 10px; color: #BBDEFB; letter-spacing: 0.5px; }
+
+.gold-bar {
+  background: var(--emas);
+  text-align: center;
+  padding: 6px;
+  border-radius: 5px;
+  font-weight: 700;
+  font-size: 9.5px;
+  color: var(--biru-tua);
+  margin: 10px 0;
+}
+
+.id-box { border: 1px solid #BBDEFB; border-radius: 5px; overflow: hidden; margin: 8px 0; }
+.id-row { display: flex; font-size: 9.5px; border-bottom: 0.3px solid #BBDEFB; }
+.id-label {
+  min-width: 36mm;
+  background: var(--biru-muda);
+  padding: 5px 7px;
+  font-weight: 700;
+  color: var(--biru-tua);
+}
+.id-val { flex:1; padding: 5px 7px; }
+
+.contact-footer { text-align: center; font-size: 8.5px; color: var(--biru); margin-top: auto; }
+
+/* ── TOC ─────────────────────────────────────────────────── */
+.toc-bab { font-weight: 700; color: var(--biru-tua); font-size: 10px; margin: 8px 0 3px; }
+.toc-sub { font-size: 9.5px; margin-left: 10px; line-height: 1.6; }
+.toc-sub::before { content: "• "; color: var(--biru); }
+
+/* ── NILAI & CLOSING ─────────────────────────────────────── */
+.nilai-box {
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 10px 0;
+  text-align: center;
+}
+.nilai-top { background: var(--biru-tua); color: white; padding: 8px; font-weight: 700; font-size: 10px; }
+.nilai-bottom { background: var(--emas); color: var(--biru-tua); padding: 7px; font-weight: 700; font-size: 9.5px; }
+
+.contact-box {
+  background: var(--biru-tua);
+  color: white;
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+  font-size: 9.5px;
+  line-height: 1.7;
+}
+.contact-box .label { font-weight: 700; font-size: 10px; margin-bottom: 3px; }
+
+.footer-note { font-size: 7.5px; color: #999; text-align: center; margin-top: 10px; font-style: italic; }
+
+/* ── DO/DONT ─────────────────────────────────────────────── */
+.do-dont { display: flex; gap: 6px; margin: 4px 0; }
+.do-box, .dont-box { flex: 1; border-radius: 5px; overflow: hidden; }
+.do-head { background: var(--hijau); color: white; padding: 4px 7px; font-weight: 700; font-size: 9px; }
+.dont-head { background: var(--merah); color: white; padding: 4px 7px; font-weight: 700; font-size: 9px; }
+.do-item, .dont-item { padding: 3px 7px; font-size: 8.5px; border-bottom: 0.3px solid #ddd; line-height: 1.35; }
+.do-item { background: var(--hijau-bg); }
+.dont-item { background: var(--merah-bg); }
+.do-item::before { content: "✓ "; color: var(--hijau); font-weight: 700; }
+.dont-item::before { content: "✗ "; color: var(--merah); font-weight: 700; }
+
+/* ── BUTTONS ─────────────────────────────────────────────── */
+.no-print {
+  position: fixed; bottom: 20px; right: 20px; z-index: 999;
+  display: flex; flex-direction: column; gap: 8px; align-items: flex-end;
+}
+.btn {
+  background: var(--biru-tua); color: white;
+  border: none; padding: 11px 20px; border-radius: 8px;
+  cursor: pointer; font-size: 13px; font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+  display: flex; align-items: center; gap: 8px;
+}
+.btn:hover { background: var(--biru); }
+.btn.loading { opacity: 0.7; cursor: wait; }
+#progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: var(--emas); width: 0;
+  transition: width 0.3s; z-index: 9999;
+  display: none;
+}
+
+/* ── PAGE NUMBER ─────────────────────────────────────────── */
+.page-footer {
+  position: absolute; bottom: 6mm; left: 13mm; right: 13mm;
+  display: flex; justify-content: space-between;
+  font-size: 7.5px; color: #aaa;
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<div class="no-print">
+  <button class="btn" id="downloadBtn" onclick="downloadPDF()">
+    ⬇ Download PDF
+  </button>
+  <button class="btn" style="background:#37474F;font-size:11px" onclick="window.print()">
+    Cetak
+  </button>
+</div>
+
+<script>
+function downloadPDF() {
+  const btn = document.getElementById('downloadBtn');
+  const bar = document.getElementById('progress-bar');
+  btn.classList.add('loading');
+  btn.textContent = '⏳ Memproses...';
+  bar.style.display = 'block';
+  bar.style.width = '30%';
+
+  const element = document.body;
+  const opt = {
+    margin:       [10, 11, 10, 11],
+    filename:     'Panduan-Saku-Aslan-Teknik.pdf',
+    image:        { type: 'jpeg', quality: 0.96 },
+    html2canvas:  { scale: 2, useCORS: true, logging: false },
+    jsPDF:        { unit: 'mm', format: 'a5', orientation: 'portrait' },
+    pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+
+  bar.style.width = '60%';
+
+  html2pdf().set(opt).from(element).save()
+    .then(() => {
+      bar.style.width = '100%';
+      setTimeout(() => {
+        btn.classList.remove('loading');
+        btn.innerHTML = '✓ Selesai — Download Lagi';
+        bar.style.display = 'none';
+        bar.style.width = '0';
+      }, 800);
+    })
+    .catch(() => {
+      btn.classList.remove('loading');
+      btn.innerHTML = '⬇ Download PDF';
+      bar.style.display = 'none';
+    });
+}
+</script>
+
+<!-- ═══════════════════════════════════════════ COVER ═══ -->
+<div class="page cover-page">
+  <div></div>
+  <div>
+    <div class="cover-box">
+      <div class="cover-brand">ASLAN TEKNIK</div>
+      <div class="cover-title">BUKU PANDUAN SAKU TEKNISI</div>
+      <div class="cover-tagline">Teknisi AC Profesional & Terpercaya</div>
+      <div class="cover-pills">SOP Kerja &nbsp;|&nbsp; Pelayanan Prima &nbsp;|&nbsp; K3<br>Keselamatan Kerja &amp; Standar Alat</div>
+    </div>
+
+    <div class="gold-bar">PANDUAN RESMI TEKNISI ASLAN TEKNIK</div>
+
+    <div class="id-box">
+      <div class="id-row"><div class="id-label">Nama Teknisi</div><div class="id-val">_______________________</div></div>
+      <div class="id-row"><div class="id-label">No. Teknisi</div><div class="id-val">_______________________</div></div>
+      <div class="id-row" style="border:none"><div class="id-label">Bergabung</div><div class="id-val">_______________________</div></div>
+    </div>
+  </div>
+
+  <div class="contact-footer">
+    0895-3261-0529 &nbsp;|&nbsp; aslanteknik.id &nbsp;|&nbsp; @aslanteknik
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ DAFTAR ISI ═══ -->
+<div class="page">
+  <div class="bab-header">DAFTAR ISI</div>
+
+  <div class="toc-bab">BAB 1 — SOP Kerja Teknisi</div>
+  <div class="toc-sub">Persiapan Sebelum Kunjungan</div>
+  <div class="toc-sub">SOP Greeting &amp; Inspeksi Awal</div>
+  <div class="toc-sub">SOP Cuci AC</div>
+  <div class="toc-sub">SOP Tambah / Isi Freon</div>
+  <div class="toc-sub">SOP Pasang AC Baru</div>
+  <div class="toc-sub">SOP Bongkar Pasang</div>
+  <div class="toc-sub">SOP Cek &amp; Perbaikan</div>
+  <div class="toc-sub">SOP Penutupan Kunjungan</div>
+
+  <div class="toc-bab">BAB 2 — Standar Pelayanan Prima</div>
+  <div class="toc-sub">Filosofi Layanan Fine Dining</div>
+  <div class="toc-sub">Sikap &amp; Penampilan Teknisi (5S)</div>
+  <div class="toc-sub">Komunikasi dengan Pelanggan</div>
+  <div class="toc-sub">Penanganan Keluhan (HEARD)</div>
+  <div class="toc-sub">After-Service Follow Up</div>
+
+  <div class="toc-bab">BAB 3 — K3: Keselamatan Kerja</div>
+  <div class="toc-sub">Alat Pelindung Diri (APD) Wajib</div>
+  <div class="toc-sub">Keselamatan Listrik</div>
+  <div class="toc-sub">Penanganan Refrigerant / Freon</div>
+  <div class="toc-sub">Kerja di Ketinggian</div>
+  <div class="toc-sub">Prosedur Darurat &amp; Nomor Penting</div>
+
+  <div class="toc-bab">BAB 4 — Daftar Alat &amp; Peralatan</div>
+  <div class="toc-sub">Alat Wajib Teknisi AC</div>
+  <div class="toc-sub">Alat Keselamatan</div>
+  <div class="toc-sub">Checklist Perlengkapan Harian</div>
+
+  <div style="margin-top:14px">
+    <div class="info-box gold" style="font-size:8.5px;font-style:italic">
+      Buku ini adalah dokumen internal rahasia Aslan Teknik. Harap dijaga dan tidak disebarluaskan ke pihak luar.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ BAB 1 — PERSIAPAN ═══ -->
+<div class="page">
+  <div class="bab-header">BAB 1 — SOP KERJA TEKNISI AC</div>
+
+  <div class="section-title">1.1 Persiapan Sebelum Kunjungan</div>
+  <div class="checklist">
+    <div class="checklist-header">Checklist Sebelum Berangkat</div>
+    <div class="checklist-item"><div class="check-box"></div><span>Cek jadwal &amp; alamat pelanggan di WhatsApp/aplikasi</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Pastikan semua alat &amp; perlengkapan lengkap (lihat Bab 4)</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Kendaraan bersih &amp; bensin cukup</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Seragam bersih, rapi, ID card terpasang</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Sapa koordinator jika ada pertanyaan sebelum berangkat</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Estimasi waktu tempuh — berangkat lebih awal 15 menit</span></div>
+  </div>
+
+  <div class="section-title">1.2 Greeting &amp; Inspeksi Awal</div>
+  <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Tiba &amp; Salam</div><div class="step-desc">Ucapkan salam, perkenalkan diri &amp; nama perusahaan dengan senyum.</div></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Alas Kaki</div><div class="step-desc">Lepas atau gunakan alas kaki khusus sebelum masuk rumah pelanggan.</div></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Periksa Lokasi &amp; Dengarkan Keluhan</div><div class="step-desc">Tanyakan keluhan pelanggan secara aktif. Catat di form kerja.</div></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Foto Kondisi Awal</div><div class="step-desc">Ambil foto unit AC sebelum dikerjakan untuk dokumentasi.</div></div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content"><div class="step-title">Konfirmasi Harga</div><div class="step-desc">Sampaikan estimasi biaya dengan jelas sebelum mulai pekerjaan.</div></div></div>
+
+  <div class="page-footer"><span>ASLAN TEKNIK — PANDUAN SAKU TEKNISI</span><span>Hal. 1</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════ BAB 1 — CUCI AC ═══ -->
+<div class="page">
+  <div class="bab-header blue">BAB 1 — SOP Cuci AC</div>
+
+  <div class="section-title">1.3 SOP Cuci AC Standar</div>
+  <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Matikan &amp; Cabut Listrik</div><div class="step-desc">Pastikan unit OFF dan kabel power dilepas dari stop kontak.</div></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Pasang Plastik Pelindung</div><div class="step-desc">Pasang plastik cuci AC agar air tidak mengotori dinding/lantai.</div></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Bersihkan Filter</div><div class="step-desc">Lepas filter, bersihkan dengan air mengalir &amp; sikat lembut. Keringkan.</div></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Semprot Evaporator</div><div class="step-desc">Semprot evaporator dari atas ke bawah dengan air bertekanan.</div></div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content"><div class="step-title">Bersihkan Body Unit</div><div class="step-desc">Lap bodi indoor &amp; outdoor dengan kain bersih lembap.</div></div></div>
+  <div class="step"><div class="step-num">6</div><div class="step-content"><div class="step-title">Bersihkan Outdoor</div><div class="step-desc">Semprot kondensor dari dalam ke luar. Jangan basahi komponen listrik.</div></div></div>
+  <div class="step"><div class="step-num">7</div><div class="step-content"><div class="step-title">Pasang Kembali &amp; Test</div><div class="step-desc">Pasang filter, nyalakan unit, cek suhu &amp; aliran udara normal.</div></div></div>
+  <div class="step"><div class="step-num">8</div><div class="step-content"><div class="step-title">Foto Hasil Akhir</div><div class="step-desc">Foto kondisi akhir. Minta tanda tangan pelanggan di form kerja.</div></div></div>
+
+  <div class="warning-box" style="margin-top:8px">Jangan menyemprot air langsung ke PCB, motor, atau kabel listrik.</div>
+
+  <div class="page-footer"><span>ASLAN TEKNIK — PANDUAN SAKU TEKNISI</span><span>Hal. 2</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════ BAB 1 — FREON & PASANG ═══ -->
+<div class="page">
+  <div class="bab-header blue">BAB 1 — SOP Freon &amp; Instalasi</div>
+
+  <div class="section-title">1.4 SOP Tambah / Isi Freon</div>
+  <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Ukur Tekanan Awal</div><div class="step-desc">Pasang manifold gauge, catat tekanan low &amp; high side.</div></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Identifikasi Jenis Freon</div><div class="step-desc">Cek label unit: R32, R410A, atau R22. JANGAN campur jenis freon.</div></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Isi Freon Sesuai Kapasitas</div><div class="step-desc">Tambah freon perlahan, pantau gauge hingga tekanan normal.</div></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Cek Kebocoran</div><div class="step-desc">Gunakan leak detector atau busa sabun di semua sambungan pipa.</div></div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content"><div class="step-title">Test Pendinginan</div><div class="step-desc">Jalankan unit min. 10 menit. Suhu outlet harus 8–12°C lebih dingin dari inlet.</div></div></div>
+
+  <div class="section-title" style="margin-top:8px">1.5 SOP Pasang AC Baru</div>
+  <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Survei Lokasi</div><div class="step-desc">Tentukan posisi indoor, outdoor, jalur pipa &amp; kabel. Konfirmasi dengan pelanggan.</div></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Pasang Braket &amp; Dudukan</div><div class="step-desc">Pasang braket indoor &amp; outdoor dengan fisher dan baut yang kuat.</div></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Instalasi Pipa &amp; Kabel</div><div class="step-desc">Sambung pipa tembaga dengan flaring tool. Hubungkan kabel sesuai diagram.</div></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Vakum Sistem</div><div class="step-desc">Vakum minimal 30 menit untuk mengeluarkan udara &amp; kelembapan.</div></div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content"><div class="step-title">Charging Freon</div><div class="step-desc">Isi freon sesuai spesifikasi unit (lihat nameplate).</div></div></div>
+  <div class="step"><div class="step-num">6</div><div class="step-content"><div class="step-title">Test &amp; Demo</div><div class="step-desc">Test semua fungsi, demo cara pakai remote ke pelanggan.</div></div></div>
+
+  <div class="page-footer"><span>ASLAN TEKNIK — PANDUAN SAKU TEKNISI</span><span>Hal. 3</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════ BAB 1 — PENUTUPAN ═══ -->
+<div class="page">
+  <div class="bab-header blue">BAB 1 — SOP Penutupan Kunjungan</div>
+
+  <div class="section-title">1.6 SOP Cek &amp; Perbaikan</div>
+  <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Diagnosis Awal</div><div class="step-desc">Cek error code di remote/panel. Tanyakan gejala kepada pelanggan.</div></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Ukur Tegangan &amp; Arus</div><div class="step-desc">Gunakan AVO meter untuk cek listrik masuk, kapasitor, dan motor.</div></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Identifikasi Komponen Rusak</div><div class="step-desc">Tentukan komponen yang perlu diganti. Konfirmasi harga ke pelanggan dulu.</div></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Lakukan Perbaikan</div><div class="step-desc">Ganti komponen sesuai spesifikasi. Jangan gunakan komponen asal-asalan.</div></div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content"><div class="step-title">Test Run</div><div class="step-desc">Jalankan unit minimal 10 menit, pastikan normal sebelum pamit.</div></div></div>
+
+  <div class="section-title" style="margin-top:8px">1.7 Penutupan Kunjungan</div>
+  <div class="checklist">
+    <div class="checklist-header">Checklist Sebelum Meninggalkan Lokasi</div>
+    <div class="checklist-item"><div class="check-box"></div><span>Bersihkan semua bekas pekerjaan &amp; kumpulkan sampah/plastik</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Kembalikan furnitur yang dipindah ke posisi semula</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Tunjukkan hasil kerja kepada pelanggan, jelaskan yang dikerjakan</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Informasikan saran perawatan rutin (cuci 3–6 bulan sekali)</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Terima pembayaran, berikan nota/bukti pembayaran</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Minta review / testimoni (WA atau Google Maps)</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Ucapkan terima kasih &amp; pamit dengan sopan</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Laporan pekerjaan terkirim ke admin/koordinator</span></div>
+  </div>
+
+  <div class="info-box green" style="margin-top:8px">
+    <strong>INGAT:</strong> Pekerjaan selesai bukan berarti tugas selesai. Pelanggan puas = reputasi Aslan Teknik naik.
+  </div>
+
+  <div class="page-footer"><span>ASLAN TEKNIK — PANDUAN SAKU TEKNISI</span><span>Hal. 4</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════ BAB 2 — FILOSOFI ═══ -->
+<div class="page">
+  <div class="bab-header">BAB 2 — STANDAR PELAYANAN PRIMA</div>
+
+  <div class="info-box quote" style="margin-top:6px">
+    "Bukan sekadar memperbaiki AC. Kita memberikan pengalaman yang membuat pelanggan merasa dihargai — seperti tamu di restoran fine dining."
+  </div>
+
+  <div class="section-title">2.1 Filosofi: Pendekatan Fine Dining</div>
+  <p style="font-size:9.5px;margin-bottom:6px">Restoran fine dining tidak hanya menyajikan makanan enak — mereka menciptakan <strong>pengalaman total</strong>. Begitu pula Aslan Teknik. AC yang bersih adalah makanannya, tapi <strong>caramu melayani adalah pengalamannya.</strong></p>
+
+  <table class="comp-table">
+    <thead>
+      <tr><th>Fine Dining</th><th>Teknisi Aslan Teknik</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Baju rapi &amp; bersih</td><td>Seragam bersih, rapi, ID card</td></tr>
+      <tr><td>Waiter hapal menu detail</td><td>Teknisi paham semua layanan &amp; harga</td></tr>
+      <tr><td>Tidak membuat tamu menunggu</td><td>Tepat waktu, info jika terlambat</td></tr>
+      <tr><td>Meja dibersihkan setelah selesai</td><td>Area kerja dibersihkan sempurna</td></tr>
+      <tr><td>Waiter menjelaskan hidangan</td><td>Jelaskan apa yang dikerjakan &amp; mengapa</td></tr>
+      <tr><td>Tamu disambut &amp; diantar pulang</td><td>Salam saat tiba &amp; pamit dengan hangat</td></tr>
+      <tr><td>"Is everything satisfactory?"</td><td>"Apakah sudah sesuai harapan?"</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title" style="margin-top:10px">2.2 Penampilan Teknisi</div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap">
+    <div style="flex:1;min-width:45%;background:var(--biru-muda);border-radius:5px;padding:6px 8px">
+      <div style="font-weight:700;font-size:9px;color:var(--biru-tua);margin-bottom:3px">WAJIB</div>
+      <div style="font-size:8.5px;line-height:1.6">✓ Seragam bersih &amp; disetrika<br>✓ ID card terpasang<br>✓ Sepatu bersih<br>✓ Rambut rapi<br>✓ Kuku pendek &amp; bersih</div>
+    </div>
+    <div style="flex:1;min-width:45%;background:var(--merah-bg);border-radius:5px;padding:6px 8px">
+      <div style="font-weight:700;font-size:9px;color:var(--merah);margin-bottom:3px">DILARANG</div>
+      <div style="font-size:8.5px;line-height:1.6">✗ Bau rokok / badan<br>✗ Sandal jepit<br>✗ Pakaian robek/kotor<br>✗ Aksesoris berlebihan<br>✗ Merokok di lokasi</div>
+    </div>
+  </div>
+
+  <div class="page-footer"><span>ASLAN TEKNIK — PANDUAN SAKU TEKNISI</span><span>Hal. 5</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════ BAB 2 — 5S & KOMUNIKASI ═══ -->
+<div class="page">
+  <div class="bab-header blue">BAB 2 — 5S &amp; Komunikasi Pelanggan</div>
+
+  <div class="section-title">2.3 Prinsip 5S Pelayanan</div>
+  <div style="border-radius:5px;overflow:hidden;margin-bottom:8px">
+    <div class="s5-row"><div class="s5-key">SENYUM</div><div class="s5-val">Sambut pelanggan dengan senyum tulus, bukan paksa</div></div>
+    <div class="s5-row"><div class="s5-key">SALAM</div><div class="s5-val">Ucapkan salam saat tiba dan saat pergi</div></div>
+    <div class="s5-row"><div class="s5-key">SAPA</div><div class="s5-val">Panggil "Bapak/Ibu" — jangan hanya diam saja</div></div>
+    <div class="s5-row"><div class="s5-key">SOPAN</div><div class="s5-val">Tutur kata halus, tidak memotong pembicaraan pelanggan</div></div>
+    <div class="s5-row" style="border:none"><div class="s5-key">SANTUN</div><div class="s5-val">Jaga sikap — tidak bersandar sembarangan di rumah pelanggan</div></div>
+  </div>
+
+  <div class="section-title">2.4 Komunikasi: Lakukan &amp; Hindari</div>
+  <div class="do-dont">
+    <div class="do-box">
+      <div class="do-head">LAKUKAN</div>
+      <div class="do-item">Jelaskan kondisi AC sebelum &amp; sesudah</div>
+      <div class="do-item">Tanya "Ada yang ingin ditanyakan?"</div>
+      <div class="do-item">Beri saran perawatan rutin</div>
+      <div class="do-item">Konfirmasi harga sebelum mulai</div>
+      <div class="do-item">Informasikan kerusakan tambahan</div>
+    </div>
+    <div class="dont-box">
+      <div class="dont-head">HINDARI</div>
+      <div class="dont-item">Bicara meremehkan pelanggan</div>
+      <div class="dont-item">Istilah teknis tanpa penjelasan</div>
+      <div class="dont-item">Main HP untuk hal pribadi</div>
+      <div class="dont-item">Nego harga di luar kebijakan</div>
+      <div class="dont-item">Tinggalkan area tanpa pamit</div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:8px">2.5 Penanganan Keluhan (HEARD)</div>
+  <div style="border-radius:5px;overflow:hidden">
+    <div class="heard-row"><div class="heard-key">H — HEAR</div><div class="heard-val">Dengarkan keluhan dengan penuh perhatian, jangan interupsi</div></div>
+    <div class="heard-row"><div class="heard-key">E — EMPATHIZE</div><div class="heard-val">"Saya sangat mengerti kekhawatiran Bapak/Ibu..."</div></div>
+    <div class="heard-row"><div class="heard-key">A — APOLOGIZE</div><div class="heard-val">"Mohon maaf atas ketidaknyamanan ini..." (meski bukan kesalahan kita)</div></div>
+    <div class="heard-row"><div class="heard-key">R — RESOLVE</div><div class="heard-val">Tawarkan solusi konkret &amp; realistis. Jangan beri janji palsu</div></div>
+    <div class="heard-row" style="border:none"><div class="heard-key">D — DIAGNOSE</div><div class="heard-val">Cari akar masalah untuk mencegah terulang kembali</div></div>
+  </div>
+
+  <div class="page-footer"><span>ASLAN TEKNIK — PANDUAN SAKU TEKNISI</span><span>Hal. 6</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════ BAB 2 — FOLLOW UP ═══ -->
+<div class="page">
+  <div class="bab-header blue">BAB 2 — After-Service &amp; Standar Komunikasi</div>
+
+  <div class="section-title">2.6 After-Service Follow Up</div>
+  <p style="font-size:9.5px;margin-bottom:5px">Kirim pesan WhatsApp 1–2 hari setelah kunjungan:</p>
+  <div class="info-box green" style="font-style:italic;font-size:9.5px">
+    "Halo Bapak/Ibu [Nama], ini dari Aslan Teknik. Bagaimana AC-nya, apakah sudah terasa lebih dingin? Kalau ada yang ingin dikonsultasikan, silakan hubungi kami ya. Terima kasih sudah mempercayakan ke kami."
+  </div>
+  <p style="font-size:8.5px;color:#555;margin-top:3px">Follow up ini meningkatkan repeat order dan referral ke pelanggan baru.</p>
+
+  <div class="section-title" style="margin-top:10px">2.7 Standar Respon WhatsApp</div>
+  <table class="tbl-blue tbl-grid" style="font-size:8.5px">
+    <thead><tr><th>Situasi</th><th>Respon Ideal</th><th>Waktu</th></tr></thead>
+    <tbody>
+      <tr><td>Pertanyaan harga</td><td>Jawab dengan harga lengkap &amp; tawaran booking</td><td>&lt; 5 menit</td></tr>
+      <tr><td>Booking jadwal</td><td>Konfirmasi tanggal &amp; jam, kirim reminder H-1</td><td>&lt; 5 menit</td></tr>
+      <tr><td>Keluhan setelah service</td><td>Minta maaf &amp; tawaran kunjungan ulang gratis</td><td>&lt; 15 menit</td></tr>
+      <tr><td>Pertanyaan di luar jam</td><td>Balas pagi hari berikutnya, jangan lewat 24 jam</td><td>&lt; 24 jam</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title" style="margin-top:10px">2.8 Tarif Layanan Aslan Teknik</div>
+  <table class="tbl-blue tbl-grid">
+    <thead><tr><th>Layanan</th><th style="text-align:right">Harga</th></tr></thead>
+    <tbody>
+      <tr><td>Cuci AC</td><td style="text-align:right;font-weight:700">Rp 100.000</td></tr>
+      <tr><td>Tambah Freon</td><td style="text-align:right;font-weight:700">Rp 230.000</td></tr>
+      <tr><td>Isi Freon 0–100%</td><td style="text-align:right;font-weight:700">Rp 450.000</td></tr>
+      <tr><td>Pasang AC Baru</td><td style="text-align:right;font-weight:700">Rp 300.000</td></tr>
+      <tr><td>Bongkar Pasang</td><td style="text-align:right;font-weight:700">Rp 450.000</td></tr>
+      <tr><td>Cek &amp; Perbaikan</td><td style="text-align:right;font-weight:700">Rp 90.000</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:8px;color:#888;margin-top:3px">*Harga dapat berubah. Selalu konfirmasi ke koordinator untuk harga terkini.</p>
+
+  <div class="page-footer"><span>ASLAN TEKNIK — PANDUAN SAKU TEKNISI</span><span>Hal. 7</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════ BAB 3 — APD ═══ -->
+<div class="page">
+  <div class="bab-header red">BAB 3 — K3: KESELAMATAN KERJA</div>
+
+  <div class="warning-box" style="margin:6px 0 8px">Keselamatan adalah prioritas UTAMA. Tidak ada pekerjaan yang terlalu penting untuk mengorbankan keselamatanmu.</div>
+
+  <div class="section-title">3.1 Alat Pelindung Diri (APD) Wajib</div>
+  <table class="tbl-red tbl-grid red" style="font-size:8.5px">
+    <thead><tr><th>APD</th><th>Fungsi</th><th>Kapan</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Sarung Tangan Karet</strong></td><td>Lindungi dari listrik &amp; bahan kimia</td><td>Semua pekerjaan listrik &amp; freon</td></tr>
+      <tr><td><strong>Kacamata Safety</strong></td><td>Lindungi mata dari percikan air &amp; kotoran</td><td>Cuci AC, pasang unit</td></tr>
+      <tr><td><strong>Masker N95/KN95</strong></td><td>Lindungi dari debu, jamur, &amp; gas freon</td><td>Cuci AC kotor, isi freon</td></tr>
+      <tr><td><strong>Helm Safety</strong></td><td>Lindungi kepala dari benturan</td><td>Kerja di ketinggian</td></tr>
+      <tr><td><strong>Sepatu Safety</strong></td><td>Anti-slip, anti-listrik (ESD)</td><td>Semua pekerjaan lapangan</td></tr>
+      <tr><td><strong>Harness Full Body</strong></td><td>Cegah jatuh dari ketinggian</td><td>Outdoor &gt; 2 meter</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title" style="margin-top:8px">3.2 Keselamatan Listrik</div>
+  <div style="font-size:9px;line-height:1.7">
+    <div style="color:#E65100;padding:1px 0">⚡ SELALU matikan dan cabut listrik sebelum menyentuh komponen internal AC</div>
+    <div style="color:#E65100;padding:1px 0">⚡ Gunakan voltage tester sebelum menyentuh kabel manapun</div>
+    <div style="color:#E65100;padding:1px 0">⚡ Jangan bekerja di area listrik saat tangan atau area basah</div>
+    <div style="color:#E65100;padding:1px 0">⚡ Jangan buka kapasitor tanpa discharge terlebih dahulu</div>
+    <div style="color:#E65100;padding:1px 0">⚡ Kapasitor menyimpan muatan meski power sudah dimatikan</div>
+    <div style="color:#E65100;padding:1px 0">⚡ Gunakan obeng &amp; tang berinsulasi untuk pekerjaan listrik</div>
+  </div>
+
+  <div class="page-footer"><span>ASLAN TEKNIK — PANDUAN SAKU TEKNISI</span><span>Hal. 8</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════ BAB 3 — FREON & KETINGGIAN ═══ -->
+<div class="page">
+  <div class="bab-header" style="background:#E65100">BAB 3 — Freon, Ketinggian &amp; Darurat</div>
+
+  <div class="section-title">3.3 Penanganan Refrigerant / Freon</div>
+  <div style="font-size:9px;line-height:1.7">
+    <div>⚠ Jangan menghirup gas refrigerant langsung — dapat menyebabkan sesak napas</div>
+    <div>⚠ Kerja di area berventilasi baik atau pakai masker saat isi/buang freon</div>
+    <div>⚠ Jangan buang freon ke udara bebas — berbahaya &amp; melanggar hukum</div>
+    <div>⚠ Gunakan manifold gauge terkalibrasi — jangan tebak tekanan</div>
+    <div>⚠ Simpan tabung freon berdiri tegak, jauh dari panas &amp; api</div>
+    <div>⚠ Jangan isi freon melebihi kapasitas — merusak kompresor</div>
+  </div>
+  <div class="warning-box" style="margin-top:6px">R32 MUDAH TERBAKAR. Hindari sumber api, percikan listrik, dan rokok saat menangani freon R32.</div>
+
+  <div class="section-title" style="margin-top:8px">3.4 Keselamatan Kerja di Ketinggian</div>
+  <div style="font-size:9px;line-height:1.7">
+    <div>⚠ Wajib gunakan harness jika bekerja di ketinggian &gt; 2 meter</div>
+    <div>⚠ Tangga dipasang stabil, sudut 75° dari tanah</div>
+    <div>⚠ Minimal 1 orang di bawah untuk memegangi tangga</div>
+    <div>⚠ Jangan meraih terlalu jauh — pindahkan tangga jika perlu</div>
+    <div>⚠ Hindari kerja di ketinggian saat hujan atau permukaan licin</div>
+  </div>
+
+  <div class="section-title" style="margin-top:8px">3.5 Prosedur Darurat</div>
+  <table class="tbl-red tbl-grid red" style="font-size:8px">
+    <thead><tr><th>Situasi</th><th>Tindakan Segera</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Sengatan listrik (orang lain)</strong></td><td>JANGAN sentuh langsung. Matikan listrik dari panel. Hubungi 119.</td></tr>
+      <tr><td><strong>Kebocoran freon besar</strong></td><td>Ventilasi ruangan, keluar segera, jangan nyalakan listrik.</td></tr>
+      <tr><td><strong>Jatuh dari ketinggian</strong></td><td>Jangan pindahkan korban. Hubungi 119. Info koordinator.</td></tr>
+      <tr><td><strong>Kebakaran kecil</strong></td><td>Matikan listrik, gunakan APAR. Jika membesar, evakuasi &amp; 113.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title" style="margin-top:8px">Nomor Darurat Penting</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:9px">
+    <div style="background:var(--merah-bg);padding:4px 7px;border-radius:4px"><span style="font-weight:700">Darurat Umum:</span> <span style="color:var(--merah);font-weight:700">112</span></div>
+    <div style="background:var(--merah-bg);padding:4px 7px;border-radius:4px"><span style="font-weight:700">Ambulance:</span> <span style="color:var(--merah);font-weight:700">119</span></div>
+    <div style="background:var(--merah-bg);padding:4px 7px;border-radius:4px"><span style="font-weight:700">Pemadam:</span> <span style="color:var(--merah);font-weight:700">113</span></div>
+    <div style="background:var(--merah-bg);padding:4px 7px;border-radius:4px"><span style="font-weight:700">Polisi:</span> <span style="color:var(--merah);font-weight:700">110</span></div>
+    <div style="background:var(--biru-muda);padding:4px 7px;border-radius:4px;grid-column:1/-1"><span style="font-weight:700">Koordinator Aslan Teknik:</span> <span style="color:var(--biru-tua);font-weight:700">0895-3261-0529</span></div>
+  </div>
+
+  <div class="page-footer"><span>ASLAN TEKNIK — PANDUAN SAKU TEKNISI</span><span>Hal. 9</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════ BAB 4 — ALAT ═══ -->
+<div class="page">
+  <div class="bab-header green">BAB 4 — DAFTAR ALAT &amp; PERALATAN</div>
+
+  <div class="section-title">4.1 Alat Wajib Teknisi AC</div>
+  <table class="tbl-green tbl-grid green" style="font-size:8.5px">
+    <thead><tr><th>Alat</th><th>Fungsi Utama</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Manifold Gauge Set</strong></td><td>Mengukur tekanan refrigerant (low &amp; high side)</td></tr>
+      <tr><td><strong>Vacuum Pump</strong></td><td>Memvakum sistem sebelum pengisian freon</td></tr>
+      <tr><td><strong>Flaring Tool</strong></td><td>Membuat sambungan pipa tembaga yang kuat</td></tr>
+      <tr><td><strong>Tube Cutter</strong></td><td>Memotong pipa tembaga dengan rapi</td></tr>
+      <tr><td><strong>Leak Detector</strong></td><td>Mendeteksi kebocoran freon</td></tr>
+      <tr><td><strong>Clamp Meter / AVO</strong></td><td>Mengukur arus, tegangan, dan hambatan listrik</td></tr>
+      <tr><td><strong>Thermometer Digital</strong></td><td>Mengukur suhu inlet/outlet evaporator</td></tr>
+      <tr><td><strong>Obeng Set (+/-)</strong></td><td>Membuka &amp; memasang panel unit AC</td></tr>
+      <tr><td><strong>Kunci L / Allen Key Set</strong></td><td>Membuka baut hex pada komponen AC</td></tr>
+      <tr><td><strong>Pompa Air Cuci AC</strong></td><td>Menyemprot evaporator &amp; kondensor</td></tr>
+      <tr><td><strong>Plastik Cuci AC</strong></td><td>Pelindung dinding &amp; lantai saat cuci</td></tr>
+      <tr><td><strong>Senter / Headlamp</strong></td><td>Penerangan area gelap / sempit</td></tr>
+      <tr><td><strong>Meteran 5 Meter</strong></td><td>Mengukur jarak instalasi pipa &amp; braket</td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer"><span>ASLAN TEKNIK — PANDUAN SAKU TEKNISI</span><span>Hal. 10</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════ BAB 4 — APD & CHECKLIST ═══ -->
+<div class="page">
+  <div class="bab-header green">BAB 4 — Alat Keselamatan &amp; Checklist</div>
+
+  <div class="section-title">4.2 Alat Keselamatan</div>
+  <table class="tbl-red tbl-grid red" style="font-size:8.5px">
+    <thead><tr><th>Alat</th><th>Standar / Catatan</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Sarung Tangan Karet</strong></td><td>Min. 1000V, ganti jika ada lubang/retak</td></tr>
+      <tr><td><strong>Kacamata Safety</strong></td><td>Anti-percikan, anti-UV</td></tr>
+      <tr><td><strong>Masker N95/KN95</strong></td><td>Ganti setiap shift atau jika sudah kotor</td></tr>
+      <tr><td><strong>Helm Safety</strong></td><td>SNI, sesuai ukuran kepala</td></tr>
+      <tr><td><strong>Sepatu Safety</strong></td><td>Anti-slip, anti-listrik (ESD)</td></tr>
+      <tr><td><strong>Harness Full Body</strong></td><td>Wajib &gt; 2m, cek tali kondisi setiap hari</td></tr>
+      <tr><td><strong>APAR</strong></td><td>Simpan di kendaraan, cek tekanan tiap bulan</td></tr>
+      <tr><td><strong>P3K Kit</strong></td><td>Plester, antiseptik, perban, revanol</td></tr>
+      <tr><td><strong>Voltage Tester (Non-Contact)</strong></td><td>Selalu cek sebelum menyentuh kabel</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title" style="margin-top:8px">4.3 Checklist Perlengkapan Harian</div>
+  <div class="checklist">
+    <div class="checklist-header">Cek Setiap Hari Sebelum Berangkat</div>
+    <div class="checklist-item"><div class="check-box"></div><span>Manifold gauge &amp; selang tidak bocor</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Vacuum pump berfungsi normal</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Pompa cuci AC &amp; plastik pelindung tersedia</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Senter / headlamp dengan baterai penuh</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Sarung tangan &amp; kacamata safety</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Masker bersih tersedia</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Sepatu safety dipakai</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Harness (jika akan kerja di ketinggian)</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>P3K kit &amp; APAR tersedia di kendaraan</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Tabung freon sesuai kebutuhan hari ini</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Obeng set, kunci L, kunci pas</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Form kerja / nota pembayaran</span></div>
+    <div class="checklist-item"><div class="check-box"></div><span>Seragam bersih &amp; ID card terpasang</span></div>
+  </div>
+
+  <div class="page-footer"><span>ASLAN TEKNIK — PANDUAN SAKU TEKNISI</span><span>Hal. 11</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════ PENUTUP ═══ -->
+<div class="page">
+  <div class="bab-header">KOMITMEN ASLAN TEKNIK</div>
+
+  <div style="margin:10px 0;display:flex;flex-direction:column;gap:6px">
+    <div class="info-box" style="text-align:center;font-style:italic;font-weight:700;font-size:10px">
+      "Setiap teknisi Aslan Teknik adalah duta perusahaan."
+    </div>
+    <div class="info-box" style="text-align:center;font-style:italic;font-weight:700;font-size:10px">
+      "Cara kamu bekerja = reputasi Aslan Teknik."
+    </div>
+    <div class="info-box" style="text-align:center;font-style:italic;font-weight:700;font-size:10px">
+      "Pelanggan puas hari ini = pelanggan setia selamanya."
+    </div>
+  </div>
+
+  <div class="nilai-box" style="margin:14px 0">
+    <div class="nilai-top">NILAI INTI ASLAN TEKNIK</div>
+    <div class="nilai-bottom">Profesional &nbsp;•&nbsp; Jujur &nbsp;•&nbsp; Tepat Waktu &nbsp;•&nbsp; Bersih &nbsp;•&nbsp; Peduli</div>
+  </div>
+
+  <div class="contact-box">
+    <div class="label">Hubungi Koordinator</div>
+    <div>WhatsApp: 0895-3261-0529</div>
+    <div>Website: aslanteknik.id</div>
+    <div>Instagram: @aslanteknik</div>
+  </div>
+
+  <div style="margin-top:12px">
+    <div class="info-box gold" style="font-size:8.5px;text-align:center">
+      Jika menemukan situasi tidak tercakup dalam panduan ini, hubungi koordinator sebelum mengambil keputusan sendiri.
+    </div>
+  </div>
+
+  <div class="footer-note">Dokumen Versi 1.0 — April 2026 — Hak Cipta Aslan Teknik<br>Dokumen internal — tidak untuk disebarluaskan</div>
+</div>
+
+</body>
+</html>
