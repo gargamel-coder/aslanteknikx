@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Aslan Teknik — Portal Teknisi</title>
+
+<!-- ── FAVICON & APP ICONS ── -->
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
+<!-- ── PWA MANIFEST ── -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1A1A2E">
+<meta name="color-scheme" content="light">
+
+<!-- ── iOS PWA ── -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Aslan Teknik">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Aslan Teknik">
+
+<!-- ── SEO & SHARE ── -->
+<meta name="description" content="Portal Teknisi Aslan Teknik — kelola tugas harian dan terima notifikasi order baru langsung di HP.">
+
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FDF8F2;--charcoal:#1A1A2E;--mid:#4A4A6A;--soft:#8888AA;
+    --accent:#5B4FD9;--white:#fff;--border:rgba(0,0,0,0.08);
+    --green:#22C55E;--red:#EF4444;--amber:#F59E0B;
+    --surface:#F4F3FF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);
+    min-height:100vh;
+    /* iOS PWA safe area support */
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:env(safe-area-inset-bottom);
+    -webkit-tap-highlight-color:transparent;
+  }
+  /* Disable pull-to-refresh bounce on iOS PWA */
+  html{overscroll-behavior-y:contain;}
+
+  /* ── LOGIN ── */
+  #login-screen{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#1A1A2E 0%,#2D2B55 50%,#1A1A2E 100%);
+    padding:20px;
+  }
+  .login-card{
+    background:var(--white);border-radius:28px;padding:48px 40px;
+    box-shadow:0 32px 80px rgba(0,0,0,0.4);width:100%;max-width:400px;
+  }
+  .login-logo{font-family:'Instrument Serif',serif;font-size:1.8rem;margin-bottom:4px;}
+  .login-logo span{color:var(--accent);}
+  .login-sub{font-size:0.83rem;color:var(--soft);margin-bottom:32px;}
+  .l-label{font-size:0.78rem;font-weight:600;display:block;margin-bottom:7px;}
+  .l-input{
+    width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;
+    font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);
+    outline:none;transition:border-color 0.2s;margin-bottom:14px;
+  }
+  .l-input:focus{border-color:var(--accent);background:#fff;}
+  .l-btn{
+    width:100%;padding:14px;border-radius:14px;background:var(--charcoal);color:#fff;
+    border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.95rem;
+    font-weight:600;transition:all 0.2s;margin-top:4px;
+  }
+  .l-btn:hover{background:var(--accent);}
+  .l-btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .l-err{font-size:0.82rem;color:var(--red);margin-top:10px;min-height:18px;}
+
+  /* ── DASHBOARD ── */
+  #dashboard{display:none;}
+  header{
+    background:var(--charcoal);padding:16px 32px;
+    display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;z-index:50;
+  }
+  .hdr-left{display:flex;align-items:center;gap:14px;}
+  .hdr-logo{font-family:'Instrument Serif',serif;font-size:1.2rem;color:#fff;}
+  .hdr-logo span{color:#A89EF5;}
+  .hdr-badge{
+    background:#2D2B55;color:#A89EF5;padding:4px 12px;
+    border-radius:100px;font-size:0.75rem;font-weight:600;
+  }
+  .hdr-name{font-size:0.82rem;color:rgba(255,255,255,0.5);}
+  .logout-btn{
+    padding:7px 18px;border-radius:100px;background:transparent;
+    border:1.5px solid rgba(255,255,255,0.2);font-family:'DM Sans',sans-serif;
+    font-size:0.82rem;color:rgba(255,255,255,0.6);cursor:pointer;transition:all 0.2s;
+  }
+  .logout-btn:hover{border-color:var(--red);color:var(--red);}
+
+  /* ── BODY ── */
+  .dash-body{padding:32px;max-width:960px;margin:0 auto;}
+
+  /* ── DATE FILTER BAR ── */
+  .date-bar{
+    display:flex;align-items:center;gap:10px;margin-bottom:28px;
+    background:var(--white);border:1px solid var(--border);border-radius:16px;
+    padding:12px 16px;flex-wrap:wrap;
+  }
+  .date-bar-lbl{font-size:0.78rem;font-weight:600;color:var(--soft);margin-right:4px;}
+  .date-pill{
+    padding:6px 16px;border-radius:100px;border:1.5px solid var(--border);
+    background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;
+    font-size:0.8rem;font-weight:500;color:var(--mid);transition:all 0.15s;
+  }
+  .date-pill.act{border-color:var(--accent);background:var(--accent);color:#fff;}
+  .date-input{
+    padding:6px 12px;border:1.5px solid var(--border);border-radius:100px;
+    font-family:'DM Sans',sans-serif;font-size:0.8rem;color:var(--charcoal);
+    background:var(--cream);outline:none;cursor:pointer;transition:border-color 0.2s;
+  }
+  .date-input:focus{border-color:var(--accent);}
+
+  /* ── STATS ── */
+  .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
+  .stat-card{
+    background:var(--white);border:1px solid var(--border);border-radius:20px;
+    padding:20px 22px;position:relative;overflow:hidden;
+  }
+  .stat-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;}
+  .stat-card.today::before{background:var(--accent);}
+  .stat-card.week::before{background:var(--amber);}
+  .stat-card.month::before{background:var(--green);}
+  .stat-num{font-family:'Instrument Serif',serif;font-size:2.4rem;line-height:1;margin-bottom:4px;}
+  .stat-card.today .stat-num{color:var(--accent);}
+  .stat-card.week .stat-num{color:var(--amber);}
+  .stat-card.month .stat-num{color:var(--green);}
+  .stat-lbl{font-size:0.78rem;color:var(--soft);font-weight:500;}
+  .stat-sub{font-size:0.72rem;color:var(--soft);margin-top:6px;display:flex;gap:10px;flex-wrap:wrap;}
+  .stat-sub span{display:inline-flex;align-items:center;gap:3px;}
+
+  /* ── PROGRESS BADGES ── */
+  .prog-row{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap;}
+  .prog-badge{
+    display:flex;align-items:center;gap:8px;padding:10px 18px;
+    border-radius:14px;border:1px solid var(--border);background:var(--white);
+  }
+  .prog-badge .pb-num{font-family:'Instrument Serif',serif;font-size:1.6rem;font-weight:700;}
+  .prog-badge .pb-lbl{font-size:0.75rem;color:var(--soft);}
+  .prog-badge.done .pb-num{color:var(--green);}
+  .prog-badge.skip .pb-num{color:var(--red);}
+  .prog-badge.pending .pb-num{color:var(--mid);}
+
+  /* ── TASK LIST ── */
+  .section-head{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:16px;flex-wrap:wrap;gap:10px;
+  }
+  .section-title{font-size:1rem;font-weight:700;color:var(--charcoal);}
+  .task-count-badge{
+    background:var(--surface);color:var(--accent);
+    padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:700;
+  }
+  .empty-state{
+    text-align:center;padding:56px 20px;color:var(--soft);
+    background:var(--white);border:1px solid var(--border);border-radius:20px;
+  }
+  .empty-state .empty-ico{font-size:2.5rem;margin-bottom:12px;}
+  .empty-state p{font-size:0.88rem;}
+
+  /* ── TASK CARD ── */
+  .task-card{
+    background:var(--white);border:1px solid var(--border);border-radius:20px;
+    padding:20px 22px;margin-bottom:12px;transition:box-shadow 0.2s;
+    position:relative;overflow:hidden;
+  }
+  .task-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;}
+  .task-card.status-belum::before{background:var(--soft);}
+  .task-card.status-selesai::before{background:var(--green);}
+  .task-card.status-skip::before{background:var(--red);}
+  .task-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.07);}
+  .task-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:12px;flex-wrap:wrap;}
+  .task-id{
+    font-family:monospace;font-size:0.82rem;font-weight:700;
+    color:var(--charcoal);background:#EDE9FB;padding:3px 10px;
+    border-radius:6px;letter-spacing:0.06em;
+  }
+  .task-status-badge{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:8px;font-size:0.75rem;font-weight:700;}
+  .tsb-belum{background:#F3F4F6;color:var(--mid);}
+  .tsb-selesai{background:#DCFCE7;color:#166534;}
+  .tsb-skip{background:#FEE2E2;color:#991B1B;}
+
+  /* Task schedule highlight */
+  .task-schedule{
+    display:inline-flex;align-items:center;gap:6px;
+    background:#EDE9FB;border:1px solid rgba(91,79,217,0.2);
+    border-radius:10px;padding:6px 14px;font-size:0.82rem;
+    font-weight:600;color:var(--accent);margin-bottom:12px;
+  }
+  /* Task info grid */
+  .task-info{display:grid;grid-template-columns:1fr 1fr;gap:5px 16px;font-size:0.82rem;color:var(--mid);margin-bottom:14px;}
+  .task-info b{color:var(--charcoal);}
+  .task-info .full{grid-column:1/-1;}
+  /* Service chips */
+  .svc-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;}
+  .svc-chip{
+    background:#F0F9FF;color:#0369A1;border:1px solid #BAE6FD;
+    padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600;
+  }
+  /* WA button */
+  .wa-link{
+    display:inline-flex;align-items:center;gap:6px;
+    background:#DCFCE7;color:#166534;border:1px solid #BBF7D0;
+    padding:5px 14px;border-radius:100px;font-size:0.78rem;font-weight:600;
+    text-decoration:none;transition:background 0.2s;
+  }
+  .wa-link:hover{background:#BBF7D0;}
+  /* Action buttons */
+  .task-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+  .btn-selesai{
+    padding:9px 20px;border-radius:10px;background:var(--green);color:#fff;
+    border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;
+    font-weight:600;transition:all 0.2s;
+  }
+  .btn-selesai:hover{background:#16A34A;transform:translateY(-1px);}
+  .btn-skip{
+    padding:9px 16px;border-radius:10px;background:transparent;color:var(--red);
+    border:1.5px solid var(--red);cursor:pointer;font-family:'DM Sans',sans-serif;
+    font-size:0.82rem;font-weight:600;transition:all 0.2s;
+  }
+  .btn-skip:hover{background:var(--red);color:#fff;}
+  .btn-undo{
+    padding:9px 16px;border-radius:10px;background:transparent;color:var(--soft);
+    border:1.5px solid var(--border);cursor:pointer;font-family:'DM Sans',sans-serif;
+    font-size:0.82rem;font-weight:500;transition:all 0.2s;
+  }
+  .btn-undo:hover{border-color:var(--mid);color:var(--charcoal);}
+  /* Notes */
+  .task-notes{
+    background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;
+    padding:8px 12px;font-size:0.78rem;color:#92400E;line-height:1.5;margin-bottom:10px;
+  }
+
+  /* Footer */
+  .foot-copy{text-align:center;padding:20px;font-size:0.75rem;color:var(--soft);margin-top:16px;}
+
+  /* Toast */
+  #toast{
+    position:fixed;bottom:24px;right:24px;background:var(--charcoal);color:#fff;
+    padding:12px 22px;border-radius:14px;font-size:0.85rem;font-weight:500;
+    box-shadow:0 8px 32px rgba(0,0,0,0.2);opacity:0;transform:translateY(10px);
+    transition:all 0.3s;pointer-events:none;z-index:999;
+  }
+  #toast.show{opacity:1;transform:translateY(0);}
+
+  /* Spinner */
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .spinner-sm{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:4px;}
+
+  @media(max-width:640px){
+    .dash-body{padding:16px;}
+    header{padding:12px 16px;}
+    .hdr-name{display:none;}
+    .stats-grid{grid-template-columns:1fr 1fr;}
+    .stats-grid .stat-card:last-child{grid-column:1/-1;}
+    .task-info{grid-template-columns:1fr;}
+    .task-info .full{grid-column:1;}
+    .date-bar{gap:7px;}
+  }
+
+  /* ═══════════════════════════════════════════════════════
+     NEW: PWA + FCM UI COMPONENTS
+     ═══════════════════════════════════════════════════════ */
+
+  /* ── Notification permission banner ── */
+  .notif-banner{
+    background:linear-gradient(135deg,#5B4FD9 0%,#7C6FEE 100%);
+    color:#fff;border-radius:18px;padding:16px 18px;
+    margin-bottom:20px;display:flex;align-items:center;gap:14px;
+    box-shadow:0 8px 24px rgba(91,79,217,0.25);
+    animation:slideIn 0.4s ease;
+  }
+  .notif-banner.hidden{display:none;}
+  .nb-icon{
+    font-size:1.8rem;flex-shrink:0;
+    background:rgba(255,255,255,0.18);width:44px;height:44px;
+    border-radius:12px;display:flex;align-items:center;justify-content:center;
+  }
+  .nb-text{flex:1;min-width:0;}
+  .nb-title{font-size:0.9rem;font-weight:600;margin-bottom:3px;}
+  .nb-sub{font-size:0.78rem;opacity:0.9;line-height:1.4;}
+  .nb-actions{display:flex;gap:8px;flex-shrink:0;}
+  .nb-btn{
+    padding:8px 16px;border-radius:10px;background:#fff;color:var(--accent);
+    border:none;cursor:pointer;font-family:'DM Sans',sans-serif;
+    font-size:0.82rem;font-weight:600;transition:all 0.15s;white-space:nowrap;
+  }
+  .nb-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+  .nb-btn.ghost{
+    background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.35);
+  }
+  .nb-btn.ghost:hover{background:rgba(255,255,255,0.12);}
+
+  @keyframes slideIn{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ── Install PWA button (floating) ── */
+  .install-fab{
+    position:fixed;bottom:24px;left:24px;z-index:90;
+    background:var(--charcoal);color:#fff;
+    padding:12px 20px;border-radius:100px;border:none;
+    box-shadow:0 8px 24px rgba(0,0,0,0.25);
+    font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;
+    cursor:pointer;display:none;align-items:center;gap:8px;
+    transition:all 0.2s;
+  }
+  .install-fab:hover{transform:translateY(-2px);background:var(--accent);}
+  .install-fab.show{display:inline-flex;}
+
+  /* ── Notification bell in header ── */
+  .notif-bell{
+    position:relative;background:transparent;border:none;
+    color:rgba(255,255,255,0.7);cursor:pointer;padding:6px;
+    font-size:1.1rem;transition:color 0.2s;
+  }
+  .notif-bell:hover{color:#fff;}
+  .notif-bell.active{color:#A89EF5;}
+  .notif-bell .dot{
+    position:absolute;top:4px;right:4px;
+    width:8px;height:8px;background:var(--red);border-radius:50%;
+    border:2px solid var(--charcoal);
+    display:none;
+  }
+  .notif-bell.has-new .dot{display:block;}
+
+  /* ── Quick action buttons on task card ── */
+  .quick-actions{
+    display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;
+  }
+  .qa-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:7px 14px;border-radius:10px;
+    font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:600;
+    text-decoration:none;border:1px solid;transition:all 0.15s;cursor:pointer;
+  }
+  .qa-btn:active{transform:scale(0.96);}
+  .qa-call{background:#EFF6FF;color:#1E40AF;border-color:#BFDBFE;}
+  .qa-call:hover{background:#DBEAFE;}
+  .qa-map{background:#FEF3C7;color:#92400E;border-color:#FDE68A;}
+  .qa-map:hover{background:#FDE68A;}
+
+  /* ── New order highlight animation ── */
+  @keyframes pulseNew{
+    0%,100%{box-shadow:0 0 0 0 rgba(91,79,217,0.4);}
+    50%{box-shadow:0 0 0 10px rgba(91,79,217,0);}
+  }
+  .task-card.is-new{animation:pulseNew 2s ease-in-out 2;}
+  .badge-new{
+    display:inline-flex;align-items:center;gap:3px;
+    background:linear-gradient(135deg,#5B4FD9,#7C6FEE);color:#fff;
+    padding:3px 9px;border-radius:6px;font-size:0.68rem;font-weight:700;
+    letter-spacing:0.04em;
+  }
+
+  /* ── Sync status indicator ── */
+  .sync-status{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:0.72rem;color:var(--soft);margin-left:auto;
+  }
+  .sync-dot{
+    width:8px;height:8px;border-radius:50%;background:var(--green);
+    animation:pulseLive 2s infinite;
+  }
+  .sync-dot.offline{background:var(--red);animation:none;}
+  @keyframes pulseLive{
+    0%,100%{opacity:1;}50%{opacity:0.4;}
+  }
+
+  /* ── Offline banner ── */
+  .offline-banner{
+    background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;
+    padding:10px 16px;border-radius:12px;font-size:0.82rem;font-weight:600;
+    text-align:center;margin-bottom:16px;display:none;
+  }
+  .offline-banner.show{display:block;}
+
+  /* ── iOS install hint modal ── */
+  .ios-hint{
+    position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;
+    display:none;align-items:flex-end;justify-content:center;
+    animation:fadeIn 0.2s ease;
+  }
+  .ios-hint.show{display:flex;}
+  .ios-hint-card{
+    background:#fff;border-radius:24px 24px 0 0;padding:28px 24px 36px;
+    max-width:440px;width:100%;
+    padding-bottom:calc(36px + env(safe-area-inset-bottom));
+  }
+  .ios-hint-title{font-family:'Instrument Serif',serif;font-size:1.4rem;margin-bottom:6px;}
+  .ios-hint-sub{font-size:0.85rem;color:var(--soft);margin-bottom:20px;}
+  .ios-step{display:flex;gap:12px;margin-bottom:14px;align-items:center;}
+  .ios-step-num{
+    width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;
+    flex-shrink:0;
+  }
+  .ios-step-txt{font-size:0.88rem;}
+  .ios-step-txt b{color:var(--accent);}
+  .ios-hint-close{
+    width:100%;padding:14px;border-radius:14px;background:var(--charcoal);color:#fff;
+    border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;
+    font-weight:600;margin-top:10px;
+  }
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Aslan<span>.</span>Teknik</div>
+    <p class="login-sub">Portal Teknisi — Masuk dengan ID & Password kamu</p>
+    <label class="l-label">ID Teknisi</label>
+    <input type="text" class="l-input" id="l-id" placeholder="TECH01" style="text-transform:uppercase;letter-spacing:0.08em;">
+    <label class="l-label">Password</label>
+    <input type="password" class="l-input" id="l-pass" placeholder="••••••••">
+    <button class="l-btn" id="btn-login">Masuk</button>
+    <p class="l-err" id="l-err"></p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <header>
+    <div class="hdr-left">
+      <div class="hdr-logo">Aslan<span>.</span>Teknik</div>
+      <div class="hdr-badge">Portal Teknisi</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <span class="hdr-name" id="hdr-name"></span>
+      <button class="notif-bell" id="notif-bell" title="Status notifikasi" aria-label="Status notifikasi">
+        🔔<span class="dot"></span>
+      </button>
+      <button class="logout-btn" id="btn-logout">Keluar</button>
+    </div>
+  </header>
+
+  <div class="dash-body">
+
+    <!-- OFFLINE BANNER -->
+    <div class="offline-banner" id="offline-banner">
+      📡 Kamu sedang offline. Data terakhir ditampilkan dari cache.
+    </div>
+
+    <!-- NOTIFICATION PERMISSION BANNER -->
+    <div class="notif-banner hidden" id="notif-banner">
+      <div class="nb-icon">🔔</div>
+      <div class="nb-text">
+        <div class="nb-title">Aktifkan Notifikasi Tugas</div>
+        <div class="nb-sub">Biar kamu dapet notif langsung saat ada order baru — meskipun layar HP terkunci.</div>
+      </div>
+      <div class="nb-actions">
+        <button class="nb-btn ghost" id="nb-later">Nanti</button>
+        <button class="nb-btn" id="nb-allow">Aktifkan</button>
+      </div>
+    </div>
+
+    <!-- WELCOME -->
+    <div style="margin-bottom:24px;">
+      <div style="font-family:'Instrument Serif',serif;font-size:1.6rem;color:var(--charcoal);" id="welcome-msg">Selamat datang!</div>
+      <div style="font-size:0.82rem;color:var(--soft);margin-top:4px;" id="welcome-date"></div>
+    </div>
+
+    <!-- DATE FILTER BAR -->
+    <div class="date-bar">
+      <span class="date-bar-lbl">📅 Lihat tugas:</span>
+      <button class="date-pill act" id="pill-today" onclick="setDateFilter('today')">Hari Ini</button>
+      <button class="date-pill" id="pill-week"  onclick="setDateFilter('week')">Pekan Ini</button>
+      <button class="date-pill" id="pill-month" onclick="setDateFilter('month')">Bulan Ini</button>
+      <button class="date-pill" id="pill-all"   onclick="setDateFilter('all')">Semua</button>
+      <input type="date" class="date-input" id="custom-date" onchange="setDateFilter('custom')" title="Pilih tanggal tertentu">
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card today">
+        <div class="stat-num" id="stat-today">0</div>
+        <div class="stat-lbl">Tugas Hari Ini</div>
+        <div class="stat-sub">
+          <span>✅ <b id="stat-today-done">0</b> selesai</span>
+          <span>⏳ <b id="stat-today-pending">0</b> belum</span>
+        </div>
+      </div>
+      <div class="stat-card week">
+        <div class="stat-num" id="stat-week">0</div>
+        <div class="stat-lbl">Total Pekan Ini</div>
+        <div class="stat-sub">
+          <span>✅ <b id="stat-week-done">0</b></span>
+          <span>⏭️ <b id="stat-week-skip">0</b></span>
+          <span>⏳ <b id="stat-week-pending">0</b></span>
+        </div>
+      </div>
+      <div class="stat-card month">
+        <div class="stat-num" id="stat-month">0</div>
+        <div class="stat-lbl">Total Bulan Ini</div>
+        <div class="stat-sub">
+          <span>✅ <b id="stat-month-done">0</b></span>
+          <span>⏭️ <b id="stat-month-skip">0</b></span>
+          <span>⏳ <b id="stat-month-pending">0</b></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRESS BADGES (for current filter) -->
+    <div class="prog-row">
+      <div class="prog-badge done">
+        <div>
+          <div class="pb-num" id="prog-done">0</div>
+          <div class="pb-lbl">✅ Selesai</div>
+        </div>
+      </div>
+      <div class="prog-badge skip">
+        <div>
+          <div class="pb-num" id="prog-skip">0</div>
+          <div class="pb-lbl">⏭️ Skip</div>
+        </div>
+      </div>
+      <div class="prog-badge pending">
+        <div>
+          <div class="pb-num" id="prog-pending">0</div>
+          <div class="pb-lbl">⏳ Belum</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK LIST -->
+    <div class="section-head">
+      <div class="section-title" id="task-list-title">Daftar Tugas</div>
+      <span class="task-count-badge" id="task-count-badge">0 tugas</span>
+      <span class="sync-status" id="sync-status">
+        <span class="sync-dot" id="sync-dot"></span>
+        <span id="sync-label">Live</span>
+      </span>
+    </div>
+    <div id="task-list">
+      <div class="empty-state">
+        <div class="empty-ico">⏳</div>
+        <p>Memuat tugas...</p>
+      </div>
+    </div>
+
+  </div>
+  <div class="foot-copy">© 2025–2026 Aslan Teknik. Portal Teknisi v1.0</div>
+</div>
+
+<div id="toast"></div>
+
+<!-- PWA INSTALL FLOATING BUTTON -->
+<button class="install-fab" id="install-fab">
+  ⬇️ Pasang App
+</button>
+
+<!-- iOS INSTALL HINT MODAL -->
+<div class="ios-hint" id="ios-hint">
+  <div class="ios-hint-card">
+    <div class="ios-hint-title">Pasang di Layar Utama 📱</div>
+    <div class="ios-hint-sub">Buat akses lebih cepat & dapat notifikasi, install app ini dulu:</div>
+    <div class="ios-step">
+      <div class="ios-step-num">1</div>
+      <div class="ios-step-txt">Tap tombol <b>Bagikan</b> (kotak panah ke atas) di bawah Safari</div>
+    </div>
+    <div class="ios-step">
+      <div class="ios-step-num">2</div>
+      <div class="ios-step-txt">Scroll & pilih <b>"Add to Home Screen"</b></div>
+    </div>
+    <div class="ios-step">
+      <div class="ios-step-num">3</div>
+      <div class="ios-step-txt">Buka app dari layar utama & aktifkan notifikasi</div>
+    </div>
+    <button class="ios-hint-close" id="ios-hint-close">Sip, Ngerti</button>
+  </div>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc,
+         arrayUnion, arrayRemove, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getMessaging, getToken, onMessage, isSupported as isMessagingSupported }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js';
+
+const firebaseConfig = {
+  apiKey:"AIzaSyAd_HmgX5djmePrHpYHxsydSErTPSjcBdY",
+  authDomain:"aslan-teknik.firebaseapp.com",
+  projectId:"aslan-teknik",
+  storageBucket:"aslan-teknik.firebasestorage.app",
+  messagingSenderId:"372303552922",
+  appId:"1:372303552922:web:5b61d3cd2c590ff1381a23"
+};
+
+// ⚠️ GANTI dengan VAPID key dari Firebase Console
+// (Project Settings → Cloud Messaging → Web Push certificates → Generate key pair)
+// Baca SETUP.md untuk instruksi lengkap.
+const VAPID_KEY = 'BBb6ED9wqC28c0Xj1Y0NA8qAawJsgusH1o6iQJl2kHTosEl3PZ8AUkXwo7kCvUUwTC-yHgQNlNqsEI6e3Pl25k4';
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+let messaging = null;  // di-init setelah cek support
+
+// ── STATE ───────────────────────────────────────────────
+let currentTech   = null; // { id, name, tech_id, ... }
+let myOrders      = [];
+let dateFilter    = 'today';
+let unsubOrders   = null;
+
+// PWA / FCM state
+let swRegistration = null;       // service worker registration
+let fcmToken       = null;       // saved FCM token
+let deferredInstallPrompt = null;// Android/desktop install prompt
+let firstSnapshot  = true;       // untuk cegah notif palsu saat first load
+let seenOrderIds   = new Set();  // track order IDs yang sudah dilihat
+let isOnline       = navigator.onLine;
+
+// ── UTILS ───────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function getWeekBounds() {
+  const now = new Date(); now.setHours(0,0,0,0);
+  const day = now.getDay();
+  const mon = new Date(now); mon.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  return { start: mon, end: sun };
+}
+
+function getOrderDate(o) {
+  // Use scheduled_date if set, else parse from date string
+  if (o.scheduled_date) return o.scheduled_date;
+  if (o.date) {
+    // date might be like "Senin, 7 April 2026" or "YYYY-MM-DD"
+    const parsed = new Date(o.date);
+    if (!isNaN(parsed)) {
+      return parsed.getFullYear()+'-'+String(parsed.getMonth()+1).padStart(2,'0')+'-'+String(parsed.getDate()).padStart(2,'0');
+    }
+  }
+  if (o.created_at && o.created_at.seconds) {
+    const d = new Date(o.created_at.seconds*1000);
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  return null;
+}
+
+function filterByDate(orders) {
+  const today = todayStr();
+  if (dateFilter === 'today') {
+    return orders.filter(o => getOrderDate(o) === today);
+  }
+  if (dateFilter === 'week') {
+    const { start, end } = getWeekBounds();
+    return orders.filter(o => {
+      const d = getOrderDate(o);
+      if (!d) return false;
+      const dt = new Date(d); dt.setHours(0,0,0,0);
+      return dt >= start && dt <= end;
+    });
+  }
+  if (dateFilter === 'month') {
+    const now = new Date();
+    return orders.filter(o => {
+      const d = getOrderDate(o);
+      if (!d) return false;
+      const dt = new Date(d);
+      return dt.getFullYear() === now.getFullYear() && dt.getMonth() === now.getMonth();
+    });
+  }
+  if (dateFilter === 'custom') {
+    const val = document.getElementById('custom-date').value;
+    return orders.filter(o => getOrderDate(o) === val);
+  }
+  return orders; // 'all'
+}
+
+// ── AUTH ────────────────────────────────────────────────
+async function doLogin() {
+  const techIdRaw = document.getElementById('l-id').value.trim().toUpperCase();
+  const pass      = document.getElementById('l-pass').value;
+  const errEl     = document.getElementById('l-err');
+  const btn       = document.getElementById('btn-login');
+  errEl.textContent = '';
+  if (!techIdRaw || !pass) { errEl.textContent = 'ID dan password wajib diisi.'; return; }
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-sm"></span> Memeriksa...';
+
+  try {
+    // Query hanya by tech_id (single field = no composite index needed)
+    const { getDocs, query: fq, collection: col, where: w } =
+      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const snap = await getDocs(fq(col(db,'technicians'), w('tech_id','==',techIdRaw)));
+
+    if (snap.empty) {
+      errEl.textContent = 'ID tidak ditemukan. Hubungi admin.';
+      btn.disabled = false; btn.textContent = 'Masuk'; return;
+    }
+    const techDoc  = snap.docs[0];
+    const techData = techDoc.data();
+    // Cek is_active client-side
+    if (!techData.is_active) {
+      errEl.textContent = 'Akun nonaktif. Hubungi admin.';
+      btn.disabled = false; btn.textContent = 'Masuk'; return;
+    }
+    if (techData.password !== pass) {
+      errEl.textContent = 'Password salah.';
+      btn.disabled = false; btn.textContent = 'Masuk'; return;
+    }
+    currentTech = { id: techDoc.id, ...techData };
+    sessionStorage.setItem('aslan_tech', JSON.stringify(currentTech));
+    showDashboard();
+  } catch(e) {
+    errEl.textContent = 'Gagal login: ' + e.message;
+    btn.disabled = false; btn.textContent = 'Masuk';
+  }
+}
+
+async function doLogout() {
+  if (!confirm('Keluar dari portal teknisi?')) return;
+
+  // Cleanup FCM token dulu (biar HP ini ga dapat notif lagi setelah logout)
+  try { await removeFCMToken(); } catch(e){}
+
+  sessionStorage.removeItem('aslan_tech');
+  sessionStorage.removeItem('nb_dismissed');
+  if (unsubOrders) { unsubOrders(); unsubOrders = null; }
+
+  // Reset PWA/FCM state
+  currentTech = null;
+  myOrders = [];
+  fcmToken = null;
+  firstSnapshot = true;
+  seenOrderIds = new Set();
+
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('l-id').value = '';
+  document.getElementById('l-pass').value = '';
+  document.getElementById('l-err').textContent = '';
+  document.getElementById('btn-login').textContent = 'Masuk';
+  hideNotifBanner();
+  markNotifBell(false);
+}
+
+function showDashboard() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+
+  const now  = new Date();
+  const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const mons = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  document.getElementById('hdr-name').textContent = currentTech.name;
+  document.getElementById('welcome-msg').textContent = 'Hai, ' + currentTech.name + '! 👋';
+  document.getElementById('welcome-date').textContent =
+    days[now.getDay()] + ', ' + now.getDate() + ' ' + mons[now.getMonth()] + ' ' + now.getFullYear();
+
+  // Sync active filter pill with current state (in case set by URL param)
+  setDateFilter(dateFilter);
+
+  listenMyOrders();
+
+  // PWA / FCM setup — non-blocking
+  (async () => {
+    // Kalau permission udah granted, langsung save token (tanpa prompt)
+    if ('Notification' in window && Notification.permission === 'granted' && messaging) {
+      await saveFCMToken();
+    } else {
+      // Show banner (cuma kalau belum diputus)
+      setTimeout(() => showNotifBanner(), 1500);
+    }
+    updateNotifBellState();
+    maybeShowIOSInstallHint();
+  })();
+}
+
+// ── ORDERS LISTENER ─────────────────────────────────────
+function listenMyOrders() {
+  if (unsubOrders) { unsubOrders(); }
+
+  // Hanya filter by assigned_to (single field, no composite index needed)
+  // orderBy dihapus — kita sort client-side supaya tidak butuh composite index
+  const q = query(
+    collection(db,'orders'),
+    where('assigned_to','==', currentTech.tech_id)
+  );
+
+  unsubOrders = onSnapshot(q,
+    snap => {
+      // Sort client-side: terbaru dulu berdasarkan created_at
+      myOrders = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a,b) => {
+          const ta = a.created_at?.seconds || 0;
+          const tb = b.created_at?.seconds || 0;
+          return tb - ta;
+        });
+
+      // Detect new orders (foreground in-app notification)
+      detectNewOrders(myOrders);
+
+      renderAll();
+    },
+    err => {
+      // Error handler — tampilkan ke user
+      console.error('listenMyOrders error:', err);
+      document.getElementById('task-list').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-ico">⚠️</div>
+          <p style="color:#EF4444;font-weight:600">Gagal memuat tugas</p>
+          <p style="font-size:0.78rem;margin-top:6px">${err.message}</p>
+          <p style="font-size:0.75rem;margin-top:4px;color:var(--soft)">Coba refresh halaman atau hubungi admin.</p>
+        </div>`;
+    }
+  );
+}
+
+// ── RENDER ──────────────────────────────────────────────
+function renderAll() {
+  renderStats();
+  renderTasks();
+}
+
+function renderStats() {
+  const today   = todayStr();
+  const { start: wStart, end: wEnd } = getWeekBounds();
+  const now     = new Date();
+
+  const inToday  = myOrders.filter(o => getOrderDate(o) === today);
+  const inWeek   = myOrders.filter(o => {
+    const d = getOrderDate(o); if (!d) return false;
+    const dt = new Date(d); dt.setHours(0,0,0,0);
+    return dt >= wStart && dt <= wEnd;
+  });
+  const inMonth  = myOrders.filter(o => {
+    const d = getOrderDate(o); if (!d) return false;
+    const dt = new Date(d);
+    return dt.getFullYear() === now.getFullYear() && dt.getMonth() === now.getMonth();
+  });
+
+  const count = (arr, status) => arr.filter(o => (o.task_status||'belum') === status).length;
+
+  document.getElementById('stat-today').textContent         = inToday.length;
+  document.getElementById('stat-today-done').textContent    = count(inToday,'selesai');
+  document.getElementById('stat-today-pending').textContent = count(inToday,'belum');
+  document.getElementById('stat-week').textContent          = inWeek.length;
+  document.getElementById('stat-week-done').textContent     = count(inWeek,'selesai');
+  document.getElementById('stat-week-skip').textContent     = count(inWeek,'skip');
+  document.getElementById('stat-week-pending').textContent  = count(inWeek,'belum');
+  document.getElementById('stat-month').textContent         = inMonth.length;
+  document.getElementById('stat-month-done').textContent    = count(inMonth,'selesai');
+  document.getElementById('stat-month-skip').textContent    = count(inMonth,'skip');
+  document.getElementById('stat-month-pending').textContent = count(inMonth,'belum');
+}
+
+function renderTasks() {
+  const filtered = filterByDate(myOrders);
+
+  // Progress badges for current filter
+  const done    = filtered.filter(o => (o.task_status||'belum') === 'selesai').length;
+  const skip    = filtered.filter(o => (o.task_status||'belum') === 'skip').length;
+  const pending = filtered.filter(o => (o.task_status||'belum') === 'belum').length;
+  document.getElementById('prog-done').textContent    = done;
+  document.getElementById('prog-skip').textContent    = skip;
+  document.getElementById('prog-pending').textContent = pending;
+
+  // Title
+  const titles = { today:'Tugas Hari Ini', week:'Tugas Pekan Ini', month:'Tugas Bulan Ini', all:'Semua Tugas', custom:'Tugas Tanggal Ini' };
+  document.getElementById('task-list-title').textContent = titles[dateFilter] || 'Daftar Tugas';
+  document.getElementById('task-count-badge').textContent = filtered.length + ' tugas';
+
+  const el = document.getElementById('task-list');
+  if (!filtered.length) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-ico">🎉</div>
+      <p>${dateFilter === 'today' ? 'Tidak ada tugas hari ini. Istirahat dulu!' : 'Tidak ada tugas pada periode ini.'}</p>
+    </div>`;
+    return;
+  }
+
+  // Sort: belum first, then selesai, then skip
+  const sorted = [...filtered].sort((a,b) => {
+    const order = { belum:0, selesai:1, skip:2 };
+    return (order[a.task_status||'belum']||0) - (order[b.task_status||'belum']||0);
+  });
+
+  el.innerHTML = sorted.map(o => buildTaskCard(o)).join('');
+}
+
+function buildTaskCard(o) {
+  const status  = o.task_status || 'belum';
+  const safeId  = o.id.replace(/'/g,"\\'");
+  const orderId = o.order_id || o.id.slice(0,8).toUpperCase();
+
+  const statusBadge = status === 'selesai'
+    ? `<span class="task-status-badge tsb-selesai">✅ Selesai</span>`
+    : status === 'skip'
+    ? `<span class="task-status-badge tsb-skip">⏭️ Skip</span>`
+    : `<span class="task-status-badge tsb-belum">⏳ Belum Dikerjakan</span>`;
+
+  // Schedule
+  let schedHtml = '';
+  if (o.scheduled_date) {
+    const sd    = new Date(o.scheduled_date + 'T00:00:00');
+    const days  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const mons  = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const sdStr = days[sd.getDay()] + ', ' + sd.getDate() + ' ' + mons[sd.getMonth()] + ' ' + sd.getFullYear();
+    const stStr = o.scheduled_time ? ' · ' + o.scheduled_time + ' WIB' : '';
+    schedHtml = `<div class="task-schedule">📅 ${sdStr}${stStr}</div>`;
+  }
+
+  // Services
+  const svcList = Array.isArray(o.services) ? o.services : (o.services ? [o.services] : []);
+  const svcChips = svcList.map(s => `<span class="svc-chip">${s}</span>`).join('');
+
+  // Quick actions: Call phone + Open in Google Maps
+  const rawPhone = (o.wa_number || o.whatsapp || '').replace(/\D/g,'');
+  const callHtml = rawPhone
+    ? `<a class="qa-btn qa-call" href="tel:${rawPhone}" aria-label="Telepon pelanggan">📞 Telepon</a>`
+    : '';
+  const mapsQuery = encodeURIComponent([o.address||'', o.city||''].filter(Boolean).join(', '));
+  const mapsHtml = mapsQuery
+    ? `<a class="qa-btn qa-map" href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" rel="noopener" aria-label="Buka di Google Maps">🗺️ Navigasi</a>`
+    : '';
+  const quickActionsHtml = (callHtml || mapsHtml)
+    ? `<div class="quick-actions">${callHtml}${mapsHtml}</div>`
+    : '';
+
+  // WA link
+  const waNum  = (o.wa_number || o.whatsapp || '').replace(/\D/g,'').replace(/^0/,'62');
+  const waHtml = waNum
+    ? `<a class="wa-link" href="https://wa.me/${waNum}" target="_blank">
+        <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        ${o.wa_number || o.whatsapp}
+      </a>` : '';
+
+  // Action buttons
+  let actionHtml = '';
+  if (status === 'belum') {
+    actionHtml = `
+      <button class="btn-selesai" onclick="updateStatus('${safeId}','selesai')">✅ Tandai Selesai</button>
+      <button class="btn-skip"    onclick="updateStatus('${safeId}','skip')">⏭️ Skip / Tidak Bisa</button>`;
+  } else {
+    actionHtml = `<button class="btn-undo" onclick="updateStatus('${safeId}','belum')">↩️ Batalkan Status</button>`;
+  }
+
+  const notesHtml = o.notes
+    ? `<div class="task-notes">📝 <strong>Catatan:</strong> ${o.notes}</div>`
+    : '';
+
+  return `<div class="task-card status-${status}">
+    <div class="task-head">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span class="task-id">${orderId}</span>
+        ${statusBadge}
+      </div>
+    </div>
+    ${schedHtml}
+    <div class="task-info">
+      <div><b>${o.name||'—'}</b></div>
+      <div>${o.city||'—'}</div>
+      <div class="full" style="color:var(--soft)">📍 ${o.address||'—'}</div>
+      <div>${o.ac_type||'—'}</div>
+      <div>${o.unit_count||'—'} unit</div>
+    </div>
+    <div class="svc-chips">${svcChips}</div>
+    ${notesHtml}
+    ${quickActionsHtml}
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+      ${waHtml}
+    </div>
+    <div class="task-actions">${actionHtml}</div>
+  </div>`;
+}
+
+// ── UPDATE TASK STATUS ──────────────────────────────────
+window.updateStatus = async function(orderId, newStatus) {
+  try {
+    await updateDoc(doc(db,'orders',orderId), { task_status: newStatus });
+    const labels = { selesai:'✅ Ditandai selesai!', skip:'⏭️ Order di-skip.', belum:'↩️ Status dikembalikan.' };
+    showToast(labels[newStatus] || 'Status diperbarui.');
+  } catch(e) { showToast('Gagal: '+e.message); }
+};
+
+// ── DATE FILTER ─────────────────────────────────────────
+window.setDateFilter = function(f) {
+  dateFilter = f;
+  ['today','week','month','all'].forEach(x => {
+    const el = document.getElementById('pill-'+x);
+    if (el) el.classList.toggle('act', x === f);
+  });
+  if (f !== 'custom') document.getElementById('custom-date').value = '';
+  renderTasks();
+};
+
+// ═══════════════════════════════════════════════════════
+// PWA + FCM SETUP
+// ═══════════════════════════════════════════════════════
+
+// ── 1. REGISTER SERVICE WORKER ──────────────────────────
+async function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) {
+    console.warn('[sw] Browser tidak support Service Worker');
+    return null;
+  }
+  try {
+    const reg = await navigator.serviceWorker.register('firebase-messaging-sw.js', {
+      scope: './'
+    });
+    console.log('[sw] Registered:', reg.scope);
+    return reg;
+  } catch(e) {
+    console.warn('[sw] Register failed:', e);
+    return null;
+  }
+}
+
+// ── 2. INIT MESSAGING (after SW ready) ──────────────────
+async function initMessaging() {
+  try {
+    const supported = await isMessagingSupported();
+    if (!supported) {
+      console.warn('[fcm] Messaging tidak support di browser ini');
+      return false;
+    }
+    messaging = getMessaging(app);
+
+    // Foreground message handler (app kebuka saat notif datang)
+    onMessage(messaging, (payload) => {
+      console.log('[fcm] Foreground message:', payload);
+      const title = payload.notification?.title || payload.data?.title || '🔔 Tugas Baru';
+      const body  = payload.notification?.body  || payload.data?.body  || '';
+      showToast(`${title}${body ? ' — ' + body : ''}`);
+      playNotifSound();
+      markNotifBell(true);
+    });
+
+    return true;
+  } catch(e) {
+    console.warn('[fcm] initMessaging error:', e);
+    return false;
+  }
+}
+
+// ── 3. REQUEST NOTIFICATION PERMISSION & SAVE TOKEN ─────
+async function requestNotifPermission() {
+  if (!messaging) {
+    showToast('Notifikasi tidak support di browser ini.');
+    return false;
+  }
+  if (!('Notification' in window)) {
+    showToast('Browser tidak support notifikasi.');
+    return false;
+  }
+
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') {
+      showToast('Notifikasi diblokir. Aktifkan manual di setting browser ya.');
+      return false;
+    }
+    await saveFCMToken();
+    showToast('✅ Notifikasi aktif! Kamu akan dapet alert saat ada tugas baru.');
+    updateNotifBellState();
+    return true;
+  } catch(e) {
+    console.warn('[fcm] Permission error:', e);
+    showToast('Gagal aktifkan notifikasi: ' + e.message);
+    return false;
+  }
+}
+
+async function saveFCMToken() {
+  if (!messaging || !currentTech) return;
+
+  try {
+    if (VAPID_KEY === 'PASTE_VAPID_KEY_DISINI' || !VAPID_KEY) {
+      console.warn('[fcm] VAPID_KEY belum di-set. Edit teknisi.html dan ganti VAPID_KEY.');
+      showToast('⚠️ VAPID key belum di-set. Hubungi admin.');
+      return;
+    }
+
+    const token = await getToken(messaging, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: swRegistration
+    });
+
+    if (!token) {
+      console.warn('[fcm] Tidak dapat FCM token');
+      return;
+    }
+
+    fcmToken = token;
+    console.log('[fcm] Token:', token);
+
+    // Simpan token ke technician doc (pakai arrayUnion biar multi-device)
+    await updateDoc(doc(db, 'technicians', currentTech.id), {
+      fcm_tokens: arrayUnion(token),
+      fcm_last_updated: serverTimestamp()
+    });
+
+    // Simpan ke localStorage untuk cleanup saat logout
+    try { localStorage.setItem('aslan_fcm_token', token); } catch(e){}
+
+  } catch(e) {
+    console.warn('[fcm] saveFCMToken error:', e);
+  }
+}
+
+// Cleanup token saat logout — biar HP orang lain tidak dapat notif teknisi ini
+async function removeFCMToken() {
+  try {
+    const token = fcmToken || localStorage.getItem('aslan_fcm_token');
+    if (!token || !currentTech) return;
+    await updateDoc(doc(db, 'technicians', currentTech.id), {
+      fcm_tokens: arrayRemove(token)
+    });
+    localStorage.removeItem('aslan_fcm_token');
+  } catch(e) { console.warn('[fcm] removeToken error:', e); }
+}
+
+// ── 4. NOTIFICATION PERMISSION BANNER ───────────────────
+function showNotifBanner() {
+  // Skip kalau sudah granted / denied, atau user sudah dismiss sesi ini
+  if (!('Notification' in window)) return;
+  if (Notification.permission !== 'default') return;
+  if (sessionStorage.getItem('nb_dismissed') === '1') return;
+
+  const banner = document.getElementById('notif-banner');
+  if (banner) banner.classList.remove('hidden');
+}
+function hideNotifBanner() {
+  const banner = document.getElementById('notif-banner');
+  if (banner) banner.classList.add('hidden');
+}
+
+function updateNotifBellState() {
+  const bell = document.getElementById('notif-bell');
+  if (!bell) return;
+  if (!('Notification' in window)) { bell.style.display = 'none'; return; }
+
+  bell.classList.toggle('active', Notification.permission === 'granted');
+  bell.title = Notification.permission === 'granted'
+    ? 'Notifikasi aktif ✅'
+    : Notification.permission === 'denied'
+      ? 'Notifikasi diblokir — aktifkan di setting browser'
+      : 'Klik untuk aktifkan notifikasi';
+}
+
+function markNotifBell(hasNew) {
+  const bell = document.getElementById('notif-bell');
+  if (bell) bell.classList.toggle('has-new', !!hasNew);
+}
+
+// ── 5. FOREGROUND NEW-ORDER DETECTION ───────────────────
+// Walau FCM sudah handle background, untuk foreground (app kebuka)
+// kita detect lewat onSnapshot supaya langsung bunyi tanpa delay FCM.
+function detectNewOrders(orders) {
+  if (firstSnapshot) {
+    // First load — record semua ID sebagai "sudah dilihat", jangan notif
+    orders.forEach(o => seenOrderIds.add(o.id));
+    firstSnapshot = false;
+    return;
+  }
+
+  const newOnes = orders.filter(o => !seenOrderIds.has(o.id));
+  newOnes.forEach(o => seenOrderIds.add(o.id));
+
+  if (newOnes.length > 0) {
+    const msg = newOnes.length === 1
+      ? `🆕 Tugas baru: ${newOnes[0].name || 'pelanggan'} (${newOnes[0].city || '—'})`
+      : `🆕 ${newOnes.length} tugas baru masuk!`;
+    showToast(msg);
+    playNotifSound();
+    markNotifBell(true);
+
+    // Jika permission granted tapi app kebuka, tampilkan juga native notif
+    if ('Notification' in window && Notification.permission === 'granted' && document.hidden) {
+      try {
+        new Notification('Aslan Teknik — Tugas Baru', {
+          body: msg.replace('🆕 ', ''),
+          icon: 'icon-192.png',
+          badge: 'favicon-32.png',
+          tag: 'new-task-foreground',
+          vibrate: [200,100,200]
+        });
+      } catch(e){}
+    }
+  }
+}
+
+// ── 6. NOTIFICATION SOUND ───────────────────────────────
+function playNotifSound() {
+  try {
+    // Simple beep via WebAudio — no external file needed
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.setValueAtTime(1320, ctx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.35);
+  } catch(e) { /* silent fail */ }
+}
+
+// ── 7. PWA INSTALL PROMPT ───────────────────────────────
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const fab = document.getElementById('install-fab');
+  if (fab && !isPWAInstalled()) fab.classList.add('show');
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  const fab = document.getElementById('install-fab');
+  if (fab) fab.classList.remove('show');
+  showToast('🎉 App terpasang! Buka dari layar utama untuk pengalaman terbaik.');
+});
+
+function isPWAInstalled() {
+  return window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+}
+
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+async function doInstall() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    const choice = await deferredInstallPrompt.userChoice;
+    if (choice.outcome === 'accepted') {
+      document.getElementById('install-fab').classList.remove('show');
+    }
+    deferredInstallPrompt = null;
+  } else if (isIOS() && !isPWAInstalled()) {
+    document.getElementById('ios-hint').classList.add('show');
+  } else {
+    showToast('App mungkin sudah terpasang atau browser tidak support PWA.');
+  }
+}
+
+// Show install FAB for iOS users who haven't installed
+function maybeShowIOSInstallHint() {
+  if (isIOS() && !isPWAInstalled()) {
+    const fab = document.getElementById('install-fab');
+    if (fab) fab.classList.add('show');
+  }
+}
+
+// ── 8. ONLINE/OFFLINE DETECTION ─────────────────────────
+function updateOnlineStatus() {
+  isOnline = navigator.onLine;
+  const banner = document.getElementById('offline-banner');
+  const dot    = document.getElementById('sync-dot');
+  const lbl    = document.getElementById('sync-label');
+
+  if (banner) banner.classList.toggle('show', !isOnline);
+  if (dot)    dot.classList.toggle('offline', !isOnline);
+  if (lbl)    lbl.textContent = isOnline ? 'Live' : 'Offline';
+}
+window.addEventListener('online',  updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
+// ═══════════════════════════════════════════════════════
+// END PWA + FCM SETUP
+// ═══════════════════════════════════════════════════════
+
+
+// ── EVENT LISTENERS ─────────────────────────────────────
+document.getElementById('btn-login').addEventListener('click', doLogin);
+document.getElementById('l-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('l-id').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase(); });
+document.getElementById('btn-logout').addEventListener('click', doLogout);
+
+// Notification banner
+document.getElementById('nb-allow').addEventListener('click', async () => {
+  hideNotifBanner();
+  await requestNotifPermission();
+});
+document.getElementById('nb-later').addEventListener('click', () => {
+  hideNotifBanner();
+  sessionStorage.setItem('nb_dismissed', '1');
+});
+
+// Notification bell
+document.getElementById('notif-bell').addEventListener('click', async () => {
+  markNotifBell(false);
+  if (!('Notification' in window)) {
+    showToast('Browser tidak support notifikasi.');
+    return;
+  }
+  if (Notification.permission === 'granted') {
+    showToast('✅ Notifikasi sudah aktif.');
+  } else if (Notification.permission === 'denied') {
+    showToast('Notifikasi diblokir. Buka setting browser untuk aktifkan.');
+  } else {
+    await requestNotifPermission();
+  }
+});
+
+// Install FAB + iOS hint
+document.getElementById('install-fab').addEventListener('click', doInstall);
+document.getElementById('ios-hint-close').addEventListener('click', () => {
+  document.getElementById('ios-hint').classList.remove('show');
+});
+document.getElementById('ios-hint').addEventListener('click', (e) => {
+  if (e.target.id === 'ios-hint') e.target.classList.remove('show');
+});
+
+// URL param filter shortcut (e.g. from PWA shortcuts)
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const f = params.get('filter');
+  if (f && ['today','week','month','all'].includes(f)) {
+    dateFilter = f;
+  }
+})();
+
+// ── AUTO-LOGIN from session ─────────────────────────────
+// & PWA/FCM bootstrap
+(async function(){
+  // 1. Register service worker (dipakai untuk FCM + offline caching)
+  swRegistration = await registerServiceWorker();
+
+  // 2. Init messaging (cek support dulu)
+  await initMessaging();
+
+  // 3. Init online/offline indicator
+  updateOnlineStatus();
+
+  // 4. Auto-login dari session
+  try {
+    const saved = sessionStorage.getItem('aslan_tech');
+    if (saved) {
+      currentTech = JSON.parse(saved);
+      showDashboard();
+    }
+  } catch(e) { sessionStorage.removeItem('aslan_tech'); }
+})();
+
+</script>
+</body>
+</html>
