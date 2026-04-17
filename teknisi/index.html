@@ -1089,7 +1089,8 @@ async function saveFCMToken() {
   if (!messaging || !currentTech) return;
 
   try {
-    if (VAPID_KEY === 'PASTE_VAPID_KEY_DISINI' || !VAPID_KEY) {
+    if (VAPID_KEY === 'const VAPID_KEY = 'BBb6ED9wqC28c0Xj1Y0NA8qAawJsgusH1o6iQJl2kHTosEl3PZ8AUkXwo7kCvUUwTC-yHgQNlNqsEI6e3Pl25k4';
+' || !VAPID_KEY) {
       console.warn('[fcm] VAPID_KEY belum di-set. Edit teknisi.html dan ganti VAPID_KEY.');
       showToast('⚠️ VAPID key belum di-set. Hubungi admin.');
       return;
