@@ -1,0 +1,2546 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<!-- Favicon reliable + anti-cache -->
+<link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
+<link rel="shortcut icon" href="/favicon.ico?v=2" type="image/x-icon">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2">
+<meta name="theme-color" content="#5B4FD9">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aslan Teknik — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  :root{--cream:#FDF8F2;--charcoal:#1A1A2E;--mid:#4A4A6A;--soft:#8888AA;--accent:#5B4FD9;--accent2:#E8643A;--white:#fff;--border:rgba(0,0,0,0.08);--green:#22C55E;--red:#EF4444;--amber:#F59E0B;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);min-height:100vh;}
+  #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#EDE9FB 0%,#D4F5EC 50%,#FCEEE7 100%);}
+  .login-card{background:var(--white);border-radius:28px;padding:48px 40px;box-shadow:0 24px 80px rgba(0,0,0,0.1);width:100%;max-width:400px;}
+  .login-logo{font-family:'Instrument Serif',serif;font-size:1.8rem;margin-bottom:6px;}
+  .login-logo span{color:var(--accent);}
+  .login-sub{font-size:0.85rem;color:var(--soft);margin-bottom:32px;}
+  .l-label{font-size:0.8rem;font-weight:600;display:block;margin-bottom:7px;}
+  .l-input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);outline:none;transition:border-color 0.2s;margin-bottom:16px;}
+  .l-input:focus{border-color:var(--accent);background:#fff;}
+  .l-btn{width:100%;padding:14px;border-radius:14px;background:var(--charcoal);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;transition:all 0.2s;margin-top:4px;}
+  .l-btn:hover{background:var(--accent);}
+  .l-btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .l-err{font-size:0.82rem;color:var(--red);margin-top:10px;min-height:18px;}
+  #dashboard{display:none;}
+  header{background:var(--white);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+  .hdr-logo{font-family:'Instrument Serif',serif;font-size:1.3rem;}
+  .hdr-logo span{color:var(--accent);}
+  .hdr-right{display:flex;align-items:center;gap:16px;}
+  .hdr-user{font-size:0.82rem;color:var(--soft);}
+  .logout-btn{padding:7px 18px;border-radius:100px;background:transparent;border:1.5px solid var(--border);font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:500;color:var(--mid);cursor:pointer;transition:all 0.2s;}
+  .logout-btn:hover{border-color:var(--red);color:var(--red);}
+  .dash-body{padding:40px;max-width:1100px;margin:0 auto;}
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px;}
+  .stat-row-orders{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:8px;}
+  .stat-c{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:22px 24px;}
+  .stat-c .s-num{font-family:'Instrument Serif',serif;font-size:2rem;}
+  .stat-c .s-lbl{font-size:0.8rem;color:var(--soft);margin-top:3px;}
+  .stat-c.green .s-num{color:var(--green);}
+  .stat-c.amber .s-num{color:var(--amber);}
+  .stat-c.red .s-num{color:var(--red);}
+  .stat-c.purple .s-num{color:var(--accent);}
+  .panels{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start;}
+  .panel{background:var(--white);border:1px solid var(--border);border-radius:24px;padding:28px;}
+  .panel-title{font-size:1rem;font-weight:600;margin-bottom:22px;}
+  .fg{margin-bottom:15px;}
+  .fl{font-size:0.78rem;font-weight:600;display:block;margin-bottom:6px;}
+  .fi,.fs{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:0.87rem;color:var(--charcoal);background:var(--cream);outline:none;transition:border-color 0.2s;}
+  .fi:focus,.fs:focus{border-color:var(--accent);background:#fff;}
+  .fr2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .type-row{display:flex;gap:8px;}
+  .type-pill{flex:1;padding:9px 0;border-radius:100px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.83rem;font-weight:500;color:var(--mid);transition:all 0.15s;text-align:center;}
+  .type-pill.act{border-color:var(--accent);background:var(--accent);color:#fff;}
+  .gen-row{display:flex;gap:8px;}
+  .gen-input{flex:1;padding:10px 13px;border:1.5px solid var(--border);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:0.87rem;background:var(--cream);outline:none;transition:border-color 0.2s;text-transform:uppercase;letter-spacing:0.08em;}
+  .gen-input:focus{border-color:var(--accent);background:#fff;}
+  .gen-btn{padding:10px 14px;border-radius:11px;background:var(--cream);border:1.5px solid var(--border);cursor:pointer;font-size:0.85rem;transition:all 0.15s;color:var(--mid);white-space:nowrap;}
+  .gen-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .create-btn{width:100%;padding:13px;border-radius:14px;background:var(--charcoal);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.92rem;font-weight:600;transition:all 0.2s;margin-top:6px;}
+  .create-btn:hover{background:var(--accent);}
+  .create-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .form-msg{font-size:0.8rem;margin-top:10px;min-height:18px;text-align:center;}
+  .form-msg.ok{color:var(--green);}
+  .form-msg.err{color:var(--red);}
+  .search-bar{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.87rem;background:var(--cream);outline:none;transition:border-color 0.2s;margin-bottom:16px;}
+  .search-bar:focus{border-color:var(--accent);background:#fff;}
+  .tbl-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:0.83rem;}
+  th{text-align:left;padding:10px 12px;font-size:0.72rem;font-weight:600;color:var(--soft);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border);}
+  td{padding:12px 12px;border-bottom:1px solid var(--border);color:var(--mid);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(91,79,217,0.03);}
+  .code-badge{font-family:monospace;font-size:0.85rem;font-weight:700;color:var(--charcoal);background:#EDE9FB;padding:3px 10px;border-radius:6px;letter-spacing:0.08em;}
+  .badge{display:inline-block;padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600;}
+  .badge-green{background:#DCFCE7;color:#166534;}
+  .badge-red{background:#FEE2E2;color:#991B1B;}
+  .badge-amber{background:#FEF9C3;color:#854D0E;}
+  .badge-pending{background:#FEF9C3;color:#854D0E;}
+  .prog-bar{height:6px;background:rgba(0,0,0,0.06);border-radius:3px;min-width:80px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:3px;background:var(--accent);transition:width 0.3s;}
+  .act-btn{padding:5px 12px;border-radius:8px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:500;color:var(--mid);transition:all 0.15s;margin-right:4px;}
+  .act-btn.del:hover{border-color:var(--red);color:var(--red);background:#FEE2E2;}
+  .act-btn.tog:hover{border-color:var(--green);color:#166534;background:#DCFCE7;}
+  .empty-state{text-align:center;padding:48px 20px;color:var(--soft);font-size:0.88rem;}
+  #toast{position:fixed;bottom:28px;right:28px;background:var(--charcoal);color:#fff;padding:12px 22px;border-radius:14px;font-size:0.85rem;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,0.2);opacity:0;transform:translateY(10px);transition:all 0.3s;pointer-events:none;z-index:999;}
+  #toast.show{opacity:1;transform:translateY(0);}
+  .tabs{display:flex;gap:4px;margin-bottom:28px;background:rgba(0,0,0,0.04);padding:4px;border-radius:14px;width:fit-content;max-width:100%;}
+  .tab-btn{padding:8px 22px;border-radius:10px;border:none;background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:500;color:var(--soft);transition:all 0.2s;}
+  .tab-btn.act{background:var(--white);color:var(--charcoal);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+  .tab-pane{display:none;}.tab-pane.act{display:block;}
+  /* ORDER CARDS */
+  .order-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:12px;transition:box-shadow 0.2s;}
+  .order-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.07);}
+  .order-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+  .order-id{font-family:monospace;font-size:0.85rem;font-weight:700;color:var(--charcoal);background:#EDE9FB;padding:3px 10px;border-radius:6px;letter-spacing:0.06em;}
+  .order-time{font-size:0.75rem;color:var(--soft);}
+  .order-body{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;font-size:0.82rem;color:var(--mid);margin-bottom:14px;}
+  .order-body b{color:var(--charcoal);}
+  .order-voucher{display:inline-flex;align-items:center;gap:6px;background:#DCFCE7;border:1px solid #BBF7D0;border-radius:100px;padding:4px 12px;font-size:0.78rem;font-weight:600;color:#166534;margin-bottom:12px;}
+  .order-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  .order-total{font-size:0.9rem;font-weight:700;color:var(--charcoal);}
+  .order-total .green{color:var(--green);}
+  .order-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .confirmed-badge{display:inline-flex;align-items:center;gap:5px;background:#DCFCE7;color:#166534;padding:8px 14px;border-radius:10px;font-size:0.8rem;font-weight:600;}
+  .rejected-badge{display:inline-flex;align-items:center;gap:5px;background:#FEE2E2;color:#991B1B;padding:8px 14px;border-radius:10px;font-size:0.8rem;font-weight:600;}
+  .confirm-btn-o{padding:10px 20px;border-radius:10px;background:var(--green);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;transition:all 0.2s;}
+  .confirm-btn-o:hover{background:#16A34A;transform:translateY(-1px);}
+  .confirm-btn-o:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+  .reject-btn-o{padding:10px 20px;border-radius:10px;background:transparent;color:var(--red);border:1.5px solid var(--red);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;transition:all 0.2s;}
+  .reject-btn-o:hover{background:var(--red);color:#fff;transform:translateY(-1px);}
+  .reject-btn-o:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+  .orders-empty{text-align:center;padding:48px 20px;color:var(--soft);font-size:0.88rem;}
+  .filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .filter-pill{padding:6px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:500;color:var(--mid);transition:all 0.15s;}
+  .filter-pill.act{border-color:var(--accent);background:var(--accent);color:#fff;}
+  /* Spinner */
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .spinner-sm{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:4px;}
+  /* Copyright */
+  .foot-copy{text-align:center;padding:20px 40px;font-size:0.76rem;color:var(--soft);border-top:1px solid var(--border);background:var(--white);margin-top:40px;}
+
+  /* ── SCHEDULE EDIT MODAL ── */
+  .sched-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;}
+  .sched-modal-overlay.open{display:flex;}
+  .sched-modal{background:var(--white);border-radius:24px;padding:32px 28px;width:100%;max-width:400px;box-shadow:0 24px 80px rgba(0,0,0,0.2);}
+  .sched-modal-title{font-size:1rem;font-weight:700;color:var(--charcoal);margin-bottom:6px;}
+  .sched-modal-sub{font-size:0.78rem;color:var(--soft);margin-bottom:24px;}
+  .sched-field{margin-bottom:16px;}
+  .sched-field label{display:block;font-size:0.78rem;font-weight:600;margin-bottom:6px;}
+  .sched-input{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);outline:none;color:var(--charcoal);}
+  .sched-input:focus{border-color:var(--accent);background:#fff;}
+  .sched-foot{display:flex;gap:10px;margin-top:4px;}
+  .sched-save-btn{flex:1;padding:12px;border-radius:12px;background:var(--charcoal);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;transition:all 0.2s;}
+  .sched-save-btn:hover{background:var(--accent);}
+  .sched-cancel-btn{padding:12px 20px;border-radius:12px;background:transparent;border:1.5px solid var(--border);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;color:var(--mid);transition:all 0.2s;}
+  .sched-cancel-btn:hover{border-color:var(--red);color:var(--red);}
+
+  /* Scheduled info badge inside card */
+  .sched-info{display:inline-flex;align-items:center;gap:6px;background:#EDE9FB;border:1px solid rgba(91,79,217,0.2);border-radius:100px;padding:4px 12px;font-size:0.78rem;font-weight:600;color:var(--accent);margin-bottom:10px;}
+  .edit-sched-btn{padding:7px 14px;border-radius:8px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:500;color:var(--mid);transition:all 0.15s;}
+  .edit-sched-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(91,79,217,0.05);}
+  .export-cal-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:100px;border:1.5px solid var(--accent);background:rgba(91,79,217,0.07);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;color:var(--accent);transition:all 0.15s;margin-left:auto;}
+  .export-cal-btn:hover{background:var(--accent);color:#fff;}
+
+  /* ── CALENDAR PICKER ── */
+  .cal-toggle-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:100px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:500;color:var(--mid);transition:all 0.15s;margin-bottom:16px;}
+  .cal-toggle-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .cal-toggle-btn.act{border-color:var(--accent);background:rgba(91,79,217,0.06);color:var(--accent);}
+  .cal-container{margin-bottom:20px;display:none;}
+  .cal-container.open{display:block;}
+  .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .cal-nav-btn{width:32px;height:32px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;color:var(--mid);transition:all 0.15s;}
+  .cal-nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .cal-month-label{font-size:0.85rem;font-weight:600;color:var(--charcoal);min-width:140px;text-align:center;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .cal-dow{text-align:center;font-size:0.68rem;font-weight:600;color:var(--soft);text-transform:uppercase;padding:6px 0;}
+  .cal-day{text-align:center;padding:8px 4px 12px;border-radius:10px;font-size:0.82rem;cursor:pointer;transition:all 0.15s;color:var(--mid);border:1.5px solid transparent;position:relative;}
+  .cal-day:hover{background:rgba(91,79,217,0.06);border-color:var(--accent);}
+  .cal-day.today{font-weight:700;color:var(--accent);}
+  .cal-day.selected{background:var(--accent);color:#fff !important;font-weight:600;border-color:var(--accent);}
+  .cal-day.other-month{color:rgba(0,0,0,0.15);cursor:default;}
+  .cal-day.other-month:hover{background:transparent;border-color:transparent;}
+  .cal-day.has-orders-low{background:#FEF9C3;color:#854D0E;font-weight:600;}
+  .cal-day.has-orders-high{background:#DBEAFE;color:#1E40AF;font-weight:600;}
+  .cal-day.selected.has-orders-low,.cal-day.selected.has-orders-high{background:var(--accent);color:#fff !important;}
+  /* Availability dot */
+  .cal-day .avail-dot{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;display:none;}
+  .cal-day.avail-almost{border-color:#F59E0B !important;}
+  .cal-day.avail-almost .avail-dot{display:block;background:#F59E0B;}
+  .cal-day.avail-full{border-color:#EF4444 !important;background:rgba(239,68,68,0.05);}
+  .cal-day.avail-full .avail-dot{display:block;background:#EF4444;}
+  .cal-day.selected.avail-almost,.cal-day.selected.avail-full{background:var(--accent) !important;border-color:var(--accent) !important;}
+  .cal-day.selected .avail-dot{background:rgba(255,255,255,0.85);}
+  .cal-legend{display:flex;align-items:center;gap:14px;margin-top:10px;font-size:0.72rem;color:var(--soft);flex-wrap:wrap;}
+  .cal-legend-dot{width:12px;height:12px;border-radius:4px;display:inline-block;vertical-align:middle;margin-right:4px;}
+  /* Selected info — redesigned to host availability picker */
+  .cal-selected-info{margin-top:12px;padding:14px;background:rgba(91,79,217,0.06);border-radius:14px;font-size:0.82rem;color:var(--charcoal);}
+  .cal-sel-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .cal-selected-info .cal-clear{margin-left:auto;padding:4px 12px;border-radius:8px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:500;color:var(--mid);transition:all 0.15s;white-space:nowrap;}
+  .cal-selected-info .cal-clear:hover{border-color:var(--red);color:var(--red);}
+  /* Availability picker inside selected-info */
+  .avail-picker{border-top:1px solid rgba(91,79,217,0.15);padding-top:12px;}
+  .avail-picker-label{font-size:0.72rem;font-weight:600;color:var(--soft);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;}
+  .avail-btn-row{display:flex;gap:7px;flex-wrap:wrap;}
+  .avail-btn{flex:1;min-width:70px;padding:9px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:600;color:var(--mid);transition:all 0.15s;text-align:center;}
+  .avail-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.08);}
+  .avail-btn.av-available{border-color:#22C55E;color:#166534;}
+  .avail-btn.av-available:hover,.avail-btn.av-available.act{background:#DCFCE7;border-color:#22C55E;}
+  .avail-btn.av-almost{border-color:#F59E0B;color:#854D0E;}
+  .avail-btn.av-almost:hover,.avail-btn.av-almost.act{background:#FEF9C3;border-color:#F59E0B;}
+  .avail-btn.av-full{border-color:#EF4444;color:#991B1B;}
+  .avail-btn.av-full:hover,.avail-btn.av-full.act{background:#FEE2E2;border-color:#EF4444;}
+  .avail-btn.act{box-shadow:inset 0 0 0 1.5px currentColor;}
+
+  /* ── REVIEW CARDS ── */
+  .review-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:12px;transition:box-shadow 0.2s;}
+  .review-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.07);}
+  .review-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+  .review-stars{color:var(--amber);font-size:1rem;letter-spacing:2px;}
+  .review-time{font-size:0.75rem;color:var(--soft);}
+  .review-body{margin-bottom:14px;}
+  .review-name{font-weight:600;font-size:0.9rem;color:var(--charcoal);margin-bottom:2px;}
+  .review-service{font-size:0.78rem;color:var(--soft);margin-bottom:8px;}
+  .review-text{font-size:0.85rem;color:var(--mid);line-height:1.5;}
+  .review-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+
+  /* ── TEKNISI ── */
+  .tech-assign-badge{display:inline-flex;align-items:center;gap:6px;background:#EDE9FB;border:1px solid rgba(91,79,217,0.2);border-radius:10px;padding:6px 12px;font-size:0.78rem;font-weight:600;color:var(--accent);}
+  .tech-assign-badge .unassign-btn{background:none;border:none;cursor:pointer;color:var(--soft);font-size:0.85rem;line-height:1;padding:0 0 0 4px;transition:color 0.15s;}
+  .tech-assign-badge .unassign-btn:hover{color:var(--red);}
+  .assign-btn-o{padding:8px 16px;border-radius:10px;background:transparent;color:var(--accent);border:1.5px solid var(--accent);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:600;transition:all 0.2s;}
+  .assign-btn-o:hover{background:var(--accent);color:#fff;}
+  .invoice-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;background:var(--charcoal);color:#fff;border:1.5px solid var(--charcoal);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:600;transition:all 0.2s;}
+  .invoice-btn:hover{background:var(--accent);border-color:var(--accent);transform:translateY(-1px);}
+  .invoice-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+  /* ======= Invoice Review Modal ======= */
+  .inv-modal-overlay{position:fixed;inset:0;background:rgba(26,26,46,0.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;opacity:0;transition:opacity 0.2s;}
+  .inv-modal-overlay.inv-modal-show{opacity:1;}
+  .inv-modal{background:#FDF8F2;border-radius:20px;padding:28px;max-width:560px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25);font-family:'DM Sans',sans-serif;}
+  .inv-modal h2{font-family:'Instrument Serif',serif;font-size:1.7rem;color:#1A1A2E;margin:0 0 4px 0;font-weight:400;}
+  .inv-modal-sub{font-size:0.82rem;color:#8888AA;margin-bottom:20px;}
+  .inv-modal-summary{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:20px;font-size:0.85rem;border:1px solid rgba(0,0,0,0.04);}
+  .inv-sum-row{display:flex;justify-content:space-between;padding:4px 0;color:#8888AA;gap:12px;}
+  .inv-sum-row b{color:#1A1A2E;font-weight:600;text-align:right;}
+  .inv-extras-label{font-size:0.68rem;font-weight:600;color:#8888AA;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;}
+  .inv-extras-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+  .inv-extras-empty{font-size:0.8rem;color:#8888AA;font-style:italic;padding:8px 0;}
+  .inv-extra-row{display:flex;gap:8px;align-items:center;}
+  .inv-extra-desc,.inv-extra-amount{padding:10px 12px;border:1.5px solid rgba(0,0,0,0.08);border-radius:10px;font-size:0.85rem;font-family:inherit;background:#fff;color:#1A1A2E;min-width:0;}
+  .inv-extra-desc{flex:2;}
+  .inv-extra-amount{flex:1;}
+  .inv-extra-desc:focus,.inv-extra-amount:focus{outline:none;border-color:#5B4FD9;}
+  .inv-extra-remove{width:36px;height:36px;flex-shrink:0;background:rgba(239,68,68,0.1);color:#EF4444;border:none;border-radius:10px;cursor:pointer;font-size:0.85rem;transition:all 0.2s;font-weight:600;}
+  .inv-extra-remove:hover{background:#EF4444;color:#fff;}
+  .inv-add-btn{padding:10px 16px;background:transparent;color:#5B4FD9;border:1.5px dashed #5B4FD9;border-radius:10px;font-size:0.82rem;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.2s;margin-bottom:20px;}
+  .inv-add-btn:hover{background:#5B4FD9;color:#fff;}
+  .inv-modal-totals{border-top:1px solid rgba(0,0,0,0.08);padding-top:14px;margin-bottom:20px;}
+  .inv-total-row{display:flex;justify-content:space-between;padding:5px 0;font-size:0.85rem;color:#8888AA;}
+  .inv-total-row b{color:#1A1A2E;font-weight:600;}
+  .inv-total-row.inv-grand{padding-top:10px;margin-top:6px;border-top:1.5px solid #1A1A2E;align-items:baseline;}
+  .inv-total-row.inv-grand span{font-family:'Instrument Serif',serif;font-size:1.05rem;color:#1A1A2E;}
+  .inv-total-row.inv-grand b{color:#5B4FD9;font-family:'Instrument Serif',serif;font-size:1.4rem;font-weight:400;}
+  .inv-modal-actions{display:flex;gap:10px;justify-content:flex-end;}
+  .inv-btn-cancel,.inv-btn-confirm{padding:11px 20px;border-radius:10px;font-family:inherit;font-weight:600;cursor:pointer;transition:all 0.2s;font-size:0.88rem;}
+  .inv-btn-cancel{background:transparent;color:#8888AA;border:1.5px solid rgba(0,0,0,0.1);}
+  .inv-btn-cancel:hover{border-color:#1A1A2E;color:#1A1A2E;}
+  .inv-btn-confirm{background:#1A1A2E;color:#fff;border:1.5px solid #1A1A2E;}
+  .inv-btn-confirm:hover{background:#5B4FD9;border-color:#5B4FD9;transform:translateY(-1px);}
+  @media(max-width:560px){
+    .inv-modal{padding:22px;border-radius:16px;}
+    .inv-extra-row{flex-wrap:wrap;}
+    .inv-extra-desc{flex:1 1 100%;}
+    .inv-extra-amount{flex:1;}
+    .inv-modal-actions{flex-direction:column-reverse;}
+    .inv-btn-cancel,.inv-btn-confirm{width:100%;}
+  }
+  /* Task status badges */
+  .ts-belum{display:inline-flex;align-items:center;gap:4px;background:#F3F4F6;color:var(--mid);padding:5px 10px;border-radius:8px;font-size:0.72rem;font-weight:600;}
+  .ts-selesai{display:inline-flex;align-items:center;gap:4px;background:#DCFCE7;color:#166534;padding:5px 10px;border-radius:8px;font-size:0.72rem;font-weight:600;}
+  .ts-skip{display:inline-flex;align-items:center;gap:4px;background:#FEE2E2;color:#991B1B;padding:5px 10px;border-radius:8px;font-size:0.72rem;font-weight:600;}
+  /* Assign modal */
+  .assign-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;}
+  .assign-modal-overlay.open{display:flex;}
+  .assign-modal{background:var(--white);border-radius:24px;padding:32px 28px;width:100%;max-width:420px;box-shadow:0 24px 80px rgba(0,0,0,0.2);}
+  .assign-modal-title{font-size:1rem;font-weight:700;color:var(--charcoal);margin-bottom:4px;}
+  .assign-modal-sub{font-size:0.78rem;color:var(--soft);margin-bottom:20px;}
+  .assign-select{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:0.87rem;color:var(--charcoal);background:var(--cream);outline:none;transition:border-color 0.2s;margin-bottom:16px;}
+  .assign-select:focus{border-color:var(--accent);background:#fff;}
+  .assign-foot{display:flex;gap:10px;}
+  .assign-save-btn{flex:1;padding:12px;border-radius:12px;background:var(--charcoal);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;transition:all 0.2s;}
+  .assign-save-btn:hover{background:var(--accent);}
+  .assign-cancel-btn{padding:12px 20px;border-radius:12px;background:transparent;border:1.5px solid var(--border);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--mid);transition:all 0.2s;}
+  .assign-cancel-btn:hover{border-color:var(--red);color:var(--red);}
+  /* Tech ID badge */
+  .tech-id-badge{font-family:monospace;font-size:0.82rem;font-weight:700;color:var(--accent);background:#EDE9FB;padding:2px 8px;border-radius:5px;letter-spacing:0.06em;}
+
+  @media(max-width:800px){
+    .panels{grid-template-columns:1fr}
+    .stat-row,.stat-row-orders{grid-template-columns:repeat(2,1fr)}
+    header{padding:12px 16px}
+    .hdr-user{display:none}
+    .dash-body{padding:16px}
+    .panel{padding:20px 16px}
+    .tabs{width:100%;overflow-x:auto;}
+    .tab-btn{flex:1;padding:8px 10px;font-size:0.8rem;white-space:nowrap;}
+    .order-body{grid-template-columns:1fr}
+    .order-foot{flex-direction:column;align-items:flex-start}
+    .order-actions{width:100%}
+    .confirm-btn-o,.reject-btn-o{flex:1;text-align:center}
+    .filter-row{gap:6px}
+    .filter-pill{padding:5px 12px;font-size:0.75rem}
+    .stat-c{padding:16px 14px}
+    .stat-c .s-num{font-size:1.6rem}
+    .login-card{padding:36px 24px;border-radius:20px}
+    table{font-size:0.78rem}
+    th,td{padding:8px 8px}
+    .act-btn{padding:4px 8px;font-size:0.72rem}
+    #toast{bottom:16px;right:16px;left:16px;text-align:center}
+    .foot-copy{padding:16px}
+    .cal-day{padding:6px 2px;font-size:0.75rem;}
+  }
+  @media(max-width:480px){
+    .stat-row,.stat-row-orders{grid-template-columns:repeat(2,1fr);gap:10px}
+    .tabs{border-radius:12px}
+    .tab-btn{font-size:0.72rem;padding:7px 6px}
+    .order-card{padding:14px}
+    .order-id{font-size:0.78rem}
+    .tbl-wrap{font-size:0.75rem}
+    th{display:none}
+    td{display:block;border:none;padding:4px 8px}
+    td:first-child{padding-top:10px}
+    td:last-child{padding-bottom:10px;border-bottom:1px solid var(--border)}
+    tr:last-child td:last-child{border-bottom:none}
+    td::before{content:attr(data-label);font-size:0.68rem;font-weight:600;color:var(--soft);text-transform:uppercase;display:block;margin-bottom:2px}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Aslan<span>.</span>Teknik</div>
+    <p class="login-sub">Admin Dashboard — Voucher, Pesanan, Review &amp; Affiliator</p>
+    <label class="l-label">Email</label>
+    <input type="email" class="l-input" id="l-email" placeholder="admin@email.com">
+    <label class="l-label">Password</label>
+    <input type="password" class="l-input" id="l-pass" placeholder="••••••••">
+    <button class="l-btn" id="btn-login">Masuk ke Dashboard</button>
+    <p class="l-err" id="l-err"></p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <header>
+    <div class="hdr-logo">Aslan<span>.</span>Teknik <span style="font-family:'DM Sans';font-size:0.75rem;color:var(--soft);font-weight:400;margin-left:8px;">Admin</span></div>
+    <div class="hdr-right">
+      <span class="hdr-user" id="hdr-email"></span>
+      <button class="logout-btn" id="btn-logout">Keluar</button>
+    </div>
+  </header>
+
+  <div class="dash-body">
+
+    <!-- STAT: VOUCHER -->
+    <div style="font-size:0.72rem;font-weight:600;color:var(--soft);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">🎟️ Statistik Voucher</div>
+    <div class="stat-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat-c purple"><div class="s-num" id="st-total">—</div><div class="s-lbl">Total Voucher</div></div>
+      <div class="stat-c green"><div class="s-num" id="st-active">—</div><div class="s-lbl">Aktif</div></div>
+      <div class="stat-c amber"><div class="s-num" id="st-used">—</div><div class="s-lbl">Total Diklaim</div></div>
+      <div class="stat-c red"><div class="s-num" id="st-expired">—</div><div class="s-lbl">Kedaluwarsa</div></div>
+    </div>
+
+    <!-- STAT: ORDERS -->
+    <div style="font-size:0.72rem;font-weight:600;color:var(--soft);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;margin-top:20px;">📦 Statistik Pesanan</div>
+    <div class="stat-row-orders">
+      <div class="stat-c" style="border-left:3px solid var(--accent)"><div class="s-num" id="st-orders" style="color:var(--accent)">—</div><div class="s-lbl">Pesanan Masuk</div></div>
+      <div class="stat-c green"><div class="s-num" id="st-confirmed">—</div><div class="s-lbl">Dikonfirmasi</div></div>
+      <div class="stat-c amber"><div class="s-num" id="st-pending">—</div><div class="s-lbl">Menunggu</div></div>
+    </div>
+
+    <!-- STAT: REVIEW -->
+    <div style="font-size:0.72rem;font-weight:600;color:var(--soft);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;margin-top:20px;">⭐ Statistik Review</div>
+    <div class="stat-row-orders" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat-c" style="border-left:3px solid var(--accent)"><div class="s-num" id="st-rev-total" style="color:var(--accent)">—</div><div class="s-lbl">Total Review</div></div>
+      <div class="stat-c amber"><div class="s-num" id="st-rev-pending">—</div><div class="s-lbl">Menunggu Review</div></div>
+      <div class="stat-c green"><div class="s-num" id="st-rev-approved">—</div><div class="s-lbl">Disetujui</div></div>
+      <div class="stat-c red"><div class="s-num" id="st-rev-rejected">—</div><div class="s-lbl">Ditolak</div></div>
+    </div>
+
+    <!-- STAT: AFFILIATOR -->
+    <div style="font-size:0.72rem;font-weight:600;color:var(--soft);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;margin-top:20px;">👥 Statistik Affiliator</div>
+    <div class="stat-row-orders">
+      <div class="stat-c" style="border-left:3px solid var(--accent)"><div class="s-num" id="st-aff-total" style="color:var(--accent)">—</div><div class="s-lbl">Total Affiliator</div></div>
+      <div class="stat-c green"><div class="s-num" id="st-aff-active">—</div><div class="s-lbl">Aktif</div></div>
+      <div class="stat-c amber"><div class="s-num" id="st-aff-wd-pending">—</div><div class="s-lbl">Penarikan Pending</div></div>
+    </div>
+
+    <!-- STAT: TEKNISI -->
+    <div style="font-size:0.72rem;font-weight:600;color:var(--soft);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;margin-top:20px;">👷 Statistik Teknisi</div>
+    <div class="stat-row-orders">
+      <div class="stat-c" style="border-left:3px solid var(--accent)"><div class="s-num" id="st-tech-total" style="color:var(--accent)">—</div><div class="s-lbl">Total Teknisi</div></div>
+      <div class="stat-c green"><div class="s-num" id="st-tech-active">—</div><div class="s-lbl">Aktif</div></div>
+      <div class="stat-c purple"><div class="s-num" id="st-tech-assigned">—</div><div class="s-lbl">Order Ter-assign</div></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs" style="margin-top:32px;">
+      <button class="tab-btn act" id="tab-voucher" onclick="switchTab('voucher')">🎟️ Voucher</button>
+      <button class="tab-btn" id="tab-orders" onclick="switchTab('orders')">
+        📦 Pesanan
+        <span id="orders-badge" style="display:none;background:var(--red);color:#fff;border-radius:100px;padding:1px 7px;font-size:0.7rem;margin-left:4px;vertical-align:middle;"></span>
+      </button>
+      <button class="tab-btn" id="tab-reviews" onclick="switchTab('reviews')">
+        ⭐ Review
+        <span id="reviews-badge" style="display:none;background:var(--amber);color:#fff;border-radius:100px;padding:1px 7px;font-size:0.7rem;margin-left:4px;vertical-align:middle;"></span>
+      </button>
+      <button class="tab-btn" id="tab-affiliator" onclick="switchTab('affiliator')">
+        👥 Affiliator
+        <span id="aff-wd-badge" style="display:none;background:var(--amber);color:#fff;border-radius:100px;padding:1px 7px;font-size:0.7rem;margin-left:4px;vertical-align:middle;"></span>
+      </button>
+      <button class="tab-btn" id="tab-teknisi" onclick="switchTab('teknisi')">👷 Teknisi</button>
+    </div>
+
+    <!-- PANE: VOUCHER -->
+    <div id="pane-voucher" class="tab-pane act">
+      <div class="panels">
+        <!-- CREATE PANEL -->
+        <div class="panel">
+          <div class="panel-title">✨ Buat Voucher Baru</div>
+          <div class="fg">
+            <label class="fl">Kode Voucher</label>
+            <div class="gen-row">
+              <input type="text" class="gen-input" id="v-code" placeholder="ASLAN20" maxlength="20">
+              <button class="gen-btn" id="btn-gen">🎲 Generate</button>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Tipe Diskon</label>
+            <div class="type-row">
+              <button class="type-pill act" id="tp-pct">% Persen</button>
+              <button class="type-pill" id="tp-nom">Rp Nominal</button>
+            </div>
+          </div>
+          <div class="fg fr2">
+            <div>
+              <label class="fl" id="v-val-lbl">Besar Diskon (%)</label>
+              <input type="number" class="fi" id="v-val" placeholder="20" min="1">
+            </div>
+            <div>
+              <label class="fl">Maks. Pemakaian</label>
+              <input type="number" class="fi" id="v-max" placeholder="100" min="1" value="100">
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Berlaku Hingga</label>
+            <input type="date" class="fi" id="v-exp">
+          </div>
+          <div class="fg">
+            <label class="fl">Deskripsi (opsional)</label>
+            <input type="text" class="fi" id="v-desc" placeholder="Promo Lebaran 2026">
+          </div>
+          <button class="create-btn" id="btn-create">+ Buat Voucher</button>
+          <p class="form-msg" id="form-msg"></p>
+        </div>
+
+        <!-- TABLE PANEL -->
+        <div class="panel">
+          <div class="panel-title">📋 Daftar Voucher</div>
+          <input type="text" class="search-bar" id="search" placeholder="🔍  Cari kode atau deskripsi...">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Kode</th><th>Diskon</th><th>Pemakaian</th><th>Kedaluwarsa</th><th>Status</th><th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbl-body">
+                <tr><td colspan="6"><div class="empty-state">Memuat data...</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div><!-- /pane-voucher -->
+
+    <!-- PANE: ORDERS -->
+    <div id="pane-orders" class="tab-pane">
+      <div class="filter-row" style="align-items:center;">
+        <button class="filter-pill act" id="f-all"       onclick="filterOrders('all')">Semua</button>
+        <button class="filter-pill"     id="f-pending"   onclick="filterOrders('pending')">⏳ Menunggu</button>
+        <button class="filter-pill"     id="f-confirmed" onclick="filterOrders('confirmed')">✅ Dikonfirmasi</button>
+        <button class="filter-pill"     id="f-rejected"  onclick="filterOrders('rejected')">❌ Ditolak</button>
+        <button class="cal-toggle-btn" id="cal-toggle" onclick="window.toggleCalendar()">📅 Filter Tanggal</button>
+        <button class="export-cal-btn" onclick="window.exportToCalendar()" title="Export order terkonfirmasi ke iPhone Calendar">📤 Export ke Kalender</button>
+      </div>
+
+      <!-- CALENDAR (hidden by default) -->
+      <div class="panel cal-container" id="cal-panel">
+        <div class="cal-header">
+          <button class="cal-nav-btn" id="cal-prev">‹</button>
+          <span class="cal-month-label" id="cal-month-label"></span>
+          <button class="cal-nav-btn" id="cal-next">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="cal-legend">
+          <span><span class="cal-legend-dot" style="background:#FEF9C3;border:1px solid #EAB308;"></span> &lt; 4 order</span>
+          <span><span class="cal-legend-dot" style="background:#DBEAFE;border:1px solid #3B82F6;"></span> ≥ 4 order</span>
+          <span style="margin-left:6px;opacity:0.4">|</span>
+          <span><span class="cal-legend-dot" style="background:#DCFCE7;border:2px solid #22C55E;"></span> Tersedia</span>
+          <span><span class="cal-legend-dot" style="background:#FEF9C3;border:2px solid #F59E0B;"></span> Hampir Penuh</span>
+          <span><span class="cal-legend-dot" style="background:#FEE2E2;border:2px solid #EF4444;"></span> Full Booked</span>
+        </div>
+        <div class="cal-selected-info" id="cal-selected-info" style="display:none;">
+          <div class="cal-sel-top">
+            <span id="cal-selected-text"></span>
+            <button class="cal-clear" id="cal-clear">✕ Reset</button>
+          </div>
+          <div class="avail-picker">
+            <div class="avail-picker-label">🗓️ Atur Ketersediaan Tanggal Ini</div>
+            <div class="avail-btn-row">
+              <button class="avail-btn av-available" id="avail-btn-available" onclick="window.setAvailability('available')">✅ Tersedia</button>
+              <button class="avail-btn av-almost"    id="avail-btn-almost"    onclick="window.setAvailability('almost_full')">⚠️ Hampir Penuh</button>
+              <button class="avail-btn av-full"      id="avail-btn-full"      onclick="window.setAvailability('full_booked')">🔴 Full Booked</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="orders-list">
+        <div class="orders-empty">Belum ada pesanan masuk.</div>
+      </div>
+    </div>
+
+    <!-- PANE: REVIEWS -->
+    <div id="pane-reviews" class="tab-pane">
+      <div class="filter-row">
+        <button class="filter-pill act" id="rf-all"      onclick="window.filterReviews('all')">Semua</button>
+        <button class="filter-pill"     id="rf-pending"  onclick="window.filterReviews('pending')">⏳ Menunggu</button>
+        <button class="filter-pill"     id="rf-approved" onclick="window.filterReviews('approved')">✅ Disetujui</button>
+        <button class="filter-pill"     id="rf-rejected" onclick="window.filterReviews('rejected')">❌ Ditolak</button>
+      </div>
+      <div id="reviews-list">
+        <div class="orders-empty">Memuat review...</div>
+      </div>
+    </div><!-- /pane-reviews -->
+
+    <!-- PANE: AFFILIATOR -->
+    <div id="pane-affiliator" class="tab-pane">
+      <div class="panels">
+        <!-- CREATE AFFILIATOR PANEL -->
+        <div class="panel">
+          <div class="panel-title">✨ Buat Affiliator Baru</div>
+          <div class="fg">
+            <label class="fl">Kode Affiliator</label>
+            <div class="gen-row">
+              <input type="text" class="gen-input" id="aff-code" placeholder="ASLANAFF01" maxlength="20">
+              <button class="gen-btn" id="btn-gen-aff">🎲 Generate</button>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">PIN Login (6 digit)</label>
+            <div class="gen-row">
+              <input type="text" class="gen-input" id="aff-pin" placeholder="123456" maxlength="6" style="letter-spacing:0.15em;text-transform:none;">
+              <button class="gen-btn" id="btn-gen-pin">🎲 Random</button>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Nama Affiliator</label>
+            <input type="text" class="fi" id="aff-name" placeholder="Nama lengkap affiliator">
+          </div>
+          <div class="fg fr2">
+            <div>
+              <label class="fl">Komisi Affiliator (%)</label>
+              <input type="number" class="fi" id="aff-rate" placeholder="10" min="1" max="50" value="10">
+            </div>
+            <div>
+              <label class="fl">Diskon Voucher untuk Customer (%)</label>
+              <input type="number" class="fi" id="aff-disc" placeholder="5" min="1" max="100" value="5">
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">No. WhatsApp</label>
+            <input type="text" class="fi" id="aff-wa" placeholder="08xxxxxxxxxx">
+          </div>
+          <div style="background:#EDE9FB;border-radius:12px;padding:12px 14px;font-size:0.76rem;color:var(--mid);line-height:1.6;margin-bottom:14px;">
+            🎟️ Voucher dengan kode yang sama akan <strong>otomatis dibuat</strong> saat affiliator disimpan. Customer bisa pakai kode ini saat booking.
+          </div>
+          <button class="create-btn" id="btn-create-aff">+ Buat Affiliator</button>
+          <p class="form-msg" id="aff-form-msg"></p>
+        </div>
+
+        <!-- AFFILIATOR TABLE PANEL -->
+        <div class="panel">
+          <div class="panel-title">📋 Daftar Affiliator</div>
+          <input type="text" class="search-bar" id="aff-search" placeholder="🔍  Cari kode atau nama...">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Kode</th><th>Nama</th><th>Komisi</th><th>Diskon Voucher</th><th>PIN</th><th>Status</th><th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="aff-tbl-body">
+                <tr><td colspan="6"><div class="empty-state">Memuat data...</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- WITHDRAWAL REQUESTS -->
+      <div class="panel" style="margin-top:24px;">
+        <div class="panel-title">💸 Pengajuan Penarikan Komisi</div>
+        <div class="filter-row" style="margin-top:12px;">
+          <button class="filter-pill act" id="wf-all"      onclick="window.filterWd('all')">Semua</button>
+          <button class="filter-pill"     id="wf-pending"  onclick="window.filterWd('pending')">⏳ Pending</button>
+          <button class="filter-pill"     id="wf-approved" onclick="window.filterWd('approved')">✅ Disetujui</button>
+          <button class="filter-pill"     id="wf-rejected" onclick="window.filterWd('rejected')">❌ Ditolak</button>
+        </div>
+        <div class="tbl-wrap" style="margin-top:12px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal</th><th>Affiliator</th><th>Jumlah</th><th>Status</th><th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="wd-tbl-body">
+              <tr><td colspan="5"><div class="empty-state">Belum ada pengajuan penarikan.</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /pane-affiliator -->
+
+    <!-- PANE: TEKNISI -->
+    <div id="pane-teknisi" class="tab-pane">
+      <div class="panels">
+        <!-- CREATE TEKNISI PANEL -->
+        <div class="panel">
+          <div class="panel-title">👷 Tambah Teknisi Baru</div>
+          <div class="fg">
+            <label class="fl">Nama Teknisi</label>
+            <input type="text" class="fi" id="tech-name" placeholder="Nama lengkap teknisi">
+          </div>
+          <div class="fg">
+            <label class="fl">ID Login</label>
+            <div class="gen-row">
+              <input type="text" class="gen-input" id="tech-id" placeholder="TECH01" maxlength="20" style="text-transform:uppercase;letter-spacing:0.06em;">
+              <button class="gen-btn" id="btn-gen-tech">🎲 Generate</button>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Password</label>
+            <div class="gen-row">
+              <input type="text" class="gen-input" id="tech-pass" placeholder="password123" style="text-transform:none;letter-spacing:normal;">
+              <button class="gen-btn" id="btn-gen-tech-pass">🎲 Random</button>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Nomor WhatsApp</label>
+            <input type="text" class="fi" id="tech-wa" placeholder="08xxxxxxxxxx">
+          </div>
+          <div class="fg">
+            <label class="fl">Spesialisasi (opsional)</label>
+            <input type="text" class="fi" id="tech-spec" placeholder="Cuci AC, Freon, dll.">
+          </div>
+          <button class="create-btn" id="btn-create-tech">+ Tambah Teknisi</button>
+          <p class="form-msg" id="tech-form-msg"></p>
+          <div style="margin-top:16px;padding:12px;background:#EDE9FB;border-radius:12px;font-size:0.76rem;color:var(--mid);line-height:1.6;">
+            💡 Teknisi login di <strong>/teknisi</strong> menggunakan ID dan password yang kamu buat di sini.
+          </div>
+        </div>
+
+        <!-- TEKNISI TABLE PANEL -->
+        <div class="panel">
+          <div class="panel-title">📋 Daftar Teknisi</div>
+          <input type="text" class="search-bar" id="tech-search" placeholder="🔍  Cari nama atau ID...">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr><th>Nama</th><th>ID Login</th><th>WA</th><th>Spesialisasi</th><th>Status</th><th>Aksi</th></tr>
+              </thead>
+              <tbody id="tech-tbl-body">
+                <tr><td colspan="6"><div class="empty-state">Memuat data...</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ASSIGNMENT OVERVIEW -->
+      <div class="panel" style="margin-top:24px;">
+        <div class="panel-title">📋 Ringkasan Assignment Teknisi</div>
+        <p style="font-size:0.82rem;color:var(--soft);margin-bottom:16px;">Order confirmed yang sudah / belum di-assign ke teknisi.</p>
+        <div id="tech-assignment-overview">
+          <div class="empty-state">Memuat data assignment...</div>
+        </div>
+      </div>
+    </div><!-- /pane-teknisi -->
+
+  </div>
+  <div class="foot-copy" id="admin-copyright"></div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ASSIGN ORDER MODAL -->
+<div class="assign-modal-overlay" id="assign-modal" onclick="if(event.target===this)window.closeAssignModal()">
+  <div class="assign-modal">
+    <div class="assign-modal-title">👷 Assign ke Teknisi</div>
+    <div class="assign-modal-sub" id="assign-modal-sub">Pilih teknisi yang akan menangani order ini</div>
+    <input type="hidden" id="assign-order-id">
+    <select class="assign-select" id="assign-tech-select">
+      <option value="">-- Pilih Teknisi --</option>
+    </select>
+    <div class="assign-foot">
+      <button class="assign-cancel-btn" onclick="window.closeAssignModal()">Batal</button>
+      <button class="assign-save-btn" onclick="window.saveAssign()">✅ Assign</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCHEDULE EDIT MODAL -->
+<div class="sched-modal-overlay" id="schedule-modal" onclick="if(event.target===this)window.closeScheduleModal()">
+  <div class="sched-modal">
+    <div class="sched-modal-title">✏️ Edit Jadwal Order</div>
+    <div class="sched-modal-sub" id="sm-order-label">Atur tanggal &amp; jam yang sudah disepakati via WhatsApp</div>
+    <input type="hidden" id="sm-order-id">
+    <div class="sched-field">
+      <label>📅 Tanggal Servis</label>
+      <input type="date" class="sched-input" id="sm-date">
+    </div>
+    <div class="sched-field">
+      <label>🕐 Jam Kedatangan <span style="font-weight:400;color:var(--soft)">(opsional)</span></label>
+      <input type="time" class="sched-input" id="sm-time" placeholder="09:00">
+    </div>
+    <div class="sched-foot">
+      <button class="sched-cancel-btn" onclick="window.closeScheduleModal()">Batal</button>
+      <button class="sched-save-btn" onclick="window.saveSchedule()">💾 Simpan Jadwal</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc,
+         onSnapshot, query, orderBy, where, getDocs, serverTimestamp, increment }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey:"AIzaSyAd_HmgX5djmePrHpYHxsydSErTPSjcBdY",
+  authDomain:"aslan-teknik.firebaseapp.com",
+  projectId:"aslan-teknik",
+  storageBucket:"aslan-teknik.firebasestorage.app",
+  messagingSenderId:"372303552922",
+  appId:"1:372303552922:web:5b61d3cd2c590ff1381a23"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// Expose ke window agar fungsi global bisa akses tanpa dynamic import
+window._fbDb              = db;
+window._fbCollection      = collection;
+window._fbDoc             = doc;
+window._fbSetDoc          = setDoc;
+window._fbUpdateDoc       = updateDoc;
+window._fbIncrement       = increment;
+window._fbServerTimestamp = serverTimestamp;
+window._fbWhere           = where;
+window._fbGetDocs         = getDocs;
+window._fbQuery           = query;
+window._fbAddDoc          = addDoc;
+
+let allVouchers  = [];
+let allOrders    = [];
+let allReviews   = [];
+let allAvailability = {}; // map: 'YYYY-MM-DD' → status string
+let orderFilter  = 'all';
+let reviewFilter = 'all';
+let discountType = 'percent';
+let selectedDate = null; // for calendar filter
+
+// Unsubscribe guards
+let unsubVouchers    = null;
+let unsubOrders      = null;
+let unsubAffiliators = null;
+let unsubWithdrawals = null;
+let unsubReviews     = null;
+let unsubAvailability = null;
+let unsubTechnicians = null;
+let allTechnicians   = [];
+let allAffiliators   = [];
+let allWithdrawals   = [];
+let wdFilter         = 'all';
+
+// ── CALENDAR STATE ─────────────────────────────────────
+let calYear  = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+
+// ── COPYRIGHT ──────────────────────────────────────────
+(function(){
+  const start = 2025;
+  const now   = new Date().getFullYear();
+  const range = now > start ? start + '–' + now : String(start);
+  const el = document.getElementById('admin-copyright');
+  if (el) el.textContent = '© ' + range + ' Aslan Teknik. Semua hak dilindungi.';
+})();
+
+// ── AUTH ───────────────────────────────────────────────
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display    = 'block';
+    document.getElementById('hdr-email').textContent      = user.email;
+    if (unsubVouchers)    { unsubVouchers();    unsubVouchers    = null; }
+    if (unsubOrders)      { unsubOrders();      unsubOrders      = null; }
+    if (unsubAffiliators) { unsubAffiliators(); unsubAffiliators = null; }
+    if (unsubWithdrawals) { unsubWithdrawals(); unsubWithdrawals = null; }
+    if (unsubReviews)     { unsubReviews();     unsubReviews     = null; }
+    listenVouchers();
+    listenOrders();
+    listenAffiliators();
+    listenWithdrawals();
+    listenReviews();
+    listenAvailability();
+    listenTechnicians();
+    const d = new Date(); d.setDate(d.getDate()+30);
+    document.getElementById('v-exp').value = d.toISOString().split('T')[0];
+    document.getElementById('v-exp').min   = new Date().toISOString().split('T')[0];
+    renderCalendar();
+  } else {
+    if (unsubVouchers)    { unsubVouchers();    unsubVouchers    = null; }
+    if (unsubOrders)      { unsubOrders();      unsubOrders      = null; }
+    if (unsubAffiliators) { unsubAffiliators(); unsubAffiliators = null; }
+    if (unsubWithdrawals) { unsubWithdrawals(); unsubWithdrawals = null; }
+    if (unsubReviews)     { unsubReviews();     unsubReviews     = null; }
+    if (unsubAvailability){ unsubAvailability();unsubAvailability= null; }
+    if (unsubTechnicians) { unsubTechnicians(); unsubTechnicians = null; }
+    allVouchers = []; allOrders = []; allAffiliators = []; allWithdrawals = []; allReviews = []; allAvailability = {}; allTechnicians = [];
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('dashboard').style.display    = 'none';
+  }
+});
+
+async function doLogin() {
+  const email = document.getElementById('l-email').value.trim();
+  const pass  = document.getElementById('l-pass').value;
+  const errEl = document.getElementById('l-err');
+  const btn   = document.getElementById('btn-login');
+  errEl.textContent = '';
+  if (!email || !pass) { errEl.textContent = 'Email dan password wajib diisi.'; return; }
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-sm"></span> Masuk...';
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e) {
+    errEl.textContent = (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found')
+      ? 'Email atau password salah.' : 'Gagal login: ' + e.message;
+    btn.disabled = false;
+    btn.textContent = 'Masuk ke Dashboard';
+  }
+}
+
+async function doLogout() { await signOut(auth); }
+
+// ── VOUCHERS ───────────────────────────────────────────
+function listenVouchers() {
+  const q = query(collection(db, 'vouchers'), orderBy('created_at', 'desc'));
+  unsubVouchers = onSnapshot(q, snap => {
+    allVouchers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderStats();
+    renderTable(allVouchers);
+  });
+}
+
+function renderStats() {
+  const now = new Date();
+  document.getElementById('st-total').textContent   = allVouchers.length;
+  document.getElementById('st-active').textContent  = allVouchers.filter(v => v.is_active && new Date(v.expires_at) > now && v.used_count < v.max_uses).length;
+  document.getElementById('st-used').textContent    = allVouchers.reduce((s,v) => s+(v.used_count||0), 0);
+  document.getElementById('st-expired').textContent = allVouchers.filter(v => new Date(v.expires_at) <= now).length;
+}
+
+function renderTable(list) {
+  const tbody = document.getElementById('tbl-body');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">Belum ada voucher. Buat voucher pertamamu! 🎉</div></td></tr>';
+    return;
+  }
+  const now = new Date();
+  tbody.innerHTML = list.map(v => {
+    const exp       = new Date(v.expires_at);
+    const isExpired = exp <= now;
+    const isFull    = v.used_count >= v.max_uses;
+    const pct       = Math.min(100, Math.round((v.used_count / v.max_uses) * 100));
+    const expStr    = exp.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+    const discount  = v.discount_type==='percent' ? v.discount_value+'%' : 'Rp '+Number(v.discount_value).toLocaleString('id-ID');
+    const badge     = isExpired ? '<span class="badge badge-red">Kedaluwarsa</span>'
+      : isFull      ? '<span class="badge badge-amber">Habis</span>'
+      : v.is_active ? '<span class="badge badge-green">Aktif</span>'
+      :               '<span class="badge badge-red">Nonaktif</span>';
+    return `<tr>
+      <td data-label="Kode"><div class="code-badge">${v.code}</div>${v.description?`<div style="font-size:0.75rem;color:var(--soft);margin-top:3px">${v.description}</div>`:''}</td>
+      <td data-label="Diskon"><strong style="color:var(--charcoal)">${discount}</strong><div style="font-size:0.72rem;color:var(--soft)">${v.discount_type==='percent'?'Persen':'Nominal'}</div></td>
+      <td data-label="Pemakaian"><div style="font-size:0.82rem;margin-bottom:4px">${v.used_count} / ${v.max_uses} pakai</div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div></td>
+      <td data-label="Kedaluwarsa" style="white-space:nowrap">${expStr}</td>
+      <td data-label="Status">${badge}</td>
+      <td data-label="Aksi">
+        <button class="act-btn tog" onclick="window.toggleV('${v.id}',${!!v.is_active})">${v.is_active?'Nonaktifkan':'Aktifkan'}</button>
+        <button class="act-btn del" onclick="window.deleteV('${v.id}','${v.code}')">Hapus</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTable() {
+  const q = document.getElementById('search').value.toLowerCase();
+  renderTable(allVouchers.filter(v => v.code.toLowerCase().includes(q)||(v.description||'').toLowerCase().includes(q)));
+}
+
+function setType(t) {
+  discountType = t;
+  document.getElementById('tp-pct').classList.toggle('act', t==='percent');
+  document.getElementById('tp-nom').classList.toggle('act', t==='nominal');
+  document.getElementById('v-val-lbl').textContent = t==='percent' ? 'Besar Diskon (%)' : 'Besar Diskon (Rp)';
+}
+
+function genCode() {
+  const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = 'ASLAN';
+  for(let i=0;i<4;i++) code += c[Math.floor(Math.random()*c.length)];
+  document.getElementById('v-code').value = code;
+}
+
+async function createVoucher() {
+  const code  = document.getElementById('v-code').value.trim().toUpperCase();
+  const val   = parseInt(document.getElementById('v-val').value);
+  const max   = parseInt(document.getElementById('v-max').value);
+  const exp   = document.getElementById('v-exp').value;
+  const desc  = document.getElementById('v-desc').value.trim();
+  const msgEl = document.getElementById('form-msg');
+  msgEl.className = 'form-msg';
+  if (!code)       { msgEl.textContent='Kode wajib diisi.';           msgEl.className='form-msg err'; return; }
+  if (!val||val<1) { msgEl.textContent='Besar diskon wajib diisi.';   msgEl.className='form-msg err'; return; }
+  if (discountType==='percent'&&val>100){ msgEl.textContent='Diskon persen max 100%.'; msgEl.className='form-msg err'; return; }
+  if (!max||max<1) { msgEl.textContent='Maks. pemakaian wajib diisi.';msgEl.className='form-msg err'; return; }
+  if (!exp)        { msgEl.textContent='Tanggal kedaluwarsa wajib.';  msgEl.className='form-msg err'; return; }
+  if (allVouchers.some(v=>v.code===code)){ msgEl.textContent='Kode sudah ada.'; msgEl.className='form-msg err'; return; }
+  const btn = document.getElementById('btn-create');
+  btn.disabled=true; btn.innerHTML='<span class="spinner-sm"></span> Menyimpan...';
+  try {
+    await addDoc(collection(db,'vouchers'),{
+      code, discount_type:discountType, discount_value:val,
+      max_uses:max, used_count:0, expires_at:exp+'T23:59:59',
+      description:desc, is_active:true, created_at:serverTimestamp()
+    });
+    msgEl.textContent='✓ Voucher berhasil dibuat!'; msgEl.className='form-msg ok';
+    document.getElementById('v-code').value='';
+    document.getElementById('v-val').value='';
+    document.getElementById('v-desc').value='';
+    showToast('Voucher '+code+' berhasil dibuat 🎉');
+    setTimeout(()=>{ msgEl.textContent=''; },3000);
+  } catch(e) {
+    msgEl.textContent='Gagal: '+e.message; msgEl.className='form-msg err';
+  }
+  btn.disabled=false; btn.textContent='+ Buat Voucher';
+}
+
+window.toggleV = async function(id, current) {
+  try {
+    await updateDoc(doc(db,'vouchers',id),{is_active:!current});
+    showToast(current?'Voucher dinonaktifkan.':'Voucher diaktifkan kembali.');
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+window.deleteV = async function(id, code) {
+  if (!confirm('Hapus voucher '+code+'? Tidak dapat dibatalkan.')) return;
+  try { await deleteDoc(doc(db,'vouchers',id)); showToast('Voucher '+code+' dihapus.'); }
+  catch(e){ showToast('Gagal: '+e.message); }
+};
+
+// ── TABS ───────────────────────────────────────────────
+window.switchTab = function(tab) {
+  ['voucher','orders','reviews','affiliator','teknisi'].forEach(t => {
+    const pane = document.getElementById('pane-'+t);
+    const btn  = document.getElementById('tab-'+t);
+    if (pane) pane.classList.toggle('act', t===tab);
+    if (btn)  btn.classList.toggle('act', t===tab);
+  });
+};
+
+// ── CALENDAR ───────────────────────────────────────────
+// ── CALENDAR TOGGLE ────────────────────────────────────
+window.toggleCalendar = function() {
+  const panel = document.getElementById('cal-panel');
+  const btn   = document.getElementById('cal-toggle');
+  const isOpen = panel.classList.toggle('open');
+  btn.classList.toggle('act', isOpen);
+  if (isOpen) renderCalendar();
+};
+
+function renderCalendar() {
+  const grid = document.getElementById('cal-grid');
+  const label = document.getElementById('cal-month-label');
+  const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+
+  label.textContent = months[calMonth] + ' ' + calYear;
+
+  // Count orders per date (exclude rejected) — use scheduled_date (fix) as priority
+  const orderCounts = {};
+  allOrders.forEach(o => {
+    if (o.status === 'rejected') return;
+    const addDate = (dateStr) => { orderCounts[dateStr] = (orderCounts[dateStr] || 0) + 1; };
+    // Priority: scheduled_date > date field > created_at
+    if (o.scheduled_date) {
+      addDate(o.scheduled_date);
+    } else if (o.date) {
+      try {
+        const pd = new Date(o.date);
+        if (!isNaN(pd)) addDate(pd.getFullYear() + '-' + String(pd.getMonth()+1).padStart(2,'0') + '-' + String(pd.getDate()).padStart(2,'0'));
+      } catch(e){}
+    } else if (o.created_at && o.created_at.seconds) {
+      const d = new Date(o.created_at.seconds * 1000);
+      addDate(d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'));
+    }
+  });
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+
+  let html = days.map(d => `<div class="cal-dow">${d}</div>`).join('');
+
+  // Previous month fill
+  for (let i = firstDay - 1; i >= 0; i--) {
+    html += `<div class="cal-day other-month">${daysInPrev - i}</div>`;
+  }
+
+  // Current month
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = calYear + '-' + String(calMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    const isToday    = dateStr === todayStr;
+    const isSelected = selectedDate === dateStr;
+    const count      = orderCounts[dateStr] || 0;
+    const colorClass = count > 0 ? (count >= 4 ? ' has-orders-high' : ' has-orders-low') : '';
+    // Availability class
+    const avail = allAvailability[dateStr];
+    const availClass = avail === 'almost_full' ? ' avail-almost' : avail === 'full_booked' ? ' avail-full' : '';
+    const availDot = (avail === 'almost_full' || avail === 'full_booked') ? '<span class="avail-dot"></span>' : '';
+    html += `<div class="cal-day${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}${colorClass}${availClass}" data-date="${dateStr}" onclick="window.selectCalDate('${dateStr}')">
+      ${d}${availDot}
+    </div>`;
+  }
+
+  // Next month fill
+  const totalCells = firstDay + daysInMonth;
+  const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let i = 1; i <= remaining; i++) {
+    html += `<div class="cal-day other-month">${i}</div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+window.selectCalDate = function(dateStr) {
+  if (selectedDate === dateStr) {
+    selectedDate = null;
+    document.getElementById('cal-selected-info').style.display = 'none';
+    document.getElementById('cal-toggle').innerHTML = '📅 Filter Tanggal';
+  } else {
+    selectedDate = dateStr;
+    const d = new Date(dateStr + 'T00:00:00');
+    const formatted = d.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    document.getElementById('cal-selected-text').textContent = '📅 ' + formatted;
+    document.getElementById('cal-selected-info').style.display = 'block';
+    document.getElementById('cal-toggle').innerHTML = '📅 ' + d.toLocaleDateString('id-ID',{day:'numeric',month:'short'});
+    document.getElementById('cal-toggle').classList.add('act');
+    // Reflect current availability status on the picker buttons
+    const currentStatus = allAvailability[dateStr] || 'available';
+    updateAvailBtnState(currentStatus);
+  }
+  renderCalendar();
+  renderOrders();
+};
+
+document.getElementById('cal-prev').addEventListener('click', () => {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+});
+document.getElementById('cal-next').addEventListener('click', () => {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+});
+document.getElementById('cal-clear').addEventListener('click', () => {
+  selectedDate = null;
+  document.getElementById('cal-selected-info').style.display = 'none';
+  document.getElementById('cal-toggle').classList.remove('act');
+  document.getElementById('cal-toggle').innerHTML = '📅 Filter Tanggal';
+  document.getElementById('cal-panel').classList.remove('open');
+  renderOrders();
+});
+
+// ── ORDERS ─────────────────────────────────────────────
+function listenOrders() {
+  const q = query(collection(db, 'orders'), orderBy('created_at', 'desc'));
+  unsubOrders = onSnapshot(q, snap => {
+    allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderOrderStats();
+    renderOrders();
+    renderCalendar(); // re-render dots
+  });
+}
+
+// ── CALENDAR AVAILABILITY ──────────────────────────────
+function listenAvailability() {
+  unsubAvailability = onSnapshot(collection(db, 'calendar_availability'), snap => {
+    allAvailability = {};
+    snap.docs.forEach(d => { allAvailability[d.id] = d.data().status; });
+    renderCalendar();
+  });
+}
+
+window.setAvailability = async function(status) {
+  if (!selectedDate) return;
+  try {
+    await window._fbSetDoc(window._fbDoc(window._fbDb, 'calendar_availability', selectedDate), {
+      status,
+      updated_at: window._fbServerTimestamp(),
+    });
+    renderCalendar();
+    updateAvailBtnState(status);
+    const labels = { available: '✅ Tersedia', almost_full: '⚠️ Hampir Penuh', full_booked: '🔴 Full Booked' };
+    showToast(`Tanggal ${selectedDate} → ${labels[status]}`);
+  } catch(e) {
+    showToast('Gagal: ' + e.message);
+  }
+};
+
+function updateAvailBtnState(status) {
+  ['available','almost','full'].forEach(k => {
+    const map = { available:'available', almost:'almost_full', full:'full_booked' };
+    const btn = document.getElementById('avail-btn-'+k);
+    if (btn) btn.classList.toggle('act', map[k] === status);
+  });
+}
+
+function renderOrderStats() {
+  const pending   = allOrders.filter(o => o.status === 'pending').length;
+  const confirmed = allOrders.filter(o => o.status === 'confirmed').length;
+  document.getElementById('st-orders').textContent    = allOrders.length;
+  document.getElementById('st-confirmed').textContent = confirmed;
+  document.getElementById('st-pending').textContent   = pending;
+  const badge = document.getElementById('orders-badge');
+  if (pending > 0) { badge.textContent = pending; badge.style.display = 'inline-block'; }
+  else { badge.style.display = 'none'; }
+}
+
+window.filterOrders = function(f) {
+  orderFilter = f;
+  ['all','pending','confirmed','rejected'].forEach(x => {
+    document.getElementById('f-'+x).classList.toggle('act', x===f);
+  });
+  renderOrders();
+};
+
+function fmt(n){ return 'Rp ' + Number(n).toLocaleString('id-ID'); }
+
+function getOrderDateStr(o) {
+  // Returns YYYY-MM-DD from created_at timestamp
+  if (o.created_at && o.created_at.seconds) {
+    const d = new Date(o.created_at.seconds * 1000);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  return null;
+}
+
+function renderOrders() {
+  let list = orderFilter === 'all' ? allOrders : allOrders.filter(o => o.status === orderFilter);
+
+  // Calendar date filter — match by scheduled_date (fix) as priority
+  if (selectedDate) {
+    list = list.filter(o => {
+      // Priority: scheduled_date > date field > created_at
+      if (o.scheduled_date) return o.scheduled_date === selectedDate;
+      if (o.date) {
+        try {
+          const pd = new Date(o.date);
+          if (!isNaN(pd)) {
+            const bookingStr = pd.getFullYear() + '-' + String(pd.getMonth()+1).padStart(2,'0') + '-' + String(pd.getDate()).padStart(2,'0');
+            return bookingStr === selectedDate;
+          }
+        } catch(e){}
+      }
+      const createdDateStr = getOrderDateStr(o);
+      return createdDateStr === selectedDate;
+    });
+  }
+
+  const el = document.getElementById('orders-list');
+  if (!list.length) {
+    const dateInfo = selectedDate ? ` pada tanggal ${new Date(selectedDate).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}` : '';
+    el.innerHTML = `<div class="orders-empty">Tidak ada pesanan${orderFilter !== 'all' ? ' dengan status ini' : ''}${dateInfo}.</div>`;
+    return;
+  }
+  el.innerHTML = list.map(o => {
+    const createdAt = o.created_at
+      ? new Date(o.created_at.seconds*1000).toLocaleString('id-ID',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+      : '—';
+    const svcList      = Array.isArray(o.services) ? o.services.join(', ') : (o.services || '—');
+    const isConfirmed  = o.status === 'confirmed';
+    const isRejected   = o.status === 'rejected';
+    const isPending    = !isConfirmed && !isRejected;
+    const voucherHtml  = o.voucher_code
+      ? `<div class="order-voucher">🎟️ ${o.voucher_code} — hemat ${fmt(o.discount_amount||0)}</div>`
+      : '';
+    const totalHtml    = o.voucher_code
+      ? `<div class="order-total"><span style="text-decoration:line-through;color:var(--soft);font-weight:400">${fmt(o.total_before)}</span> → <span class="green">${fmt(o.total_after)}</span></div>`
+      : `<div class="order-total">${fmt(o.total_before||0)}</div>`;
+    const safeId       = o.id.replace(/'/g,"\\'");
+    const safeVid      = (o.voucher_id||'').replace(/'/g,"\\'");
+    const safeVcode    = (o.voucher_code||'').replace(/'/g,"\\'");
+
+    // Assignment UI for confirmed orders
+    let assignHtml = '';
+    if (isConfirmed) {
+      const ts = o.task_status || 'belum';
+      const tsBadge = ts === 'selesai'
+        ? `<span class="ts-selesai">✅ Selesai</span>`
+        : ts === 'skip'
+        ? `<span class="ts-skip">⏭️ Skip</span>`
+        : `<span class="ts-belum">⏳ Belum</span>`;
+      if (o.assigned_to) {
+        assignHtml = `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div class="tech-assign-badge">👷 ${o.assigned_name||o.assigned_to}
+            <button class="unassign-btn" onclick="window.unassignOrder('${safeId}')" title="Hapus assignment">✕</button>
+          </div>
+          ${tsBadge}
+          <button class="invoice-btn" onclick="window.printInvoice('${safeId}',this)" title="Cetak invoice PDF">🧾 Cetak Invoice</button>
+        </div>`;
+      } else {
+        assignHtml = `<button class="assign-btn-o" onclick="window.openAssignModal('${safeId}')">👷 Assign Teknisi</button>`;
+      }
+    }
+
+    const actionHtml   = isConfirmed
+      ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+           <div class="confirmed-badge">✅ Dikonfirmasi</div>
+           ${assignHtml}
+         </div>`
+      : isRejected
+      ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+           <div class="rejected-badge">❌ Ditolak</div>
+           <button class="act-btn del" onclick="window.deleteOrder('${safeId}',this)">🗑️ Hapus Order</button>
+         </div>`
+      : `<div class="order-actions">
+           <button class="confirm-btn-o" onclick="window.confirmOrder('${safeId}','${safeVid}','${safeVcode}',this)">✅ Konfirmasi Order</button>
+           <button class="reject-btn-o"  onclick="window.rejectOrder('${safeId}',this)">❌ Tolak Order</button>
+         </div>`;
+
+    // Scheduled date/time display
+    let schedHtml = '';
+    if (o.scheduled_date) {
+      const sd = new Date(o.scheduled_date + 'T00:00:00');
+      const sdStr = sd.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+      const stStr = o.scheduled_time ? ' · ' + o.scheduled_time + ' WIB' : '';
+      schedHtml = `<div class="sched-info">📅 Jadwal Fix: ${sdStr}${stStr}</div>`;
+    }
+    const badgeHtml    = isConfirmed
+      ? '<span class="badge badge-green">Confirmed</span>'
+      : isRejected
+      ? '<span class="badge badge-red">Ditolak</span>'
+      : '<span class="badge badge-pending">Pending</span>';
+    return `<div class="order-card" id="ocard-${o.id}">
+      <div class="order-head">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="order-id">${o.order_id || o.id.slice(0,8).toUpperCase()}</span>
+          ${badgeHtml}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="order-time">${createdAt}</span>
+          <button class="edit-sched-btn" onclick="window.openEditSchedule('${safeId}')">✏️ Edit Jadwal</button>
+        </div>
+      </div>
+      ${schedHtml}
+      <div class="order-body">
+        <div><b>${o.name||'—'}</b></div>
+        <div>${o.city||'—'}</div>
+        ${o.wa_number ? `<div style="grid-column:1/-1">
+          <a href="https://wa.me/${(o.wa_number||'').replace(/\D/g,'').replace(/^0/,'62')}" target="_blank"
+             style="display:inline-flex;align-items:center;gap:6px;background:#DCFCE7;color:#166534;padding:4px 12px;border-radius:100px;font-size:0.78rem;font-weight:600;text-decoration:none;border:1px solid #BBF7D0;transition:background 0.2s;"
+             onmouseover="this.style.background='#BBF7D0'" onmouseout="this.style.background='#DCFCE7'">
+            <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            📱 ${o.wa_number}
+          </a>
+        </div>` : ''}
+        <div style="grid-column:1/-1;color:var(--soft)">${o.address||'—'}</div>
+        <div>${o.ac_type||'—'}</div>
+        <div>${o.unit_count||'—'} unit</div>
+        <div style="grid-column:1/-1">${svcList}</div>
+        <div>📅 ${o.date||'—'}</div>
+        ${o.notes ? `<div style="grid-column:1/-1;color:var(--soft)">📝 ${o.notes}</div>` : ''}
+      </div>
+      ${voucherHtml}
+      <div class="order-foot">
+        ${totalHtml}
+        ${actionHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.confirmOrder = async function(orderId, voucherId, voucherCode, btn) {
+  const label = voucherCode ? `Voucher ${voucherCode} akan dicatat sebagai terpakai.` : 'Order ini tidak menggunakan voucher.';
+  if (!confirm('Konfirmasi order ini? ' + label)) return;
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Memproses...'; }
+
+  try {
+    // 1. Konfirmasi order
+    await window._fbUpdateDoc(window._fbDoc(window._fbDb, 'orders', orderId), {
+      status: 'confirmed',
+      confirmed_at: window._fbServerTimestamp()
+    });
+
+    // 2. Kalau tidak ada voucher, selesai
+    if (!voucherCode) {
+      showToast('Order dikonfirmasi ✅');
+      return;
+    }
+
+    // 3. Ambil data voucher dari Firestore (selalu by code, paling reliable)
+    const vSnap = await window._fbGetDocs(
+      window._fbQuery(window._fbCollection(window._fbDb,'vouchers'), window._fbWhere('code','==',voucherCode))
+    );
+
+    if (vSnap.empty) {
+      showToast('Order dikonfirmasi ✅ (voucher tidak ditemukan di database)');
+      return;
+    }
+
+    const voucherDocId = vSnap.docs[0].id;
+    const voucherData  = vSnap.docs[0].data();
+
+    // 4. Increment used_count voucher
+    await window._fbUpdateDoc(window._fbDoc(window._fbDb,'vouchers',voucherDocId), {
+      used_count: window._fbIncrement(1)
+    });
+
+    // 5. Cari affiliator — dari field affiliator_code di voucher,
+    //    atau fallback: cari affiliator yg kodenya sama dengan kode voucher
+    const affCode = (voucherData.affiliator_code || voucherCode || '').trim().toUpperCase();
+
+    console.log('[confirmOrder] voucherCode:', voucherCode);
+    console.log('[confirmOrder] voucherData.affiliator_code:', voucherData.affiliator_code);
+    console.log('[confirmOrder] affCode yg dicari:', affCode);
+    console.log('[confirmOrder] voucherData:', JSON.stringify(voucherData));
+
+    const affSnap = await window._fbGetDocs(
+      window._fbQuery(window._fbCollection(window._fbDb,'affiliators'), window._fbWhere('code','==',affCode))
+    );
+
+    console.log('[confirmOrder] affSnap.size:', affSnap.size);
+
+    // Bukan voucher affiliator — selesai
+    if (affSnap.empty) {
+      // Coba juga dengan kode asli tanpa toUpperCase sebagai fallback terakhir
+      const affSnapRaw = await window._fbGetDocs(
+        window._fbQuery(window._fbCollection(window._fbDb,'affiliators'), window._fbWhere('code','==',voucherCode))
+      );
+      console.log('[confirmOrder] affSnapRaw (tanpa uppercase) size:', affSnapRaw.size);
+      if (affSnapRaw.empty) {
+        showToast('Order dikonfirmasi! Pemakaian voucher tercatat ✅');
+        return;
+      }
+      // Ketemu dengan raw — lanjut pakai ini
+      const affDocId2  = affSnapRaw.docs[0].id;
+      const affData2   = affSnapRaw.docs[0].data();
+      const commRate2  = affData2.commission_rate || 10;
+      const orderDoc2  = allOrders.find(o => o.id === orderId);
+      const total2     = orderDoc2?.total_after || orderDoc2?.total_before || 0;
+      const commAmt2   = Math.round(total2 * commRate2 / 100);
+      await window._fbUpdateDoc(window._fbDoc(window._fbDb,'affiliators',affDocId2), {
+        total_earnings:  window._fbIncrement(commAmt2),
+        total_orders:    window._fbIncrement(1),
+        pending_balance: window._fbIncrement(commAmt2)
+      });
+      await window._fbAddDoc(window._fbCollection(window._fbDb,'affiliate_commissions'), {
+        affiliator_code:   affData2.code,
+        affiliator_name:   affData2.name || '',
+        order_id:          orderDoc2?.order_id || orderId,
+        order_total:       total2,
+        commission_rate:   commRate2,
+        commission_amount: commAmt2,
+        voucher_code:      voucherCode,
+        status:            'pending',
+        created_at:        window._fbServerTimestamp()
+      });
+      showToast(`✅ Dikonfirmasi! Komisi ${affData2.name||voucherCode}: Rp ${commAmt2.toLocaleString('id-ID')} tercatat`);
+      return;
+    }
+
+    // 6. Ini voucher affiliator — hitung & catat komisi
+
+    const affDocId  = affSnap.docs[0].id;
+    const affData   = affSnap.docs[0].data();
+    const commRate  = affData.commission_rate || 10;
+    const orderDoc  = allOrders.find(o => o.id === orderId);
+    const total     = orderDoc?.total_after || orderDoc?.total_before || 0;
+    const commAmt   = Math.round(total * commRate / 100);
+
+    // Patch voucher lama yang belum punya affiliator_code
+    if (!voucherData.affiliator_code) {
+      window._fbUpdateDoc(window._fbDoc(window._fbDb,'vouchers',voucherDocId), {
+        affiliator_code: affCode
+      }).catch(()=>{}); // silent, not critical
+    }
+
+    // Update saldo affiliator
+    await window._fbUpdateDoc(window._fbDoc(window._fbDb,'affiliators',affDocId), {
+      total_earnings:  window._fbIncrement(commAmt),
+      total_orders:    window._fbIncrement(1),
+      pending_balance: window._fbIncrement(commAmt)
+    });
+
+    // Catat record komisi
+    await window._fbAddDoc(window._fbCollection(window._fbDb,'affiliate_commissions'), {
+      affiliator_code:   affCode,
+      affiliator_name:   affData.name || '',
+      order_id:          orderDoc?.order_id || orderId,
+      order_total:       total,
+      commission_rate:   commRate,
+      commission_amount: commAmt,
+      voucher_code:      voucherCode,
+      status:            'pending',
+      created_at:        window._fbServerTimestamp()
+    });
+
+    showToast(`✅ Dikonfirmasi! Komisi ${affData.name||affCode}: Rp ${commAmt.toLocaleString('id-ID')} tercatat`);
+
+  } catch(e) {
+    showToast('Gagal konfirmasi: ' + e.message);
+    if (btn) { btn.disabled = false; btn.textContent = '✅ Konfirmasi Order'; }
+  }
+};
+
+window.rejectOrder = async function(orderId, btn) {
+  if (!confirm('Tolak/batalkan order ini? Tindakan ini tidak dapat dibatalkan.')) return;
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Memproses...'; }
+  try {
+    await window._fbUpdateDoc(window._fbDoc(window._fbDb,'orders',orderId), {
+      status: 'rejected',
+      rejected_at: window._fbServerTimestamp()
+    });
+    showToast('Order telah ditolak ❌');
+  } catch(e) {
+    showToast('Gagal menolak order: ' + e.message);
+    if (btn) { btn.disabled = false; btn.textContent = '❌ Tolak Order'; }
+  }
+};
+
+window.deleteOrder = async function(orderId, btn) {
+  if (!confirm('Hapus permanen order yang ditolak ini? Data akan hilang dan tidak bisa dikembalikan.')) return;
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Menghapus...'; }
+  try {
+    await deleteDoc(doc(db, 'orders', orderId));
+    showToast('Order berhasil dihapus permanen 🗑️');
+  } catch(e) {
+    showToast('Gagal menghapus: ' + e.message);
+    if (btn) { btn.disabled = false; btn.textContent = '🗑️ Hapus Order'; }
+  }
+};
+
+// ── REVIEWS ────────────────────────────────────────────
+function listenReviews() {
+  const q = query(collection(db, 'reviews'), orderBy('created_at', 'desc'));
+  unsubReviews = onSnapshot(q, snap => {
+    allReviews = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderReviewStats();
+    renderReviews();
+  });
+}
+
+function renderReviewStats() {
+  // Web utama saves reviews with approved:false (no status field)
+  // Treat any review without status='approved' or status='rejected' as pending
+  const pending  = allReviews.filter(r => r.status !== 'approved' && r.status !== 'rejected').length;
+  const approved = allReviews.filter(r => r.status === 'approved').length;
+  const rejected = allReviews.filter(r => r.status === 'rejected').length;
+  document.getElementById('st-rev-total').textContent    = allReviews.length;
+  document.getElementById('st-rev-pending').textContent  = pending;
+  document.getElementById('st-rev-approved').textContent = approved;
+  document.getElementById('st-rev-rejected').textContent = rejected;
+  // Badge notif
+  const badge = document.getElementById('reviews-badge');
+  if (pending > 0) { badge.textContent = pending; badge.style.display = 'inline-block'; }
+  else { badge.style.display = 'none'; }
+}
+
+window.filterReviews = function(f) {
+  reviewFilter = f;
+  ['all','pending','approved','rejected'].forEach(x => {
+    document.getElementById('rf-'+x).classList.toggle('act', x===f);
+  });
+  renderReviews();
+};
+
+function renderReviews() {
+  let list;
+  if (reviewFilter === 'all') {
+    list = allReviews;
+  } else if (reviewFilter === 'pending') {
+    // Reviews from web utama have no status field — treat as pending
+    list = allReviews.filter(r => r.status !== 'approved' && r.status !== 'rejected');
+  } else {
+    list = allReviews.filter(r => r.status === reviewFilter);
+  }
+  const el = document.getElementById('reviews-list');
+  if (!list.length) {
+    el.innerHTML = `<div class="orders-empty">Tidak ada review${reviewFilter !== 'all' ? ' dengan status ini' : ''}.</div>`;
+    return;
+  }
+  el.innerHTML = list.map(r => {
+    const createdAt = r.created_at
+      ? new Date(r.created_at.seconds*1000).toLocaleString('id-ID',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+      : '—';
+    const stars = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
+    const isApproved = r.status === 'approved';
+    const isRejected = r.status === 'rejected';
+    const isPending  = !isApproved && !isRejected;
+    const safeId = r.id.replace(/'/g,"\\'");
+
+    const statusBadge = isApproved
+      ? '<span class="badge badge-green">✅ Tampil di Web</span>'
+      : isRejected
+      ? '<span class="badge badge-red">❌ Ditolak</span>'
+      : '<span class="badge badge-pending">⏳ Menunggu Review</span>';
+
+    const actionHtml = isPending
+      ? `<div class="order-actions">
+           <button class="confirm-btn-o" onclick="window.approveReview('${safeId}',this)">✅ Setujui & Tampilkan</button>
+           <button class="reject-btn-o"  onclick="window.rejectReview('${safeId}',this)">❌ Tolak</button>
+         </div>`
+      : isApproved
+      ? `<div class="confirmed-badge">✅ Ditampilkan di Web</div>
+         <button class="act-btn del" style="margin-left:8px" onclick="window.rejectReview('${safeId}',this)">Sembunyikan</button>`
+      : `<div class="rejected-badge">❌ Ditolak</div>
+         <button class="act-btn tog" style="margin-left:8px" onclick="window.approveReview('${safeId}',this)">Tampilkan</button>`;
+
+    return `<div class="review-card">
+      <div class="review-head">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="review-stars">${stars}</span>
+          ${statusBadge}
+        </div>
+        <span class="review-time">${createdAt}</span>
+      </div>
+      <div class="review-body">
+        <div class="review-name">${r.name || 'Anonim'}</div>
+        ${r.service_type ? `<div class="review-service">🔧 ${r.service_type}</div>` : ''}
+        ${r.city ? `<div class="review-service">📍 ${r.city}</div>` : ''}
+        <div class="review-text">"${r.review || r.text || r.comment || '—'}"</div>
+      </div>
+      <div class="review-foot">
+        ${actionHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.approveReview = async function(id, btn) {
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span>'; }
+  try {
+    await updateDoc(doc(db,'reviews',id),{ status:'approved', approved:true, approved_at:serverTimestamp() });
+    showToast('Review disetujui & ditampilkan di web ✅');
+  } catch(e) {
+    showToast('Gagal: '+e.message);
+    if (btn) { btn.disabled = false; }
+  }
+};
+
+window.rejectReview = async function(id, btn) {
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span>'; }
+  try {
+    await updateDoc(doc(db,'reviews',id),{ status:'rejected', approved:false, rejected_at:serverTimestamp() });
+    showToast('Review ditolak / disembunyikan ❌');
+  } catch(e) {
+    showToast('Gagal: '+e.message);
+    if (btn) { btn.disabled = false; }
+  }
+};
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── AFFILIATORS ────────────────────────────────────────
+function listenAffiliators() {
+  const q = query(collection(db, 'affiliators'), orderBy('created_at', 'desc'));
+  unsubAffiliators = onSnapshot(q, snap => {
+    allAffiliators = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAffStats();
+    renderAffTable(allAffiliators);
+  });
+}
+
+function renderAffStats() {
+  document.getElementById('st-aff-total').textContent  = allAffiliators.length;
+  document.getElementById('st-aff-active').textContent = allAffiliators.filter(a => a.is_active).length;
+}
+
+function renderAffTable(list) {
+  const tbody = document.getElementById('aff-tbl-body');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state">Belum ada affiliator. Buat yang pertama! 🤝</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(a => {
+    const badge = a.is_active
+      ? '<span class="badge badge-green">Aktif</span>'
+      : '<span class="badge badge-red">Nonaktif</span>';
+    const discBadge = a.voucher_discount
+      ? `<span class="badge" style="background:#EDE9FB;color:var(--accent)">🎟️ ${a.voucher_discount}% off</span>`
+      : `<span style="font-size:0.75rem;color:var(--soft)">—</span>`;
+    return `<tr>
+      <td data-label="Kode"><div class="code-badge">${a.code}</div></td>
+      <td data-label="Nama"><b style="color:var(--charcoal)">${a.name||'—'}</b>${a.whatsapp?`<div style="font-size:0.72rem;color:var(--soft)">${a.whatsapp}</div>`:''}</td>
+      <td data-label="Komisi"><strong style="color:var(--accent)">${a.commission_rate||10}%</strong></td>
+      <td data-label="Diskon Voucher">${discBadge}</td>
+      <td data-label="PIN"><span style="font-family:monospace;font-size:0.85rem;letter-spacing:0.1em">${a.pin||'—'}</span></td>
+      <td data-label="Status">${badge}</td>
+      <td data-label="Aksi">
+        <button class="act-btn tog" onclick="window.toggleAff('${a.id}',${!!a.is_active})">${a.is_active?'Nonaktifkan':'Aktifkan'}</button>
+        <button class="act-btn del" onclick="window.deleteAff('${a.id}','${a.code}')">Hapus</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterAffTable() {
+  const q = document.getElementById('aff-search').value.toLowerCase();
+  renderAffTable(allAffiliators.filter(a => a.code.toLowerCase().includes(q)||(a.name||'').toLowerCase().includes(q)));
+}
+
+function genAffCode() {
+  const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = 'ASLAN';
+  for(let i=0;i<4;i++) code += c[Math.floor(Math.random()*c.length)];
+  document.getElementById('aff-code').value = code;
+}
+
+function genAffPin() {
+  let pin = '';
+  for(let i=0;i<6;i++) pin += Math.floor(Math.random()*10);
+  document.getElementById('aff-pin').value = pin;
+}
+
+async function createAffiliator() {
+  const code  = document.getElementById('aff-code').value.trim().toUpperCase();
+  const pin   = document.getElementById('aff-pin').value.trim();
+  const name  = document.getElementById('aff-name').value.trim();
+  const rate  = parseInt(document.getElementById('aff-rate').value);
+  const disc  = parseInt(document.getElementById('aff-disc').value);
+  const wa    = document.getElementById('aff-wa').value.trim();
+  const msgEl = document.getElementById('aff-form-msg');
+  msgEl.className = 'form-msg';
+
+  if (!code)              { msgEl.textContent='Kode wajib diisi.';             msgEl.className='form-msg err'; return; }
+  if (!pin||pin.length!==6){ msgEl.textContent='PIN harus 6 digit angka.';     msgEl.className='form-msg err'; return; }
+  if (!/^\d{6}$/.test(pin)){ msgEl.textContent='PIN harus berupa angka.';      msgEl.className='form-msg err'; return; }
+  if (!name)              { msgEl.textContent='Nama wajib diisi.';             msgEl.className='form-msg err'; return; }
+  if (!rate||rate<1)      { msgEl.textContent='Komisi wajib diisi (min 1%).';  msgEl.className='form-msg err'; return; }
+  if (!disc||disc<1)      { msgEl.textContent='Diskon voucher wajib diisi.';   msgEl.className='form-msg err'; return; }
+  if (disc > 100)         { msgEl.textContent='Diskon voucher max 100%.';      msgEl.className='form-msg err'; return; }
+  if (allAffiliators.some(a=>a.code===code)){ msgEl.textContent='Kode affiliator sudah ada.'; msgEl.className='form-msg err'; return; }
+  if (allVouchers.some(v=>v.code===code))   { msgEl.textContent='Kode ini sudah dipakai sebagai voucher lain.'; msgEl.className='form-msg err'; return; }
+
+  const btn = document.getElementById('btn-create-aff');
+  btn.disabled=true; btn.innerHTML='<span class="spinner-sm"></span> Menyimpan...';
+  try {
+    // Buat expiry 2 tahun ke depan
+    const exp = new Date();
+    exp.setFullYear(exp.getFullYear() + 2);
+    const expStr = exp.toISOString().split('T')[0] + 'T23:59:59';
+
+    // 1. Buat affiliator
+    await addDoc(collection(db,'affiliators'),{
+      code, pin, name, commission_rate:rate, voucher_discount:disc,
+      whatsapp:wa, is_active:true, created_at:serverTimestamp()
+    });
+
+    // 2. Buat voucher dengan kode yang sama secara otomatis
+    await addDoc(collection(db,'vouchers'),{
+      code,
+      discount_type: 'percent',
+      discount_value: disc,
+      max_uses: 99999,
+      used_count: 0,
+      expires_at: expStr,
+      description: 'Voucher affiliator — ' + name,
+      is_active: true,
+      affiliator_code: code,
+      created_at: serverTimestamp()
+    });
+
+    msgEl.textContent='✓ Affiliator & voucher berhasil dibuat!'; msgEl.className='form-msg ok';
+    document.getElementById('aff-code').value='';
+    document.getElementById('aff-pin').value='';
+    document.getElementById('aff-name').value='';
+    document.getElementById('aff-wa').value='';
+    showToast('Affiliator '+code+' + voucher berhasil dibuat 🤝🎟️');
+    setTimeout(()=>{ msgEl.textContent=''; },3000);
+  } catch(e) {
+    msgEl.textContent='Gagal: '+e.message; msgEl.className='form-msg err';
+  }
+  btn.disabled=false; btn.textContent='+ Buat Affiliator';
+}
+
+window.toggleAff = async function(id, current) {
+  try {
+    await updateDoc(doc(db,'affiliators',id),{is_active:!current});
+    showToast(current?'Affiliator dinonaktifkan.':'Affiliator diaktifkan kembali.');
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+window.deleteAff = async function(id, code) {
+  if (!confirm('Hapus affiliator '+code+'? Voucher dengan kode yang sama juga akan dihapus.')) return;
+  try {
+    await deleteDoc(doc(db,'affiliators',id));
+    // Hapus juga voucher affiliator yang terkait (cari by code + affiliator_code)
+    const vSnap = await getDocs(
+      query(collection(db,'vouchers'), where('affiliator_code','==',code))
+    );
+    for (const vDoc of vSnap.docs) {
+      await deleteDoc(doc(db,'vouchers',vDoc.id));
+    }
+    showToast('Affiliator '+code+' dan vouchernya dihapus.');
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+// ── WITHDRAWALS (Admin) ───────────────────────────────
+function listenWithdrawals() {
+  const q = query(collection(db, 'affiliate_withdrawals'), orderBy('created_at', 'desc'));
+  unsubWithdrawals = onSnapshot(q, snap => {
+    allWithdrawals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderWdTable();
+    const pendingCount = allWithdrawals.filter(w => w.status === 'pending').length;
+    const badge = document.getElementById('aff-wd-badge');
+    if (pendingCount > 0) { badge.textContent = pendingCount; badge.style.display = 'inline-block'; }
+    else { badge.style.display = 'none'; }
+    document.getElementById('st-aff-wd-pending').textContent = pendingCount;
+  });
+}
+
+window.filterWd = function(f) {
+  wdFilter = f;
+  ['all','pending','approved','rejected'].forEach(x => {
+    document.getElementById('wf-'+x).classList.toggle('act', x===f);
+  });
+  renderWdTable();
+};
+
+function renderWdTable() {
+  const list = wdFilter === 'all' ? allWithdrawals : allWithdrawals.filter(w => w.status === wdFilter);
+  const tbody = document.getElementById('wd-tbl-body');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">Tidak ada pengajuan${wdFilter !== 'all' ? ' dengan status ini' : ''}.</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(w => {
+    const dateStr = w.created_at
+      ? new Date(w.created_at.seconds*1000).toLocaleString('id-ID',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+      : '—';
+    const statusBadge = (w.status==='approved'||w.status==='paid')
+      ? '<span class="badge badge-green">✅ Disetujui</span>'
+      : w.status==='rejected'
+      ? '<span class="badge badge-red">❌ Ditolak</span>'
+      : '<span class="badge badge-amber">⏳ Pending</span>';
+    const safeId = w.id.replace(/'/g,"\\'");
+    const actionHtml = w.status === 'pending'
+      ? `<button class="act-btn tog" onclick="window.approveWd('${safeId}')">✅ Setujui</button>
+         <button class="act-btn del" onclick="window.rejectWd('${safeId}')">❌ Tolak</button>`
+      : '<span style="font-size:0.75rem;color:var(--soft)">—</span>';
+    return `<tr>
+      <td data-label="Tanggal">${dateStr}</td>
+      <td data-label="Affiliator"><b style="color:var(--charcoal)">${w.affiliator_code||'—'}</b><div style="font-size:0.72rem;color:var(--soft)">${w.affiliator_name||''}</div></td>
+      <td data-label="Jumlah"><strong style="color:var(--green)">${fmt(w.amount)}</strong></td>
+      <td data-label="Status">${statusBadge}</td>
+      <td data-label="Aksi">${actionHtml}</td>
+    </tr>`;
+  }).join('');
+}
+
+window.approveWd = async function(id) {
+  if (!confirm('Setujui penarikan ini? Pastikan dana sudah ditransfer ke affiliator.')) return;
+  try {
+    await updateDoc(doc(db,'affiliate_withdrawals',id),{ status:'approved', approved_at:serverTimestamp() });
+    showToast('Penarikan disetujui ✅');
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+window.rejectWd = async function(id) {
+  if (!confirm('Tolak penarikan ini? Saldo akan dikembalikan ke affiliator.')) return;
+  try {
+    await updateDoc(doc(db,'affiliate_withdrawals',id),{ status:'rejected', rejected_at:serverTimestamp() });
+    showToast('Penarikan ditolak ❌');
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+// ── SCHEDULE EDIT ──────────────────────────────────────
+window.openEditSchedule = function(orderId) {
+  const o = allOrders.find(x => x.id === orderId);
+  if (!o) return;
+  document.getElementById('sm-order-id').value = orderId;
+  document.getElementById('sm-order-label').textContent =
+    'Order: ' + (o.order_id || o.id.slice(0,8).toUpperCase()) + ' — ' + (o.name || 'Customer');
+  document.getElementById('sm-date').value = o.scheduled_date || '';
+  document.getElementById('sm-time').value = o.scheduled_time || '';
+  document.getElementById('schedule-modal').classList.add('open');
+};
+
+window.closeScheduleModal = function() {
+  document.getElementById('schedule-modal').classList.remove('open');
+};
+
+window.saveSchedule = async function() {
+  const orderId = document.getElementById('sm-order-id').value;
+  const date    = document.getElementById('sm-date').value;
+  const time    = document.getElementById('sm-time').value;
+  if (!date) { showToast('Tanggal wajib diisi!'); return; }
+  try {
+    await window._fbUpdateDoc(window._fbDoc(window._fbDb, 'orders', orderId), {
+      scheduled_date: date,
+      scheduled_time: time || null,
+      schedule_updated_at: window._fbServerTimestamp()
+    });
+    window.closeScheduleModal();
+    showToast('Jadwal berhasil disimpan 📅');
+  } catch(e) {
+    showToast('Gagal menyimpan jadwal: ' + e.message);
+  }
+};
+
+// ── EXPORT TO iCAL ─────────────────────────────────────
+window.exportToCalendar = function() {
+  // Only export confirmed orders
+  let list = allOrders.filter(o => o.status === 'confirmed');
+
+  // If a date is selected in the calendar filter, export only that date
+  if (selectedDate) {
+    list = list.filter(o => {
+      const d = o.scheduled_date ||
+        (o.created_at && o.created_at.seconds
+          ? new Date(o.created_at.seconds*1000).toISOString().split('T')[0]
+          : null);
+      return d === selectedDate;
+    });
+  }
+
+  if (!list.length) {
+    showToast(selectedDate
+      ? 'Tidak ada order terkonfirmasi pada tanggal ini.'
+      : 'Belum ada order terkonfirmasi untuk diexport.');
+    return;
+  }
+
+  function padZ(n){ return String(n).padStart(2,'0'); }
+  function toICSDate(dateStr, timeStr) {
+    // Build a local datetime and format as TZID
+    const [y,m,d] = dateStr.split('-').map(Number);
+    const [hh,mm] = (timeStr||'09:00').split(':').map(Number);
+    // Return as floating local time (no Z) with TZID=Asia/Jakarta
+    return `${y}${padZ(m)}${padZ(d)}T${padZ(hh)}${padZ(mm)}00`;
+  }
+  function escICS(s){ return (s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n'); }
+
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Aslan Teknik//Admin Dashboard//ID',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'X-WR-CALNAME:Aslan Teknik — Jadwal Servis',
+    'X-WR-TIMEZONE:Asia/Jakarta'
+  ];
+
+  list.forEach(o => {
+    const dateStr = o.scheduled_date ||
+      (o.created_at && o.created_at.seconds
+        ? new Date(o.created_at.seconds*1000).toISOString().split('T')[0]
+        : null);
+    if (!dateStr) return;
+
+    const timeStr  = o.scheduled_time || '09:00';
+    const [hh,mm]  = timeStr.split(':').map(Number);
+    // End time = start + 2 hours
+    const endHH    = padZ(hh + 2 > 23 ? 23 : hh + 2);
+    const [y,mo,d] = dateStr.split('-').map(Number);
+    const dtStart  = `${y}${padZ(mo)}${padZ(d)}T${padZ(hh)}${padZ(mm)}00`;
+    const dtEnd    = `${y}${padZ(mo)}${padZ(d)}T${endHH}${padZ(mm)}00`;
+
+    const svcList  = Array.isArray(o.services) ? o.services.join(', ') : (o.services||'');
+    const summary  = escICS(`Service AC — ${o.name||'Customer'} (${o.order_id||o.id.slice(0,8).toUpperCase()})`);
+    const desc     = escICS([
+      `Pelanggan: ${o.name||'—'}`,
+      `WA: ${o.wa_number||'—'}`,
+      `Layanan: ${svcList}`,
+      `AC: ${o.ac_type||'—'} × ${o.unit_count||1} unit`,
+      o.notes ? `Catatan: ${o.notes}` : ''
+    ].filter(Boolean).join('\n'));
+    const location = escICS([o.address, o.city].filter(Boolean).join(', '));
+    const uid      = `${o.id}@aslan-teknik.app`;
+
+    lines.push('BEGIN:VEVENT');
+    lines.push(`UID:${uid}`);
+    lines.push(`DTSTART;TZID=Asia/Jakarta:${dtStart}`);
+    lines.push(`DTEND;TZID=Asia/Jakarta:${dtEnd}`);
+    lines.push(`SUMMARY:${summary}`);
+    lines.push(`DESCRIPTION:${desc}`);
+    if (location) lines.push(`LOCATION:${location}`);
+    lines.push('STATUS:CONFIRMED');
+    lines.push('END:VEVENT');
+  });
+
+  lines.push('END:VCALENDAR');
+
+  const icsContent = lines.join('\r\n');
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const label = selectedDate || new Date().toISOString().split('T')[0];
+  a.href = url;
+  a.download = `aslan-teknik-servis-${label}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`✅ ${list.length} event diexport ke kalender!`);
+};
+
+// ── TECHNICIANS ────────────────────────────────────────
+function listenTechnicians() {
+  const q = query(collection(db, 'technicians'), orderBy('created_at', 'desc'));
+  unsubTechnicians = onSnapshot(q, snap => {
+    allTechnicians = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderTechTable();
+    renderTechStats();
+    renderTechAssignmentOverview();
+  });
+}
+
+function renderTechStats() {
+  document.getElementById('st-tech-total').textContent  = allTechnicians.length;
+  document.getElementById('st-tech-active').textContent = allTechnicians.filter(t => t.is_active).length;
+  document.getElementById('st-tech-assigned').textContent = allOrders.filter(o => o.assigned_to).length;
+}
+
+function renderTechTable(list) {
+  const data = list || allTechnicians;
+  const tbody = document.getElementById('tech-tbl-body');
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">Belum ada teknisi. Tambah teknisi pertama!</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map(t => {
+    const safeId = t.id.replace(/'/g,"\\'");
+    const statusBadge = t.is_active
+      ? '<span class="badge badge-green">Aktif</span>'
+      : '<span class="badge badge-red">Nonaktif</span>';
+    const assignedCount = allOrders.filter(o => o.assigned_to === t.tech_id).length;
+    return `<tr>
+      <td data-label="Nama"><b style="color:var(--charcoal)">${t.name||'—'}</b>
+        ${assignedCount > 0 ? `<div style="font-size:0.72rem;color:var(--soft);margin-top:2px">${assignedCount} order ter-assign</div>` : ''}
+      </td>
+      <td data-label="ID Login"><span class="tech-id-badge">${t.tech_id||'—'}</span></td>
+      <td data-label="WA">${t.wa_number||'—'}</td>
+      <td data-label="Spesialisasi" style="font-size:0.78rem;color:var(--soft)">${t.specialization||'—'}</td>
+      <td data-label="Status">${statusBadge}</td>
+      <td data-label="Aksi">
+        <button class="act-btn tog" onclick="window.toggleTech('${safeId}',${!!t.is_active})">${t.is_active?'Nonaktifkan':'Aktifkan'}</button>
+        <button class="act-btn del" onclick="window.deleteTech('${safeId}','${(t.name||'').replace(/'/g,"\\'")}')">Hapus</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderTechAssignmentOverview() {
+  const el = document.getElementById('tech-assignment-overview');
+  if (!el) return;
+  const confirmed = allOrders.filter(o => o.status === 'confirmed');
+  if (!confirmed.length) { el.innerHTML = '<div class="empty-state">Belum ada order terkonfirmasi.</div>'; return; }
+  const assigned   = confirmed.filter(o => o.assigned_to);
+  const unassigned = confirmed.filter(o => !o.assigned_to);
+  let html = `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+    <div class="stat-c" style="flex:1;min-width:120px;border-left:3px solid var(--green)"><div class="s-num" style="color:var(--green);font-size:1.5rem">${assigned.length}</div><div class="s-lbl">Sudah Ter-assign</div></div>
+    <div class="stat-c" style="flex:1;min-width:120px;border-left:3px solid var(--amber)"><div class="s-num" style="color:var(--amber);font-size:1.5rem">${unassigned.length}</div><div class="s-lbl">Belum Di-assign</div></div>
+  </div>`;
+  if (unassigned.length) {
+    html += `<div style="font-size:0.78rem;font-weight:600;color:var(--soft);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em;">⚠️ Order Belum Di-assign</div>`;
+    html += unassigned.map(o => {
+      const safeId = o.id.replace(/'/g,"\\'");
+      const sd = o.scheduled_date ? new Date(o.scheduled_date+'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short'}) : '—';
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap;">
+        <div>
+          <span class="code-badge" style="font-size:0.75rem">${o.order_id||o.id.slice(0,8).toUpperCase()}</span>
+          <span style="font-size:0.82rem;color:var(--charcoal);margin-left:8px;font-weight:600">${o.name||'—'}</span>
+          <span style="font-size:0.75rem;color:var(--soft);margin-left:8px">📅 ${sd}</span>
+        </div>
+        <button class="assign-btn-o" style="padding:6px 14px;font-size:0.75rem" onclick="window.openAssignModal('${safeId}')">👷 Assign</button>
+      </div>`;
+    }).join('');
+  }
+  el.innerHTML = html;
+}
+
+window.filterTechTable = function() {
+  const q = document.getElementById('tech-search').value.toLowerCase();
+  renderTechTable(allTechnicians.filter(t =>
+    (t.name||'').toLowerCase().includes(q) || (t.tech_id||'').toLowerCase().includes(q)
+  ));
+};
+
+function genTechId() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let id = 'TECH';
+  for(let i=0;i<3;i++) id += chars[Math.floor(Math.random()*chars.length)];
+  return id;
+}
+function genTechPass() {
+  const w = ['aslan','teknik','service','ac','teknisi'];
+  const n = Math.floor(Math.random()*900)+100;
+  return w[Math.floor(Math.random()*w.length)] + n;
+}
+
+window.createTechnician = async function() {
+  const name  = document.getElementById('tech-name').value.trim();
+  const tid   = document.getElementById('tech-id').value.trim().toUpperCase();
+  const pass  = document.getElementById('tech-pass').value.trim();
+  const wa    = document.getElementById('tech-wa').value.trim();
+  const spec  = document.getElementById('tech-spec').value.trim();
+  const msgEl = document.getElementById('tech-form-msg');
+  msgEl.className = 'form-msg';
+  if (!name) { msgEl.textContent='Nama wajib diisi.'; msgEl.className='form-msg err'; return; }
+  if (!tid)  { msgEl.textContent='ID Login wajib diisi.'; msgEl.className='form-msg err'; return; }
+  if (!pass) { msgEl.textContent='Password wajib diisi.'; msgEl.className='form-msg err'; return; }
+  if (allTechnicians.some(t => t.tech_id === tid)) { msgEl.textContent='ID sudah dipakai teknisi lain.'; msgEl.className='form-msg err'; return; }
+  const btn = document.getElementById('btn-create-tech');
+  btn.disabled=true; btn.innerHTML='<span class="spinner-sm"></span> Menyimpan...';
+  try {
+    await addDoc(collection(db,'technicians'),{
+      name, tech_id:tid, password:pass, wa_number:wa, specialization:spec,
+      is_active:true, created_at:serverTimestamp()
+    });
+    msgEl.textContent='✓ Teknisi berhasil ditambahkan!'; msgEl.className='form-msg ok';
+    document.getElementById('tech-name').value='';
+    document.getElementById('tech-id').value='';
+    document.getElementById('tech-pass').value='';
+    document.getElementById('tech-wa').value='';
+    document.getElementById('tech-spec').value='';
+    showToast('Teknisi '+name+' berhasil dibuat 👷');
+    setTimeout(()=>{ msgEl.textContent=''; },3000);
+  } catch(e){ msgEl.textContent='Gagal: '+e.message; msgEl.className='form-msg err'; }
+  btn.disabled=false; btn.textContent='+ Tambah Teknisi';
+};
+
+window.toggleTech = async function(id, current) {
+  try {
+    await updateDoc(doc(db,'technicians',id),{is_active:!current});
+    showToast(current?'Teknisi dinonaktifkan.':'Teknisi diaktifkan kembali.');
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+window.deleteTech = async function(id, name) {
+  if (!confirm('Hapus teknisi '+name+'? Tindakan ini tidak dapat dibatalkan.')) return;
+  try { await deleteDoc(doc(db,'technicians',id)); showToast('Teknisi '+name+' dihapus.'); }
+  catch(e){ showToast('Gagal: '+e.message); }
+};
+
+// ── ORDER ASSIGNMENT ───────────────────────────────────
+window.openAssignModal = function(orderId) {
+  const o = allOrders.find(x => x.id === orderId);
+  if (!o) return;
+  document.getElementById('assign-order-id').value = orderId;
+  document.getElementById('assign-modal-sub').textContent =
+    `Order ${o.order_id||o.id.slice(0,8).toUpperCase()} — ${o.name||'Customer'}`;
+  const sel = document.getElementById('assign-tech-select');
+  const active = allTechnicians.filter(t => t.is_active);
+  sel.innerHTML = '<option value="">-- Pilih Teknisi --</option>' +
+    active.map(t => `<option value="${t.tech_id}" data-name="${t.name}">${t.name} (${t.tech_id})</option>`).join('');
+  if (o.assigned_to) sel.value = o.assigned_to;
+  document.getElementById('assign-modal').classList.add('open');
+};
+
+window.closeAssignModal = function() {
+  document.getElementById('assign-modal').classList.remove('open');
+};
+
+window.saveAssign = async function() {
+  const orderId = document.getElementById('assign-order-id').value;
+  const sel     = document.getElementById('assign-tech-select');
+  const techId  = sel.value;
+  const techOpt = sel.options[sel.selectedIndex];
+  const techName = techOpt ? techOpt.dataset.name || techId : techId;
+  if (!techId) { showToast('Pilih teknisi terlebih dahulu!'); return; }
+  try {
+    await window._fbUpdateDoc(window._fbDoc(window._fbDb,'orders',orderId), {
+      assigned_to: techId,
+      assigned_name: techName,
+      assigned_at: window._fbServerTimestamp(),
+      task_status: 'belum'
+    });
+    window.closeAssignModal();
+    showToast(`Order di-assign ke ${techName} 👷`);
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+window.unassignOrder = async function(orderId) {
+  if (!confirm('Hapus assignment teknisi dari order ini?')) return;
+  try {
+    await window._fbUpdateDoc(window._fbDoc(window._fbDb,'orders',orderId), {
+      assigned_to: null, assigned_name: null, assigned_at: null, task_status: null
+    });
+    showToast('Assignment dihapus.');
+  } catch(e){ showToast('Gagal: '+e.message); }
+};
+
+// ── EVENT LISTENERS ───────────────────────────────────
+document.getElementById('btn-login').addEventListener('click', doLogin);
+document.getElementById('l-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('btn-logout').addEventListener('click', doLogout);
+document.getElementById('btn-gen').addEventListener('click', genCode);
+document.getElementById('btn-create').addEventListener('click', createVoucher);
+document.getElementById('tp-pct').addEventListener('click', () => setType('percent'));
+document.getElementById('tp-nom').addEventListener('click', () => setType('nominal'));
+document.getElementById('search').addEventListener('input', filterTable);
+document.getElementById('btn-gen-aff').addEventListener('click', genAffCode);
+document.getElementById('btn-gen-pin').addEventListener('click', genAffPin);
+document.getElementById('btn-create-aff').addEventListener('click', createAffiliator);
+document.getElementById('aff-search').addEventListener('input', filterAffTable);
+document.getElementById('btn-gen-tech').addEventListener('click', () => { document.getElementById('tech-id').value = genTechId(); });
+document.getElementById('btn-gen-tech-pass').addEventListener('click', () => { document.getElementById('tech-pass').value = genTechPass(); });
+document.getElementById('btn-create-tech').addEventListener('click', window.createTechnician);
+document.getElementById('tech-search').addEventListener('input', window.filterTechTable);
+window.toggleV = window.toggleV;
+window.deleteV = window.deleteV;
+
+// ============= CETAK INVOICE PDF =============
+window._QRIS_B64 = 'data:image/webp;base64,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';
+
+// Escape HTML entities to safely inject user-provided text into innerHTML/template strings
+function _invEscHtml(s) {
+  return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// Show the invoice review modal. Returns Promise<Array|null>.
+// null = user cancelled. Array of {desc, amount} = user confirmed.
+function _showInvoiceModal(order, fmtRp) {
+  return new Promise(resolve => {
+    const bookingSubtotal = order.total_before || 0;
+    const discount = order.discount_amount || 0;
+    const svcArr = Array.isArray(order.services) ? order.services : (order.services ? [order.services] : []);
+    const svcStr = svcArr.length ? svcArr.join(', ') : 'Layanan AC';
+
+    const overlay = document.createElement('div');
+    overlay.className = 'inv-modal-overlay';
+
+    const modal = document.createElement('div');
+    modal.className = 'inv-modal';
+    overlay.appendChild(modal);
+
+    // Header
+    const headerHtml =
+      '<h2>Review Invoice</h2>' +
+      '<div class="inv-modal-sub">Tambahkan pekerjaan atau sparepart di luar booking kalau ada, lalu cetak.</div>';
+
+    // Summary card
+    const voucherLine = order.voucher_code
+      ? '<div class="inv-sum-row" style="color:#22C55E"><span>Voucher (' + _invEscHtml(order.voucher_code) + ')</span><b>&minus;' + fmtRp(discount) + '</b></div>'
+      : '';
+    const summaryHtml =
+      '<div class="inv-modal-summary">' +
+        '<div class="inv-sum-row"><span>Customer</span><b>' + _invEscHtml(order.name || '—') + '</b></div>' +
+        '<div class="inv-sum-row"><span>Layanan booking</span><b>' + _invEscHtml(svcStr) + '</b></div>' +
+        '<div class="inv-sum-row"><span>Subtotal booking</span><b>' + fmtRp(bookingSubtotal) + '</b></div>' +
+        voucherLine +
+      '</div>';
+
+    // Extras section
+    const extrasHtml =
+      '<div class="inv-extras-label">Tambahan Pekerjaan / Sparepart</div>' +
+      '<div class="inv-extras-list" id="__inv_list">' +
+        '<div class="inv-extras-empty" id="__inv_empty">Belum ada tambahan. Klik tombol di bawah kalau ada pekerjaan atau sparepart di luar booking.</div>' +
+      '</div>' +
+      '<button type="button" class="inv-add-btn" id="__inv_add">+ Tambah Item</button>';
+
+    // Totals
+    const totalsHtml =
+      '<div class="inv-modal-totals">' +
+        '<div class="inv-total-row"><span>Total tambahan</span><b id="__inv_extras_total">' + fmtRp(0) + '</b></div>' +
+        '<div class="inv-total-row inv-grand"><span>Total Invoice</span><b id="__inv_grand">' + fmtRp(bookingSubtotal - discount) + '</b></div>' +
+      '</div>';
+
+    // Actions
+    const actionsHtml =
+      '<div class="inv-modal-actions">' +
+        '<button type="button" class="inv-btn-cancel" id="__inv_cancel">Batal</button>' +
+        '<button type="button" class="inv-btn-confirm" id="__inv_confirm">🧾 Cetak PDF</button>' +
+      '</div>';
+
+    modal.innerHTML = headerHtml + summaryHtml + extrasHtml + totalsHtml + actionsHtml;
+    document.body.appendChild(overlay);
+
+    const listEl = modal.querySelector('#__inv_list');
+    const emptyEl = modal.querySelector('#__inv_empty');
+    const extrasTotalEl = modal.querySelector('#__inv_extras_total');
+    const grandEl = modal.querySelector('#__inv_grand');
+
+    function recalc() {
+      let sum = 0;
+      listEl.querySelectorAll('.inv-extra-row').forEach(r => {
+        sum += Number(r.querySelector('.inv-extra-amount').value) || 0;
+      });
+      extrasTotalEl.textContent = fmtRp(sum);
+      grandEl.textContent = fmtRp(bookingSubtotal - discount + sum);
+    }
+
+    function addRow() {
+      if (emptyEl && emptyEl.parentNode) emptyEl.remove();
+      const row = document.createElement('div');
+      row.className = 'inv-extra-row';
+      const descIn = document.createElement('input');
+      descIn.type = 'text';
+      descIn.className = 'inv-extra-desc';
+      descIn.placeholder = 'Deskripsi (misal: Freon R32 1 tabung)';
+      const amtIn = document.createElement('input');
+      amtIn.type = 'number';
+      amtIn.className = 'inv-extra-amount';
+      amtIn.placeholder = 'Jumlah (Rp)';
+      amtIn.min = '0';
+      amtIn.step = '1000';
+      amtIn.inputMode = 'numeric';
+      const rmBtn = document.createElement('button');
+      rmBtn.type = 'button';
+      rmBtn.className = 'inv-extra-remove';
+      rmBtn.title = 'Hapus';
+      rmBtn.textContent = '✕';
+      row.appendChild(descIn);
+      row.appendChild(amtIn);
+      row.appendChild(rmBtn);
+      listEl.appendChild(row);
+      amtIn.addEventListener('input', recalc);
+      rmBtn.addEventListener('click', () => { row.remove(); recalc(); });
+      descIn.focus();
+    }
+
+    function close(result) {
+      overlay.remove();
+      resolve(result);
+    }
+
+    modal.querySelector('#__inv_add').addEventListener('click', addRow);
+    modal.querySelector('#__inv_cancel').addEventListener('click', () => close(null));
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(null); });
+
+    modal.querySelector('#__inv_confirm').addEventListener('click', () => {
+      const rows = listEl.querySelectorAll('.inv-extra-row');
+      const result = [];
+      for (const r of rows) {
+        const desc = r.querySelector('.inv-extra-desc').value.trim();
+        const amt = Number(r.querySelector('.inv-extra-amount').value) || 0;
+        if (!desc && amt <= 0) continue; // skip fully empty row
+        if (!desc || amt <= 0) {
+          showToast('Lengkapi deskripsi dan jumlah, atau hapus baris yang kosong.');
+          return;
+        }
+        result.push({ desc, amount: amt });
+      }
+      close(result);
+    });
+
+    requestAnimationFrame(() => overlay.classList.add('inv-modal-show'));
+  });
+}
+
+window.printInvoice = async function(orderId, btn) {
+  const order = (window._allOrders || allOrders).find(o => o.id === orderId);
+  if (!order) { showToast('Order tidak ditemukan.'); return; }
+  if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Menyiapkan...'; }
+
+  try {
+    const fmtRp = n => 'Rp ' + Number(n||0).toLocaleString('id-ID');
+    const orderIdDisp = order.order_id || order.id.slice(0,8).toUpperCase();
+    const invoiceNo = 'INV-' + orderIdDisp;
+
+    // Show review modal to collect tambahan pekerjaan/sparepart
+    const extras = await _showInvoiceModal(order, fmtRp);
+    if (extras === null) return; // user cancelled — finally restores button
+
+    // Tanggal invoice = tanggal hari ini
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+
+    // Jadwal fix
+    let schedStr = '—';
+    if (order.scheduled_date) {
+      const sd = new Date(order.scheduled_date + 'T00:00:00');
+      schedStr = sd.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+      if (order.scheduled_time) schedStr += ' · ' + order.scheduled_time + ' WIB';
+    } else if (order.date) {
+      schedStr = order.date;
+    }
+
+    // Services list + totals (booking + extras)
+    const svcArr = Array.isArray(order.services) ? order.services : (order.services ? [order.services] : []);
+    const bookingSubtotal = order.total_before || 0;
+    const extrasTotal = extras.reduce((s,x) => s + (Number(x.amount)||0), 0);
+    const subtotal = bookingSubtotal + extrasTotal;
+    const discount = order.discount_amount || 0;
+    const bookingAfterDisc = (order.total_after != null ? order.total_after : bookingSubtotal);
+    const total = bookingAfterDisc + extrasTotal;
+
+    // Build line items — booking items (distributed from bookingSubtotal, not combined)
+    let lineItems = '';
+    if (svcArr.length) {
+      const perItem = Math.round(bookingSubtotal / svcArr.length);
+      lineItems = svcArr.map((s,i) => {
+        const amount = (i === svcArr.length-1) ? (bookingSubtotal - perItem*(svcArr.length-1)) : perItem;
+        return `<div style="display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid rgba(0,0,0,0.06);">
+          <div style="font-size:0.92rem;color:#1A1A2E;line-height:1.4;">
+            <div style="font-weight:500;">${s}</div>
+            <div style="font-size:0.78rem;color:#8888AA;margin-top:2px;">${order.ac_type||'AC'} · ${order.unit_count||1} unit</div>
+          </div>
+          <div style="font-size:0.92rem;color:#1A1A2E;font-weight:500;white-space:nowrap;">${fmtRp(amount)}</div>
+        </div>`;
+      }).join('');
+    } else {
+      lineItems = `<div style="display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid rgba(0,0,0,0.06);">
+        <div style="font-size:0.92rem;color:#1A1A2E;">Layanan AC</div>
+        <div style="font-size:0.92rem;color:#1A1A2E;font-weight:500;">${fmtRp(bookingSubtotal)}</div>
+      </div>`;
+    }
+
+    // Append extras as additional line items (with "Tambahan" label)
+    if (extras.length) {
+      lineItems += extras.map(x => `<div style="display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid rgba(0,0,0,0.06);">
+        <div style="font-size:0.92rem;color:#1A1A2E;line-height:1.4;">
+          <div style="font-weight:500;">${_invEscHtml(x.desc)}</div>
+          <div style="font-size:0.78rem;color:#5B4FD9;margin-top:2px;font-weight:500;">Tambahan</div>
+        </div>
+        <div style="font-size:0.92rem;color:#1A1A2E;font-weight:500;white-space:nowrap;">${fmtRp(x.amount)}</div>
+      </div>`).join('');
+    }
+
+    // Voucher row (optional)
+    const voucherRow = order.voucher_code
+      ? `<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:0.88rem;color:#22C55E;">
+          <span>Diskon (${order.voucher_code})</span>
+          <span>−${fmtRp(discount)}</span>
+        </div>`
+      : '';
+
+    // WA number formatted
+    const waDisp = order.wa_number || '—';
+
+    // Build the invoice HTML
+    const invoiceHTML = `
+<div id="__invoice_doc" style="font-family:'DM Sans',sans-serif;background:#FDF8F2;padding:44px 48px;color:#1A1A2E;width:794px;box-sizing:border-box;line-height:1.4;">
+
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:24px;border-bottom:2px solid #1A1A2E;">
+    <div>
+      <div style="font-family:'Instrument Serif',serif;font-size:2.4rem;line-height:1;color:#1A1A2E;">
+        Aslan<span style="color:#5B4FD9;font-style:italic;"> Teknik</span>
+      </div>
+      <div style="font-size:0.76rem;color:#8888AA;margin-top:8px;letter-spacing:0.02em;">
+        AC Service &amp; Maintenance
+      </div>
+      <div style="font-size:0.74rem;color:#8888AA;margin-top:2px;">
+        Jakarta Selatan · Depok · Bogor · Tangerang Selatan
+      </div>
+      <div style="font-size:0.74rem;color:#8888AA;margin-top:2px;">
+        aslanteknik.id
+      </div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-family:'Instrument Serif',serif;font-size:2.2rem;color:#1A1A2E;letter-spacing:0.08em;line-height:1;">INVOICE</div>
+      <div style="font-size:0.78rem;color:#4A4A6A;margin-top:10px;line-height:1.7;">
+        <div><span style="color:#8888AA;">No. Invoice:</span> <b>${invoiceNo}</b></div>
+        <div><span style="color:#8888AA;">Tanggal:</span> ${dateStr}</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:32px;margin-top:24px;margin-bottom:24px;">
+    <div style="flex:1;">
+      <div style="font-size:0.68rem;font-weight:600;color:#8888AA;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:8px;">Ditagihkan Kepada</div>
+      <div style="font-size:1rem;font-weight:600;color:#1A1A2E;margin-bottom:4px;">${order.name || '—'}</div>
+      <div style="font-size:0.82rem;color:#4A4A6A;line-height:1.55;">
+        ${order.address || '—'}<br>
+        ${order.city || '—'}<br>
+        <span style="color:#8888AA;">WhatsApp:</span> ${waDisp}
+      </div>
+    </div>
+    <div style="flex:1;">
+      <div style="font-size:0.68rem;font-weight:600;color:#8888AA;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:8px;">Detail Pekerjaan</div>
+      <div style="font-size:0.82rem;color:#4A4A6A;line-height:1.7;">
+        <div><span style="color:#8888AA;">Jadwal:</span> <b style="color:#1A1A2E;">${schedStr}</b></div>
+        <div><span style="color:#8888AA;">Teknisi:</span> <b style="color:#1A1A2E;">${order.assigned_name || order.assigned_to || '—'}</b></div>
+        <div><span style="color:#8888AA;">Unit AC:</span> <b style="color:#1A1A2E;">${order.ac_type || '—'} · ${order.unit_count || 1} unit</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:22px;">
+    <div style="display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-top:1.5px solid #1A1A2E;border-bottom:1px solid rgba(0,0,0,0.12);">
+      <div style="font-size:0.68rem;font-weight:600;color:#8888AA;letter-spacing:0.14em;text-transform:uppercase;">Deskripsi Layanan</div>
+      <div style="font-size:0.68rem;font-weight:600;color:#8888AA;letter-spacing:0.14em;text-transform:uppercase;">Subtotal</div>
+    </div>
+    ${lineItems}
+  </div>
+
+  <div style="display:flex;justify-content:flex-end;margin-bottom:28px;">
+    <div style="width:48%;">
+      <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.88rem;color:#4A4A6A;">
+        <span>Subtotal</span>
+        <span>${fmtRp(subtotal)}</span>
+      </div>
+      ${voucherRow}
+      <div style="display:flex;justify-content:space-between;align-items:baseline;padding:12px 0 0 0;margin-top:8px;border-top:1.5px solid #1A1A2E;">
+        <span style="font-family:'Instrument Serif',serif;font-size:1.15rem;color:#1A1A2E;">Total</span>
+        <span style="font-family:'Instrument Serif',serif;font-size:1.55rem;color:#5B4FD9;line-height:1;">${fmtRp(total)}</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:18px;padding:22px;display:flex;gap:22px;align-items:center;margin-bottom:26px;">
+    <div style="flex-shrink:0;">
+      <img src="${window._QRIS_B64}" style="width:200px;height:auto;display:block;" alt="QRIS Aslan Teknik" crossorigin="anonymous">
+    </div>
+    <div style="flex:1;">
+      <div style="font-family:'Instrument Serif',serif;font-size:1.35rem;color:#1A1A2E;line-height:1.1;margin-bottom:3px;">Pembayaran via QRIS</div>
+      <div style="font-size:0.76rem;color:#8888AA;margin-bottom:14px;letter-spacing:0.02em;">Satu QRIS Untuk Semua · Aslan Teknik Indonesia</div>
+      <div style="font-size:0.82rem;color:#4A4A6A;line-height:1.75;">
+        <div style="display:flex;gap:10px;margin-bottom:3px;"><span style="color:#5B4FD9;font-weight:600;min-width:14px;">1.</span><span>Buka aplikasi e-wallet atau m-banking berlogo QRIS</span></div>
+        <div style="display:flex;gap:10px;margin-bottom:3px;"><span style="color:#5B4FD9;font-weight:600;min-width:14px;">2.</span><span>Scan QR Code di samping</span></div>
+        <div style="display:flex;gap:10px;"><span style="color:#5B4FD9;font-weight:600;min-width:14px;">3.</span><span>Konfirmasi nominal <b>${fmtRp(total)}</b> lalu bayar</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding-top:18px;border-top:1px solid rgba(0,0,0,0.08);font-size:0.72rem;color:#8888AA;line-height:1.6;">
+    <div style="margin-bottom:10px;"><b style="color:#4A4A6A;">Catatan:</b> Invoice ini sah tanpa tanda tangan dan cap. Terima kasih telah mempercayakan perawatan AC Anda kepada Aslan Teknik.</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:16px;">
+      <div style="font-family:'Instrument Serif',serif;font-style:italic;font-size:0.95rem;color:#1A1A2E;">Jujur, Transparan, Profesional.</div>
+      <div style="text-align:right;">aslanteknik.id</div>
+    </div>
+  </div>
+
+</div>`;
+
+    const safeName = (order.name||'customer').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'-').slice(0,30);
+    const filename = `Invoice-${orderIdDisp}-${safeName}.pdf`;
+
+    // Detect iOS (Safari's html2canvas is unreliable — blank renders are common)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    if (isIOS) {
+      // iOS path: open new window with the invoice HTML and trigger the native
+      // print dialog. User picks "Save as PDF" from iOS share sheet — far more
+      // reliable than html2canvas-based rendering on mobile Safari.
+      // NOTE: window.open MUST run synchronously within the click handler,
+      // otherwise iOS blocks the popup.
+      const printWin = window.open('', '_blank');
+      if (!printWin) {
+        showToast('Popup diblokir. Izinkan popup untuk mencetak invoice.');
+        return;
+      }
+      const fullHTML = `<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=794">
+<title>${filename.replace(/\.pdf$/,'')}</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{background:#FDF8F2;font-family:'DM Sans',sans-serif;}
+  @page{size:A4;margin:0;}
+  @media print{
+    html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+${invoiceHTML}
+<script>
+  window.addEventListener('load', function(){
+    setTimeout(function(){ window.print(); }, 700);
+  });
+<\/script>
+</body>
+</html>`;
+      printWin.document.open();
+      printWin.document.write(fullHTML);
+      printWin.document.close();
+      showToast('Pilih "Save as PDF" di dialog print 📄');
+      return;
+    }
+
+    // ===== Desktop / Android: html2pdf direct download =====
+    // Create off-screen container
+    const host = document.createElement('div');
+    host.style.cssText = 'position:absolute;top:-20000px;left:0;width:794px;';
+    host.innerHTML = invoiceHTML;
+    document.body.appendChild(host);
+
+    // Wait for fonts + QRIS image to load
+    if (document.fonts && document.fonts.ready) { await document.fonts.ready; }
+    const qrImg = host.querySelector('img');
+    if (qrImg && !qrImg.complete) {
+      await new Promise(res => { qrImg.onload = res; qrImg.onerror = res; });
+    }
+    await new Promise(r => setTimeout(r, 150));
+
+    const el = host.querySelector('#__invoice_doc');
+
+    await html2pdf().set({
+      margin: 0,
+      filename: filename,
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#FDF8F2', logging: false },
+      jsPDF: { unit: 'px', format: [794, el.scrollHeight], orientation: 'portrait', hotfixes: ['px_scaling'] }
+    }).from(el).save();
+
+    document.body.removeChild(host);
+    showToast('Invoice berhasil dicetak 🧾');
+  } catch (e) {
+    console.error('[printInvoice]', e);
+    showToast('Gagal cetak invoice: ' + (e.message || e));
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '🧾 Cetak Invoice'; }
+  }
+};
+// ============= END CETAK INVOICE =============
+
+</script>
+</body>
+</html>
