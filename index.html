@@ -1287,7 +1287,6 @@ function sendWA() {
 
   // 3. Buka WhatsApp LANGSUNG — sinkron, masih dalam konteks klik user
   window.open(waUrl, '_blank');
-  window.location.href = '/terima-kasih.html'; 
 
   // 3. Simpan ke Firestore — dengan unit_count sebagai integer (wajib oleh Firestore rules)
   saveOrder({
@@ -1313,25 +1312,28 @@ function sendWA() {
 
 function saveOrder(data) {
   if (!window._fbDb || !window._fbAddDoc) {
-    // Retry setelah Firebase siap
     window.addEventListener('fbReady', function(){ saveOrder(data); }, { once: true });
     return;
   }
   var payload = Object.assign({}, data, { created_at: window._fbServerTimestamp() });
-  // Coba simpan langsung
   window._fbAddDoc(
     window._fbCollection(window._fbDb, 'orders'),
     payload
   ).then(function(){
     console.log('[saveOrder] Order berhasil disimpan:', data.order_id);
+    window.location.href = '/terima-kasih.html'; // ← pindah ke sini!
   }).catch(function(e){
     console.warn('[saveOrder] Gagal simpan, retry dalam 2 detik:', e);
-    // Retry sekali lagi setelah 2 detik
     setTimeout(function(){
       window._fbAddDoc(
         window._fbCollection(window._fbDb, 'orders'),
         payload
-      ).catch(function(e2){ console.error('[saveOrder] Retry juga gagal:', e2); });
+      ).then(function(){
+        window.location.href = '/terima-kasih.html'; // ← dan di sini juga
+      }).catch(function(e2){ 
+        console.error('[saveOrder] Retry juga gagal:', e2);
+        window.location.href = '/terima-kasih.html'; // ← tetap redirect walau gagal
+      });
     }, 2000);
   });
 }
